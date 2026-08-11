@@ -8,18 +8,18 @@ description: "Disciplina de Programação Web."
 theme: "default"
 class: "invert"
 
-footer: "Eduardo Cruz Araujo | Fatec | 2026.2 | Programação Web | Desenvolvimento de aplicações Web (Part. 2)"
+footer: "Eduardo Cruz Araujo | Fatec | 2026.2 | Programação Web | Desenvolvimento de aplicações Web: Overview (Part. 2)"
 
 paginate: "true"
 
 ---
 
 # Programação Web :mortar_board:
-## Desenvolvimento de aplicações Web (Part. 2)
+## Desenvolvimento de aplicações Web: Overview (Part. 2)
 
 ---
 
-Desenvolvimento de aplicações Web (Part. 2)
+Desenvolvimento de aplicações Web: Overview (Part. 2)
 ## Considerações sobre o Desenvolvimento de Aplicações Web
 
 ---

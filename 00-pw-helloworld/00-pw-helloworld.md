@@ -48,18 +48,18 @@ request/response e conexão com BD."*
 
 ## Ementa
 
-- Desenvolvimento de aplicações Web (Part. 1) - Overview
-- Desenvolvimento de aplicações Web (Part. 2) - Overview
-- Desenvolvimento de aplicações Web (Part. 3) - System Design: Fundamentos
-- Desenvolvimento de aplicações Web (Part. 4) - System Design: Deep dive
-- Desenvolvimento de aplicações Web (Part. 5) - System Design: Deep dive
+- Desenvolvimento de aplicações Web: Overview (Part. 1)
+- Desenvolvimento de aplicações Web: Overview (Part. 2)
+- System Design: Arquitetura de Sistemas Distribuídos (Part. 1)
+- System Design: Arquitetura de Sistemas Distribuídos (Part. 2)
+- System Design: Arquitetura de Sistemas Distribuídos (Part. 3)
 
 ---
 
 ## Ementa
 
-- API: Design, Documentação e Teste (Apidog)
 - API: Contextualização
+- API: Design, Documentação e Teste (Apidog)
 - API: Projeto
 - SDD: Fundamentos do Spec-Driven Design 
 - SDD: Prática
@@ -69,6 +69,8 @@ request/response e conexão com BD."*
 
 ## Ementa
 
+- API: Autenticação e Autorização
+- API: Mapeamento Objeto-Relacional (ORM)
 - API: Teste (Apidog)
 - API: Deploy (Render+Supabase)
 - Revisão: Git

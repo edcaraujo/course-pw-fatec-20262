@@ -8,18 +8,18 @@ description: "Disciplina de Programação Web."
 theme: "default"
 class: "invert"
 
-footer: "Eduardo Cruz Araujo | Fatec | 2026.2 | Programação Web | Desenvolvimento de aplicações Web (Part. 1)"
+footer: "Eduardo Cruz Araujo | Fatec | 2026.2 | Programação Web | Desenvolvimento de aplicações Web: Overview (Part. 1)"
 
 paginate: "true"
 
 ---
 
 # Programação Web :mortar_board:
-## Desenvolvimento de aplicações Web (Part. 1)
+## Desenvolvimento de aplicações Web: Overview (Part. 1)
 
 --- 
 
-Desenvolvimento de aplicações Web (Part. 1)
+Desenvolvimento de aplicações Web: Overview (Part. 1)
 ## Internet e Web
 
 ---
@@ -92,7 +92,7 @@ Para que uma página chegue até você, quatro pilares trabalham juntos:
 
 --- 
 
-Desenvolvimento de aplicações Web (Part. 1)
+Desenvolvimento de aplicações Web: Overview (Part. 1)
 ## Hands on
 
 ---
@@ -122,7 +122,7 @@ Desenvolvimento de aplicações Web (Part. 1)
 
 ---
 
-Desenvolvimento de aplicações Web (Part. 1)
+Desenvolvimento de aplicações Web: Overview (Part. 1)
 ## Considerações sobre o Desenvolvimento de Aplicações Web
 
 ---
@@ -239,7 +239,7 @@ Como lidar quando o banco se torna o gargalo.
 
 ---
 
-Desenvolvimento de aplicações Web (Part. 1)
+Desenvolvimento de aplicações Web: Overview (Part. 1)
 ## Referências
 
 ---
