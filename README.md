@@ -1,4 +1,4 @@
-# 🌐 Programação Web — Fatec Ribeirão Preto
+# 📚 Programação Web — Fatec Ribeirão Preto
 
 Repositório contendo os materiais, apresentações e exercícios da disciplina de **Programação Web** (semestre 2026.2) do curso de **Análise e Desenvolvimento de Sistemas (ADS)** da **Fatec de Ribeirão Preto - SP**.
 
@@ -28,3 +28,4 @@ Repositório contendo os materiais, apresentações e exercícios da disciplina 
 
 - Cada pasta numérica (ex: `00-pw-helloworld/`) representa um módulo/aula da disciplina.
 - Os arquivos `.md` principais contêm os slides em formato Markdown (compatíveis com [Marp](https://marp.app/)).
+- O diretório `src/demo/` dentro das pastas das aulas contém as aplicações web interativas (HTML, CSS e JS) utilizadas nas demonstrações práticas.

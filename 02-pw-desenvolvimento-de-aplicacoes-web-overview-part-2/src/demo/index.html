@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programação Web - Overview (Part. 2) | Fatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| Overview (Part. 2)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 16</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Teclas M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">Desenvolvimento de Aplicações Web</h1>
+      <p class="cover-subtitle">Cache, Rendering Patterns, Otimização de Performance, Escalabilidade, Resiliência, Observabilidade, Segurança (AppSec) e DevOps (Parte 2)</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd> ou a tecla <kbd>M</kbd> para o índice de slides.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: CACHE PATTERNS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Camadas de Alta Velocidade</span>
+        <h2 class="slide-title">Estratégias de Cache (Caching Patterns)</h2>
+        <p class="slide-subtitle">Como otimizar a velocidade de acesso e reduzir a carga no banco de dados principal.</p>
+      </div>
+
+      <div class="cache-pattern-grid">
+        <div class="card">
+          <div class="card-title">⚡ Padrões de Acesso</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Cache-Aside (Lazy Loading):</strong> A aplicação verifica o cache. Se der <em>Cache Miss</em>, busca no DB e popula o cache. <span style="color: var(--accent-emerald); font-size: 0.8rem;">(Ideal para leitura pesada)</span>.</li>
+              <li><strong>Write-Through:</strong> A escrita salva simultaneamente no Cache e no DB. <span style="color: var(--accent-cyan); font-size: 0.8rem;">(Garante consistência)</span>.</li>
+              <li><strong>Write-Back (Write-Behind):</strong> Escreve no cache e retorna rápido. O banco é atualizado assincronamente em background. <span style="color: var(--accent-amber); font-size: 0.8rem;">(Altíssima performance de escrita)</span>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="cache-flow-display">
+          <div class="widget-toolbar" style="padding: 6px 10px;">
+            <span class="toolbar-title" style="font-size: 0.8rem;">🧪 SIMULADOR DE CACHE</span>
+            <div style="display: flex; gap: 6px;">
+              <button class="btn-nav" id="btn-cache-read" style="font-size: 0.75rem;">📖 Ler Dado (GET)</button>
+              <button class="btn-nav" id="btn-cache-clear" style="font-size: 0.75rem;">🗑️ Limpar Cache</button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-around; background: #080c14; padding: 12px; border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem;">
+            <div style="text-align: center;">
+              <div style="color: var(--accent-cyan); font-weight: 700;">Navegador</div>
+              <div style="font-size: 0.7rem; color: #888;">Cliente</div>
+            </div>
+            <div>➔</div>
+            <div style="text-align: center; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: #1e293b;" id="cache-node-box">
+              <div style="color: var(--accent-purple); font-weight: 700;">Redis Cache</div>
+              <div style="font-size: 0.7rem; color: #aaa;" id="cache-status-label">STATUS: VAZIO (MISS)</div>
+            </div>
+            <div>➔</div>
+            <div style="text-align: center; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 6px; background: #1e293b;">
+              <div style="color: var(--accent-emerald); font-weight: 700;">PostgreSQL</div>
+              <div style="font-size: 0.7rem; color: #aaa;">Database</div>
+            </div>
+          </div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;" id="cache-explain-text">
+            Clique em <strong>"Ler Dado"</strong> para observar o comportamento do primeiro acesso (Cache Miss) seguido dos acessos subsequentes (Cache Hit).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: RENDERING PATTERNS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Arquitetura de Renderização</span>
+        <h2 class="slide-title">Geração de Conteúdo (Rendering Patterns)</h2>
+        <p class="slide-subtitle">SSR vs CSR vs SSG vs ISR: O tradeoff entre performance inicial, SEO e carga no servidor.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>⏱️ COMPARADOR WATERFALL DE RENDERIZAÇÃO</span>
+          </div>
+          <div class="toolbar-controls" id="rendering-tabs-bar">
+            <button class="btn-nav active" data-render="ssr">SSR (Server-Side)</button>
+            <button class="btn-nav" data-render="csr">CSR (Client-Side SPA)</button>
+            <button class="btn-nav" data-render="ssg">SSG (Static Generation)</button>
+            <button class="btn-nav" data-render="isr">ISR (Incremental Static)</button>
+          </div>
+        </div>
+
+        <div class="rendering-waterfall">
+          <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 6px;" id="render-pattern-title">Server-Side Rendering (SSR)</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;" id="render-pattern-desc">
+            O servidor processa a requisição, busca dados no banco e envia o HTML 100% pronto. <strong>Prós:</strong> Excelente SEO e visualização rápida (FCP). <strong>Contras:</strong> Maior tempo até o primeiro byte (TTFB).
+          </p>
+
+          <div class="waterfall-bar-container">
+            <div class="waterfall-row">
+              <span class="waterfall-label">TTFB</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 45%; background: var(--accent-amber);" id="wf-ttfb">450ms (Server Build)</div>
+              </div>
+            </div>
+            <div class="waterfall-row">
+              <span class="waterfall-label">FCP (Paint)</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 55%; background: var(--accent-emerald);" id="wf-fcp">550ms (HTML Pronto)</div>
+              </div>
+            </div>
+            <div class="waterfall-row">
+              <span class="waterfall-label">Hydration</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 75%; background: var(--accent-purple);" id="wf-hydr">750ms (JS Interativo)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: OTIMIZAÇÃO BACKEND & REDE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Otimização de Performance</span>
+        <h2 class="slide-title">Otimização de Backend, Protocolos & Rede</h2>
+        <p class="slide-subtitle">Como HTTP/2, HTTP/3 (QUIC), CDNs e compressão Brotli aceleram a entrega de dados.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">⚡ HTTP/2 & HTTP/3 (QUIC)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>HTTP/2:</strong> Multiplexação de requisições na mesma conexão TCP.</li>
+              <li><strong>HTTP/3 (QUIC):</strong> Opera sobre UDP, eliminando o bloqueio de cabeça de fila (<em>Head-of-Line Blocking</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🌍 CDN (Edge Caching)</div>
+          <div class="card-body">
+            <p>Servidores distribuídos geograficamente (Edges) que entregam ativos estáticos (HTML, imagens, JS) com latência de milissegundos.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">📦 Compressão Brotli</div>
+          <div class="card-body">
+            <p>Algoritmo de compressão superior ao Gzip, reduzindo em até 20% adicional o tamanho dos payloads de texto (HTML, CSS, JS).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: OTIMIZAÇÃO FRONTEND -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Frontend Performance</span>
+        <h2 class="slide-title">Otimização Frontend & Critical Rendering Path</h2>
+        <p class="slide-subtitle">Técnicas de minificação de ativos e otimização da navegação no cliente.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">✂️ Code Splitting & Tree Shaking</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Code Splitting:</strong> Divisão do bundle JavaScript em chunks menores, carregando apenas o código da rota atual.</li>
+              <li><strong>Tree Shaking:</strong> Remoção de funções e bibliotecas não utilizadas (código morto) durante a etapa de build.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🖼️ Resource Hints & Imagens Modernas</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Formatos Modernos:</strong> WebP e AVIF com <code>srcset</code> e <code>loading="lazy"</code>.</li>
+              <li><strong>Resource Hints:</strong> <code>rel="preload"</code>, <code>rel="prefetch"</code> e <code>rel="preconnect"</code> para antecipar conexões DNS/TLS.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: DEDICADO 1 - ESCALABILIDADE DE INFRAESTRUTURA (SCALE UP VS SCALE OUT) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Alta Disponibilidade (Part. 1)</span>
+        <h2 class="slide-title">Escalabilidade da Infraestrutura: Scale Up vs. Scale Out</h2>
+        <p class="slide-subtitle">O confronto arquitetural entre aumentar o hardware de um servidor ou distribuir a carga em cluster.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Scale Up Card -->
+        <div class="card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">⬆️ Scale Up (Escalabilidade Vertical)</div>
+          <div class="card-body">
+            <p><strong>Conceito:</strong> Adicionar mais recursos físicos (CPU, RAM, SSDs) a um único servidor existente.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Vantagens:</strong> Nenhuma mudança de código ou arquitetura necessária. Latência zero de rede interna.</li>
+              <li><strong>Desvantagens:</strong> Teto físico de hardware rápido; Custo exponencialmente alto; Ponto Único de Falha (SPOF); Requer tempo de inatividade (Downtime) para upgrades.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Scale Out Card -->
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">➡️ Scale Out (Escalabilidade Horizontal)</div>
+          <div class="card-body">
+            <p><strong>Conceito:</strong> Adicionar mais servidores idênticos (réplicas em cluster) para trabalhar em paralelo.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Vantagens:</strong> Escalabilidade teoricamente infinita; Alta resiliência (se 1 máquina cai, as outras assumem); Custo linear por réplica.</li>
+              <li><strong>Exigências:</strong> Requer obrigatoriamente <strong>Arquitetura Stateless</strong> e um <strong>Load Balancer</strong> na frente.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: DEDICADO 2 - LOAD BALANCING (L4 VS L7) & AUTO SCALING -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Alta Disponibilidade (Part. 2)</span>
+        <h2 class="slide-title">Load Balancing (L4 vs. L7) & Auto Scaling</h2>
+        <p class="slide-subtitle">Como os balanceadores de carga distribuem tráfego e como a nuvem escala réplicas dinamicamente.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Load Balancer L4 Card -->
+        <div class="card">
+          <div class="card-title">⚡ Load Balancer Layer 4 (Transporte)</div>
+          <div class="card-body">
+            <p><strong>Como funciona:</strong> Roteia pacotes baseado estritamente em IP e Porta TCP/UDP.</p>
+            <p style="margin-top: 6px; font-size: 0.8rem; color: var(--text-muted);">Não abre o pacote HTTP. Oferece velocidade extrema de milhões de requisições por segundo. <em>(Ex: AWS NLB, HAProxy TCP Mode)</em>.</p>
+          </div>
+        </div>
+
+        <!-- Load Balancer L7 Card -->
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🧠 Load Balancer Layer 7 (Aplicação)</div>
+          <div class="card-body">
+            <p><strong>Como funciona:</strong> Roteia com base no conteúdo HTTP/HTTPS (URL Path, Headers, Cookies).</p>
+            <p style="margin-top: 6px; font-size: 0.8rem; color: var(--text-muted);">Permite SSL Termination, roteamento de microsserviços (<code>/api/v1/checkout</code>) e Sticky Sessions. <em>(Ex: NGINX, AWS ALB)</em>.</p>
+          </div>
+        </div>
+
+        <!-- Auto Scaling Card -->
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">📈 Auto Scaling (Reativo vs Preditivo)</div>
+          <div class="card-body">
+            <p><strong>Reativo:</strong> Adiciona servidores quando CPU > 70% por 3 min.</p>
+            <p style="margin-top: 6px;"><strong>Preditivo:</strong> Usa aprendizado de máquina e dados históricos para escalar servidores *antes* que o pico aconteça (ex: às 17h para o rush).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: RESILIÊNCIA DEDICADA 1 - CIRCUIT BREAKER & EXPONENTIAL BACKOFF -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Engenharia de Resiliência (Part. 1)</span>
+        <h2 class="slide-title">Circuit Breakers & Exponential Backoff</h2>
+        <p class="slide-subtitle">Protegendo o sistema contra cascatas de falhas de rede e sobrecargas de re-tentativas.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Interactive Circuit Breaker Widget -->
+        <div class="interactive-widget" style="margin-top: 0;">
+          <div class="widget-toolbar">
+            <div class="toolbar-title" style="font-size: 0.85rem;">
+              <span>🔌 MÁQUINA DE ESTADOS DO CIRCUIT BREAKER</span>
+            </div>
+            <div class="toolbar-controls">
+              <button class="btn-nav" id="btn-cb-trigger" style="font-size: 0.75rem; border-color: var(--accent-rose); color: var(--accent-rose);">💥 Simular Erros</button>
+              <button class="btn-nav" id="btn-cb-reset" style="font-size: 0.75rem;">↺ Reset</button>
+            </div>
+          </div>
+
+          <div class="cb-state-machine">
+            <div class="cb-state-node active-closed" id="cb-node-closed">
+              <strong style="color: var(--accent-emerald); font-size: 0.85rem;">CLOSED</strong>
+              <span style="font-size: 0.65rem; color: #aaa;">Fluxo Normal</span>
+            </div>
+            <div style="font-size: 1rem; color: #888;">➔</div>
+            <div class="cb-state-node" id="cb-node-open">
+              <strong style="color: var(--accent-rose); font-size: 0.85rem;">OPEN</strong>
+              <span style="font-size: 0.65rem; color: #aaa;">Bloqueio Fast</span>
+            </div>
+            <div style="font-size: 1rem; color: #888;">➔</div>
+            <div class="cb-state-node" id="cb-node-half">
+              <strong style="color: var(--accent-amber); font-size: 0.85rem;">HALF-OPEN</strong>
+              <span style="font-size: 0.65rem; color: #aaa;">Teste Sonda</span>
+            </div>
+          </div>
+
+          <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 6px; font-size: 0.8rem; color: var(--text-muted);" id="cb-status-text">
+            O disjuntor está <strong>FECHADO (Normal)</strong>. Requisições passam diretamente.
+          </div>
+        </div>
+
+        <!-- Exponential Backoff Deep Dive Card -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">⏳ Retry com Exponential Backoff (+ Jitter)</div>
+          <div class="card-body">
+            <p><strong>O Problema:</strong> Quando um serviço falha temporariamente, re-tentar em intervalos fixos (ex: a cada 1s) cria o efeito <em>Thundering Herd</em> (manada atordoada), derrubando o servidor novamente.</p>
+            <p style="margin-top: 10px;"><strong>A Solução:</strong> Dobrar o tempo de espera a cada tentativa mais um ruído aleatório (Jitter):</p>
+            <div class="code-snippet" style="font-size: 0.8rem; margin-top: 8px;">Tentativa 1: Espera 1,0s
+Tentativa 2: Espera 2,0s + Jitter (142ms)
+Tentativa 3: Espera 4,0s + Jitter (85ms)
+Tentativa 4: Espera 8,0s + Jitter (310ms)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: RESILIÊNCIA DEDICADA 2 - BULKHEADS & DEGRADAÇÃO GRACIOSA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Engenharia de Resiliência (Part. 2)</span>
+        <h2 class="slide-title">Bulkheads & Degradação Graciosa (Fallback)</h2>
+        <p class="slide-subtitle">Isolando falhas de componentes para garantir que serviços críticos continuem operantes.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🚢 Bulkhead (Isolamento de Recursos)</div>
+          <div class="card-body">
+            <p style="margin-bottom: 10px;"><strong>Origem do Nome:</strong> Inspirado nas anteparas estanques de um navio: se um compartimento alaga, os outros mantêm a embarcação flutuando.</p>
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-cyan); padding: 12px; border-radius: 6px; margin-top: 10px;">
+              <strong>Aplicação na Web:</strong> Separa pools de threads e conexões. Se a funcionalidade de <em>Upload de Imagens</em> sobrecarregar, a funcionalidade vital de <em>Login e Checkout</em> continua 100% ativa com seu próprio pool isolado.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🛡️ Degradação Graciosa (Graceful Degradation)</div>
+          <div class="card-body">
+            <p style="margin-bottom: 10px;"><strong>Conceito:</strong> Capacidade de responder em modo reduzido/simplificado (Fallback) em vez de lançar um erro <code>HTTP 500</code> ao cliente.</p>
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-emerald); padding: 12px; border-radius: 6px; margin-top: 10px;">
+              <strong>Exemplo de E-commerce:</strong> Se o microserviço de <em>"Recomendações via IA"</em> cair, o sistema exibe silenciosamente uma lista estática de <em>"Mais Populares"</em> salvos em cache, mantendo a venda.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: OS 3 PILARES DA OBSERVABILIDADE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Telemetria & Operações</span>
+        <h2 class="slide-title">Os 3 Pilares da Observabilidade</h2>
+        <p class="slide-subtitle">Logs, Métricas e Tracing Distribuído: Saindo do "está funcionando?" para o "por que está lento?".</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔍 Os 3 Pilares</div>
+          <div class="card-body">
+            <ul class="bullet-list" style="gap: 16px;">
+              <li><strong>1. Logs (Eventos Estruturados):</strong> Registro textual de eventos específicos <em>("Erro de NullPointer na linha 42")</em>. Ferramentas: ELK Stack (Elasticsearch, Logstash, Kibana), Splunk.</li>
+              <li><strong>2. Métricas (Séries Temporais):</strong> Valores numéricos agregados no tempo para análise de tendências <em>("Uso de CPU está em 90%")</em>. Ferramentas: Prometheus, Grafana, Datadog.</li>
+              <li><strong>3. Tracing Distribuído (Fluxo da Requisição):</strong> Mapeia o caminho exato e o tempo gasto por uma única requisição através de dezenas de microsserviços. Ferramentas: Jaeger, Zipkin, OpenTelemetry.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Tracing Flamegraph Demo Card -->
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🔥 Distributed Tracing (Jaeger / OpenTelemetry)</div>
+          <div class="card-body">
+            <p style="font-size: 0.85rem; margin-bottom: 10px;">Visualização em formato <em>Flamegraph</em> do tempo de resposta de uma requisição navegando pela arquitetura:</p>
+            <div class="trace-flamegraph">
+              <div class="trace-span" style="width: 100%; background: var(--accent-cyan);">API Gateway (Total: 250ms)</div>
+              <div class="trace-span" style="width: 80%; margin-left: 20%; background: var(--accent-emerald);">Auth Service (45ms)</div>
+              <div class="trace-span" style="width: 60%; margin-left: 40%; background: var(--accent-rose);">Order Service -> DB Query (180ms - GARGALO)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: OS 4 GOLDEN SIGNALS & SLA/SLO/SLI (DEDICADO) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Engenharia de Confiabilidade (SRE)</span>
+        <h2 class="slide-title">Google SRE: Os 4 Golden Signals & SLA/SLO/SLI</h2>
+        <p class="slide-subtitle">O conjunto essencial de métricas da equipe de SRE do Google e o gerenciamento do Error Budget.</p>
+      </div>
+
+      <!-- Golden Signals Interactive Dashboard Grid -->
+      <div class="golden-signals-grid">
+        <div class="signal-card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="signal-header">
+            <span class="signal-title">⏱️ Latência (P50/P99)</span>
+            <span style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">GOOD</span>
+          </div>
+          <div class="signal-metric">42ms <span style="font-size: 0.75rem; color: #888;">(P99: 180ms)</span></div>
+          <p class="signal-subtext">Separa a latência de respostas 200 OK da latência de erros 500 rápidos.</p>
+        </div>
+
+        <div class="signal-card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="signal-header">
+            <span class="signal-title" style="color: var(--accent-emerald);">🚦 Tráfego (RPS)</span>
+            <span style="background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">1.42k RPS</span>
+          </div>
+          <div class="signal-metric" style="color: var(--accent-emerald);">1.420 req/s</div>
+          <p class="signal-subtext">Mede a demanda de trabalho colocada sobre o sistema (RPS / Bitrate / IOPS).</p>
+        </div>
+
+        <div class="signal-card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="signal-header">
+            <span class="signal-title" style="color: var(--accent-rose);">❌ Erros (Rate)</span>
+            <span style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">0.04%</span>
+          </div>
+          <div class="signal-metric" style="color: var(--accent-rose);">0,04%</div>
+          <p class="signal-subtext">Taxa de requisições que falharam (erros explícitos HTTP 5xx e semânticos).</p>
+        </div>
+
+        <div class="signal-card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="signal-header">
+            <span class="signal-title" style="color: var(--accent-amber);">🛢️ Saturação</span>
+            <span style="background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: 700;">CPU 68%</span>
+          </div>
+          <div class="signal-metric" style="color: var(--accent-amber);">68% CPU</div>
+          <p class="signal-subtext">Alerta preditivo de esgotamento de recursos (CPU, RAM, DB Connection Pool).</p>
+        </div>
+      </div>
+
+      <!-- SLA / SLO / SLI & Error Budget Framework Flow -->
+      <div class="sre-framework-flow">
+        <div class="sre-flow-card" style="border-color: var(--accent-cyan);">
+          <div class="sre-flow-title" style="color: var(--accent-cyan);">📊 SLI (Indicator)</div>
+          <div class="sre-flow-desc">
+            <strong>Medição Real:</strong> "99.85% das requisições responderam em < 200ms neste mês."
+          </div>
+        </div>
+
+        <div class="sre-flow-card" style="border-color: var(--accent-emerald);">
+          <div class="sre-flow-title" style="color: var(--accent-emerald);">🎯 SLO (Objective)</div>
+          <div class="sre-flow-desc">
+            <strong>Meta do Time:</strong> "A equipe de engenharia se compromete a manter > 99.5%."
+          </div>
+        </div>
+
+        <div class="sre-flow-card" style="border-color: var(--accent-purple);">
+          <div class="sre-flow-title" style="color: var(--accent-purple);">📜 SLA (Agreement)</div>
+          <div class="sre-flow-desc">
+            <strong>Contrato Comercial:</strong> "Garante 99.0% ao cliente com cláusula de reembolso."
+          </div>
+        </div>
+
+        <div class="sre-flow-card" style="border-color: var(--accent-amber);">
+          <div class="sre-flow-title" style="color: var(--accent-amber);">💰 Error Budget</div>
+          <div class="sre-flow-desc">
+            <strong>Saldo de Risco:</strong> "0.5% de margem tolerada para inovações e novos deploys."
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: NOVO DEDICADO 1 - SEGURANÇA: DEFESA EM CAMADAS & OAUTH2/OIDC -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">09. Application Security (Part. 1)</span>
+        <h2 class="slide-title">Defesa em Camadas & Autenticação OAuth2 / OIDC</h2>
+        <p class="slide-subtitle">Arquitetura Defense in Depth e os padrões de identidade e autorização federada.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🛡️ Defesa em Camadas (Defense in Depth)</div>
+          <div class="card-body">
+            <p style="margin-bottom: 10px;"><strong>Princípio:</strong> Nenhuma camada única de segurança é infalível. Aplica-se múltiplos anéis de segurança concêntricos:</p>
+            <ol style="line-height: 1.6; padding-left: 18px; color: var(--text-main); font-size: 0.85rem;">
+              <li><strong>Rede & Perímetro:</strong> Firewalls (VPC, Subnets privadas).</li>
+              <li><strong>Aplicação & WAF:</strong> Inspeção e filtragem de pacotes HTTP.</li>
+              <li><strong>Identidade & Acesso:</strong> OAuth2 / OIDC / JWT assinado.</li>
+              <li><strong>Dados:</strong> Criptografia em trânsito (TLS 1.3) e em repouso (AES-256).</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🔑 AuthN vs. AuthZ (OAuth2 / OIDC)</div>
+          <div class="card-body">
+            <ul class="bullet-list" style="gap: 12px;">
+              <li><strong>AuthN (Autenticação - "Quem é você?"):</strong> Verificação da identidade do usuário (OpenID Connect - ID Token).</li>
+              <li><strong>AuthZ (Autorização - "O que você pode fazer?"):</strong> Delegação de permissões de acesso a recursos (OAuth 2.0 - Access Token / Scopes).</li>
+            </ul>
+            <div class="code-snippet" style="font-size: 0.75rem; margin-top: 10px;">Fluxo OIDC: Login -> Provider (Google/Auth0) -> ID Token + Access Token -> Validação JWT no Backend</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: NOVO DEDICADO 2 - SEGURANÇA: RATE LIMITING, WAF & OWASP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">09. Application Security (Part. 2)</span>
+        <h2 class="slide-title">Rate Limiting, WAF & Proteção OWASP (SQLi / XSS)</h2>
+        <p class="slide-subtitle">Simulador Token Bucket, inspeção de pacotes via WAF e mitigação de vulnerabilidades.</p>
+      </div>
+
+      <!-- Token Bucket Simulator Widget -->
+      <div class="interactive-widget" style="margin-top: 0; padding: 16px;">
+        <div class="widget-toolbar" style="padding: 6px 12px;">
+          <div class="toolbar-title" style="font-size: 0.85rem;">
+            <span>🛡️ SIMULADOR DE RATE LIMITING (TOKEN BUCKET ALGORITHM)</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn-nav" id="btn-send-request" style="font-size: 0.75rem; border-color: var(--accent-cyan); color: var(--accent-cyan);">🚀 Enviar Requisição HTTP</button>
+          </div>
+        </div>
+
+        <div class="token-bucket-visualizer">
+          <div class="bucket-container" id="token-bucket-display">
+            <div class="token-pill"></div>
+            <div class="token-pill"></div>
+            <div class="token-pill"></div>
+            <div class="token-pill"></div>
+          </div>
+
+          <div style="flex: 1;">
+            <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 4px;">Algoritmo Token Bucket</h4>
+            <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;" id="bucket-explain-text">
+              Cada requisição consome 1 Token. Se o balde esvaziar (ataques de força bruta ou DDoS), a API bloqueia com <strong>HTTP 429 Too Many Requests</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- WAF & SQLi/XSS Protection Cards -->
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card" style="padding: 14px;">
+          <div class="card-title" style="font-size: 0.95rem;">🧱 WAF (Web Application Firewall)</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            Inspeção de pacotes na camada 7 antes de chegarem à aplicação. Bloqueia padrões conhecidos do **OWASP Top 10** (DDoS, Botnets, Path Traversal).
+          </div>
+        </div>
+
+        <div class="card" style="padding: 14px; border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-rose);">💉 Proteção SQL Injection & XSS</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            <strong>SQLi:</strong> Uso obrigatório de <em>Prepared Statements / Parameterized Queries</em>.<br>
+            <strong>XSS:</strong> Sanitização estrita de inputs, cabeçalho <em>Content Security Policy (CSP)</em> e Cookies <em>HttpOnly + SameSite</em>.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: DEVOPS & CI/CD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">10. Entrega Contínua</span>
+        <h2 class="slide-title">DevOps, CI/CD & Estratégias de Deploy</h2>
+        <p class="slide-subtitle">Pipelines de integração contínua e estratégias de deploy sem tempo de inatividade (Zero Downtime).</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔄 Pipeline de CI/CD</div>
+          <div class="card-body">
+            <p><strong>Commit ➔ Lint ➔ Testes Unitários ➔ Build Docker ➔ Testes de Integração ➔ Deploy.</strong><br><br>Garante automação total e validação do código antes da entrega em produção.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🚀 Estratégias de Deploy</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Blue/Green:</strong> Ambiente "Blue" (versão antiga) e "Green" (versão nova). A chave do roteador vira instantaneamente.</li>
+              <li><strong>Canary Release:</strong> Libera a nova versão gradualmente (1% ➔ 10% ➔ 100% dos usuários), realizando rollback automático em caso de erros.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: CHECKLIST DE BOA PRÁTICAS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">11. Visão Holística de Engenharia</span>
+        <h2 class="slide-title">Checklist das Boas Práticas de Engenharia Web</h2>
+        <p class="slide-subtitle">Unindo os pilares abordados na Parte 1 e Parte 2 da disciplina de Programação Web.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem;">1. Arquitetura</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            Stateless, microsserviços bem delimitados, APIs REST/gRPC e resiliência via Circuit Breakers.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-emerald);">2. Performance</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            Cache em memória (Redis), HTTP/3, CDN Edge, SSR/ISR para SEO e Brotli compression.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-purple);">3. Observabilidade</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            Logs estruturados, métricas no Prometheus, distributed tracing e alertas nos Golden Signals.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem; color: var(--accent-amber);">4. AppSec & CI/CD</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            OAuth2/OIDC, Rate Limiting, WAF e pipeline automatizada com deploy Blue/Green.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: AGRADECIMENTO & ENCERRAMENTO DEDICADO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.3);">FATEC 2026.2 • PROGRAMAÇÃO WEB</span>
+      <h2 style="font-size: 3.2rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Obrigado! 🤘</h2>
+      <p style="font-size: 1.3rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px auto; line-height: 1.5;">
+        Dúvidas, perguntas ou considerações finais sobre a disciplina?
+      </p>
+
+      <div class="card" style="max-width: 480px; text-align: left; margin: 0 auto; width: 100%; border-color: rgba(56, 189, 248, 0.3);">
+        <div class="card-title" style="font-size: 1.15rem; color: var(--accent-cyan);">👨‍🏫 Eduardo Cruz Araujo</div>
+        <div class="card-body">
+          <ul class="bullet-list" style="gap: 12px;">
+            <li><strong>E-mail:</strong> <a href="mailto:eduardo.araujo@cps.sp.gov.br" style="color: var(--accent-cyan); text-decoration: none;">eduardo.araujo@cps.sp.gov.br</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">linkedin.com/in/edcaraujo</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">github.com/edcaraujo</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Grid / Overview Modal -->
+  <div class="modal-overlay" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📱 ÍNDICE DE SLIDES DA APRESENTAÇÃO</h3>
+        <button class="btn-close" id="modal-close">&times;</button>
+      </div>
+      <div class="slide-grid-nav" id="slide-grid-nav">
+        <!-- Populated via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-msg" id="toast-msg">Mensagem Toast</div>
+
+  <script src="app.js"></script>
+</body>
+</html>

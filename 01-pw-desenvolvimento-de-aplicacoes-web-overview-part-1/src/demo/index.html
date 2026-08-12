@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programação Web - Overview (Part. 1) | Fatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| Overview (Part. 1)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 12</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Teclas M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">Desenvolvimento de Aplicações Web</h1>
+      <p class="cover-subtitle">Overview da Arquitetura, Protocolos da Internet, Ciclo HTTP, DevTools, Microsserviços e Bancos de Dados Distribuidos (Parte 1)</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd> ou a tecla <kbd>M</kbd> para o índice de slides.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: INTERNET VS WEB -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Fundamentos Globais</span>
+        <h2 class="slide-title">Internet e World Wide Web (WWW)</h2>
+        <p class="slide-subtitle">A diferença fundamental entre a infraestrutura física/lógica e os serviços de hipertexto.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">
+            <span style="font-size: 1.5rem;">🌐</span> O que é a Internet?
+          </div>
+          <div class="card-subtitle">A Infraestrutura Global de Transporte</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Rede de Redes:</strong> Bilhões de dispositivos conectados (roteadores, switches, cabos submarinos de fibra e satélites).</li>
+              <li><strong>Protocolo Base:</strong> Opera sob a suíte de protocolos <strong>TCP/IP</strong>.</li>
+              <li><strong>Rodovia Digital:</strong> Suporta múltiplos serviços independentes:
+                <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                  <span style="background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-family: var(--font-mono);">Web (HTTP)</span>
+                  <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-family: var(--font-mono);">E-mail (SMTP)</span>
+                  <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-family: var(--font-mono);">Arquivos (FTP)</span>
+                  <span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-family: var(--font-mono);">Streaming (RTSP/UDP)</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">
+            <span style="font-size: 1.5rem;">📄</span> O que é a Web (World Wide Web)?
+          </div>
+          <div class="card-subtitle">O Sistema de Informações e Hipertexto</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Documentos Interligados:</strong> Baseia-se no conceito de <strong>Hipertexto</strong> (links acessíveis via navegadores).</li>
+              <li><strong>A Tríade Fundamental:</strong>
+                <ol style="margin-top: 8px; padding-left: 20px; line-height: 1.6; color: var(--text-main);">
+                  <li><strong>HTML:</strong> Estrutura e conteúdo da informação.</li>
+                  <li><strong>HTTP / HTTPS:</strong> Protocolo de comunicação e transporte.</li>
+                  <li><strong>URL / URI:</strong> Sistema de localização e endereçamento único global.</li>
+                </ol>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box" style="display:none;">
+        💡 <strong>Nota para o Professor:</strong> Destaque para a turma a analogia da rodovia (Internet) versus os carros que trafegam nela (Web, Email, Streaming). Muitos alunos confundem achar que a Internet é apenas o navegador.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ORIGEM DA WEB & A TRÍADE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. História & Padrões</span>
+        <h2 class="slide-title">Origem da Web & Os Três Pilares</h2>
+        <p class="slide-subtitle">Como Tim Berners-Lee criou a base da tecnologia livre e royalty-free no CERN em 1989.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">👨‍💻 O Criador & CERN</div>
+          <div class="card-body">
+            <p style="margin-bottom: 12px;">Sir <strong>Tim Berners-Lee</strong> propôs a Web em <strong>1989</strong> no laboratório do <strong>CERN</strong> (Suíça) para facilitar o compartilhamento de pesquisas entre cientistas.</p>
+            <div class="code-snippet">Primeiro Site (1991):<br>https://info.cern.ch/</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-purple);">🔓 Royalty-Free</div>
+          <div class="card-body">
+            <p>Lançada publicamente em <strong>1991</strong> como tecnologia <strong>Royalty-Free (gratuita e aberta)</strong>, o que permitiu sua adoção e evolução exponencial por todo o planeta.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">📐 Padronização W3C</div>
+          <div class="card-body">
+            <p>Garante a interoperabilidade entre navegadores e sistemas operacionais mantendo padrões abertos para HTML, CSS e APIs.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: SIMULADOR CICLO DE VIDA WEB -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Arquitetura Cliente-Servidor</span>
+        <h2 class="slide-title">O Ciclo de Vida de um Acesso Web</h2>
+        <p class="slide-subtitle">O caminho completo percorrido desde a digitação da URL até a renderização de pixels na tela.</p>
+      </div>
+
+      <!-- Interactive Widget: Web Lifecycle -->
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>⚡ SIMULADOR INTERATIVO DO CICLO HTTP</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn-nav" id="lc-btn-play">▶ Executar Sequência</button>
+            <button class="btn-nav" id="lc-btn-next">Próximo Passo ➔</button>
+            <button class="btn-nav" id="lc-btn-reset">↺ Reiniciar</button>
+          </div>
+        </div>
+
+        <div class="lifecycle-visualizer">
+          <div class="lifecycle-steps">
+            <div class="step-node active" data-step="0">
+              <div class="step-number">1</div>
+              <div class="step-title">URL Input</div>
+              <div class="step-desc">Cliente no Navegador</div>
+            </div>
+            <div class="step-node" data-step="1">
+              <div class="step-number">2</div>
+              <div class="step-title">DNS Lookup</div>
+              <div class="step-desc">Traduz Domínio -> IP</div>
+            </div>
+            <div class="step-node" data-step="2">
+              <div class="step-number">3</div>
+              <div class="step-title">TCP / TLS</div>
+              <div class="step-desc">Conexão Segura</div>
+            </div>
+            <div class="step-node" data-step="3">
+              <div class="step-number">4</div>
+              <div class="step-title">HTTP Req / Res</div>
+              <div class="step-desc">GET -> 200 OK</div>
+            </div>
+            <div class="step-node" data-step="4">
+              <div class="step-number">5</div>
+              <div class="step-title">DOM Rendering</div>
+              <div class="step-desc">Paint na Tela</div>
+            </div>
+          </div>
+
+          <div class="step-details-box">
+            <div class="details-header">
+              <span class="details-badge" id="lc-badge">CLIENTE</span>
+              <h3 class="details-title" id="lc-title">1. Entrada da URL</h3>
+            </div>
+            <p class="details-content" id="lc-desc">O usuário digita https://www.fatec.sp.gov.br e o navegador valida o protocolo e o domínio.</p>
+            <div class="code-snippet" id="lc-code">URL: https://www.fatec.sp.gov.br:443/index.html</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: DEVTOOLS GUI & MOCKUP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Ferramentas Práticas (Hands-On)</span>
+        <h2 class="slide-title">Explorando o Chrome DevTools</h2>
+        <p class="slide-subtitle">A suíte essencial integrada ao navegador para inspeção, testes de rede e depuração.</p>
+      </div>
+
+      <!-- Interactive DevTools Mockup -->
+      <div class="devtools-container">
+        <div class="devtools-nav">
+          <div class="devtools-tab active" data-tab="elements">🔍 Elementos</div>
+          <div class="devtools-tab" data-tab="console">💻 Console</div>
+          <div class="devtools-tab" data-tab="sources">📂 Fontes (Sources)</div>
+          <div class="devtools-tab" data-tab="network">🌐 Rede (Network)</div>
+          <div class="devtools-tab" data-tab="performance">⚡ Desempenho</div>
+          <div class="devtools-tab" data-tab="application">💾 Aplicação</div>
+          <div class="devtools-tab" data-tab="lighthouse">🚀 Lighthouse</div>
+        </div>
+        <div class="devtools-panel">
+          <h3 style="color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 8px;" id="dt-panel-title">Aba Elementos (DOM & CSS)</h3>
+          <p style="font-size: 0.95rem; color: #bbb; line-height: 1.6;" id="dt-panel-content">
+            Permite inspecionar a árvore DOM em tempo real, editar tags HTML, modificar propriedades CSS e testar responsividade visual instantaneamente. Ideal para ajustar layouts e entender a hierarquia da página.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: PADRÕES ESTRUTURAIS & MONOLITO VS MICROSSERVIÇOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Arquitetura e Design</span>
+        <h2 class="slide-title">Padrões Estruturais: Monolito vs. Microsserviços</h2>
+        <p class="slide-subtitle">Como a escolha arquitetural impacta a escalabilidade, manutenção e tolerância a falhas.</p>
+      </div>
+
+      <div class="arch-toggle-bar">
+        <button class="arch-btn active" id="arch-btn-mono">Monolito Modular</button>
+        <button class="arch-btn" id="arch-btn-micro">Microsserviços Distribuídos</button>
+        <button class="btn-nav" id="btn-sim-crash" style="border-color: var(--accent-rose); color: var(--accent-rose);">💥 Simular Falha de Serviço</button>
+      </div>
+
+      <div class="arch-diagram-canvas" id="arch-diagram">
+        <!-- Injected via JavaScript -->
+      </div>
+    </section>
+
+    <!-- SLIDE 7: APIS E INTEGRAÇÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Comunicação entre Serviços</span>
+        <h2 class="slide-title">APIs, API Gateway & Padronização de Interfaces</h2>
+        <p class="slide-subtitle">Tecnologias de integração: REST vs GraphQL vs gRPC e padrões BFF (Backend for Frontend).</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">📡 REST</div>
+          <div class="card-body">
+            <p>Padrão baseado nos verbos HTTP (GET, POST, PUT, DELETE). Stateless e fácil de cachear.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">⚡ GraphQL</div>
+          <div class="card-body">
+            <p>Permite que o cliente solicite exatamente os campos necessários, evitando <em>over-fetching</em> e <em>under-fetching</em>.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🚀 gRPC</div>
+          <div class="card-body">
+            <p>Comunicação binária de altíssima performance via HTTP/2 e Protocol Buffers (ideal para backend-to-backend).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: ARQUITETURA STATELESS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Escalabilidade Horizontal</span>
+        <h2 class="slide-title">Arquitetura Stateless (Sem Estado)</h2>
+        <p class="slide-subtitle">Como permitir que qualquer nó atenda qualquer requisição sem reter sessão local.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>🛡️ SIMULADOR DE FAILOVER STATELESS (JWT vs REDIS)</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn-nav" id="btn-sim-failover" style="border-color: var(--accent-cyan); color: var(--accent-cyan);">💥 Simular Queda do Servidor 1</button>
+          </div>
+        </div>
+
+        <div class="stateless-flow-grid">
+          <div class="card" id="server-node-1">
+            <div class="card-title">
+              <span class="server-badge" style="background: var(--accent-cyan); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">ONLINE (Instância A)</span>
+            </div>
+            <div class="card-body">
+              <strong>Servidor 1:</strong> Processa requisições validando a chave pública do JWT sem consultar banco de sessão local.
+            </div>
+          </div>
+
+          <div class="card" id="server-node-2">
+            <div class="card-title">
+              <span class="server-badge" style="background: var(--accent-blue); color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">ONLINE (Instância B)</span>
+            </div>
+            <div class="card-body">
+              <strong>Servidor 2:</strong> Pronto para assumir o tráfego instantaneamente com o mesmo Token JWT.
+            </div>
+          </div>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; font-size: 0.85rem; color: var(--text-muted);" id="stateless-status-text">
+          Ambas as instâncias estão prontas para autenticar requisições com JWT.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: TEOREMA CAP & CONSISTÊNCIA DISTRIBUÍDA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Teoria de Sistemas Distribuidos</span>
+        <h2 class="slide-title">Teorema CAP & Consistência Eventual</h2>
+        <p class="slide-subtitle">O teorema de Eric Brewer: Em redes sujeitas a partição, é necessário escolher entre Consistência estrita (CP) ou Disponibilidade alta (AP).</p>
+      </div>
+
+      <div class="cap-section-layout">
+        <!-- CAP Triangle & Partition Simulator -->
+        <div class="cap-interactive-card">
+          <div class="widget-toolbar" style="padding: 6px 12px;">
+            <span class="toolbar-title" style="font-size: 0.8rem;">📐 TRIÂNGULO CAP & SIMULADOR DE PARTIÇÃO DE REDE</span>
+            <button class="btn-nav" id="btn-toggle-partition" style="font-size: 0.75rem; border-color: var(--accent-rose); color: var(--accent-rose);">⚡ Cortar Cabo de Rede (Partição)</button>
+          </div>
+
+          <div class="cap-triangle-wrapper">
+            <div class="cap-node cap-node-c active" data-cap="c">
+              <strong style="color: var(--accent-cyan); font-size: 1.2rem;">C</strong>
+              <span style="font-size: 0.7rem; color: #aaa;">Consistência</span>
+            </div>
+            <div class="cap-node cap-node-a" data-cap="a">
+              <strong style="color: var(--accent-emerald); font-size: 1.2rem;">A</strong>
+              <span style="font-size: 0.7rem; color: #aaa;">Disponibilidade</span>
+            </div>
+            <div class="cap-node cap-node-p" data-cap="p">
+              <strong style="color: var(--accent-purple); font-size: 1.2rem;">P</strong>
+              <span style="font-size: 0.7rem; color: #aaa;">Tolerância</span>
+            </div>
+          </div>
+
+          <!-- Network Partition Status Box -->
+          <div class="partition-sim-box">
+            <div class="partition-nodes-display">
+              <div class="node-box">Nó A (São Paulo)</div>
+              <span class="network-link-status link-ok" id="net-link-status">⚡ Conexão OK</span>
+              <div class="node-box">Nó B (Virgínia - EUA)</div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;" id="net-partition-explain">
+              <strong>Estado Normal:</strong> Os dois nós trocam confirmações de escrita síncronas sem falhas na rede.
+            </div>
+          </div>
+        </div>
+
+        <!-- Deep Dive Educational Content -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);" id="cap-details-title">Consistência (Consistency)</div>
+          <div class="card-body" id="cap-details-desc">
+            <p style="margin-bottom: 12px;"><strong>O que significa?</strong> Todos os nós da rede leem exatamente a mesma informação atualizada no mesmo milissegundo. Se um valor é alterado no Nó A, o Nó B é bloqueado até sincronizar.</p>
+            
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-cyan); padding: 12px; border-radius: 4px; font-size: 0.85rem; margin-top: 10px;">
+              <strong>Trade-Off Arquitetural na Web:</strong> Como falhas na rede (Partições) são inevitáveis na Internet global, a maioria das aplicações Web sacrifica a Consistência Rígida em favor da <strong>Consistência Eventual (Eventual Consistency)</strong> para nunca deixar a página do usuário fora do ar (AP).
+            </div>
+
+            <div style="margin-top: 14px; font-size: 0.8rem; color: var(--text-muted);">
+              <strong>Extensão Teorema PACELC:</strong> Se houver Partição (P), escolha entre A ou C; Senão (E), escolha entre Latência (L) ou Consistência (C).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: MATRIZ DE SELEÇÃO & TIPOS DE BANCOS DE DADOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">09. Persistência & Modelagem de Dados</span>
+        <h2 class="slide-title">Matriz de Seleção & Tipos de Bancos de Dados</h2>
+        <p class="slide-subtitle">Comparativo aprofundado dos 5 paradigmas de armazenamento: SQL vs Documentos vs Chave-Valor vs Wide-Column vs Grafos.</p>
+      </div>
+
+      <div class="db-matrix-layout">
+        <!-- Deep Breakdown Grid of DB Paradigms -->
+        <div class="card" style="padding: 16px;">
+          <div class="card-title" style="font-size: 1rem; color: var(--accent-emerald);">🗄️ Paradigmas de Armazenamento</div>
+          
+          <div class="db-type-card-grid">
+            <div class="db-mini-card">
+              <div class="db-mini-title">💎 SQL (Relacional)</div>
+              <p>PostgreSQL, MySQL. ACID, Tabelas, Joins complexos. Ideal para: Finanças, ERP.</p>
+            </div>
+
+            <div class="db-mini-card">
+              <div class="db-mini-title" style="color: var(--accent-cyan);">📄 Documento</div>
+              <p>MongoDB. JSON flexível, Coleções dinâmicas. Ideal para: Catálogo, CMS.</p>
+            </div>
+
+            <div class="db-mini-card">
+              <div class="db-mini-title" style="color: var(--accent-purple);">⚡ Chave-Valor</div>
+              <p>Redis, DynamoDB. RAM sub-ms, Estruturas em memória. Ideal para: Cache, Sessão.</p>
+            </div>
+
+            <div class="db-mini-card">
+              <div class="db-mini-title" style="color: var(--accent-amber);">📊 Wide-Column</div>
+              <p>Cassandra, Scylla. Gravação massiva distribuída. Ideal para: Logs, IoT.</p>
+            </div>
+
+            <div class="db-mini-card" style="grid-column: span 2;">
+              <div class="db-mini-title" style="color: var(--accent-rose);">🕸️ Grafos</div>
+              <p>Neo4j, Amazon Neptune. Nós e Arestas. Otimizado para conexões e recomendações em redes sociais.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Decision Engine Tool -->
+        <div class="db-selector-box">
+          <h4 style="color: var(--accent-cyan); margin-bottom: 6px;">🧠 Motor de Recomendação de Arquitetura de Dados</h4>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Selecione os requisitos do seu projeto para obter a recomendação otimizada:</p>
+          
+          <div class="db-options-grid">
+            <button class="db-opt-btn" data-req="acid">💳 Transações ACID (Financeiro/Saldo)</button>
+            <button class="db-opt-btn" data-req="flexible">📄 Schema JSON Dinâmico (E-commerce)</button>
+            <button class="db-opt-btn" data-req="highspeed">⚡ Leitura < 1ms em RAM (Cache / Sessão)</button>
+            <button class="db-opt-btn" data-req="timeseries">📈 Telemetria IoT & Logs em Lote</button>
+            <button class="db-opt-btn" data-req="graph">🕸️ Redes Sociais & Antifraude</button>
+          </div>
+
+          <div class="db-result-badge" id="db-rec-badge">Selecione requisitos acima para ver a sugestão</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; line-height: 1.5;" id="db-rec-reason">A escolha do banco de dados ideal deve equilibrar modelo de dados, padrão de acesso e requisitos de escalabilidade.</p>
+          <div class="code-snippet" id="db-rec-snippet" style="margin-top: 10px; font-size: 0.75rem;">// Exemplo de código/modelo aparecerá aqui</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: ESCALABILIDADE DE DADOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">10. Altas Cargas de Tráfego</span>
+        <h2 class="slide-title">Escalabilidade de Dados: Replicação, Sharding & Hashing</h2>
+        <p class="slide-subtitle">Como superar gargalos de banco de dados quando a aplicação escala horizontalmente.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🔄 Replicação Master-Slave</div>
+          <div class="card-body">
+            <p>1 Nó de Escrita (Master) sincroniza assincronamente para N Nós de Leitura (Slaves). Aumenta dramaticamente a vazão de leitura.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🧩 Sharding (Horizontal)</div>
+          <div class="card-body">
+            <p>Divide tabelas gigantescas em múltiplos servidores baseados em uma <strong>Shard Key</strong> (ex: ID do Usuário ou Região Geográfica).</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">⭕ Consistent Hashing</div>
+          <div class="card-body">
+            <p>Algoritmo em anel distribuído que minimiza a reorganização de dados quando nós são adicionados ou removidos da rede.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: AGRADECIMENTO & ENCERRAMENTO DEDICADO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.3);">FATEC 2026.2 • PROGRAMAÇÃO WEB</span>
+      <h2 style="font-size: 3.2rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Obrigado! 🤘</h2>
+      <p style="font-size: 1.3rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 32px auto; line-height: 1.5;">
+        Dúvidas, perguntas ou considerações finais?
+      </p>
+
+      <div class="card" style="max-width: 480px; text-align: left; margin: 0 auto; width: 100%; border-color: rgba(56, 189, 248, 0.3);">
+        <div class="card-title" style="font-size: 1.15rem; color: var(--accent-cyan);">👨‍🏫 Eduardo Cruz Araujo</div>
+        <div class="card-body">
+          <ul class="bullet-list" style="gap: 12px;">
+            <li><strong>E-mail:</strong> <a href="mailto:eduardo.araujo@cps.sp.gov.br" style="color: var(--accent-cyan); text-decoration: none;">eduardo.araujo@cps.sp.gov.br</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">linkedin.com/in/edcaraujo</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">github.com/edcaraujo</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Grid / Overview Modal -->
+  <div class="modal-overlay" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📱 ÍNDICE DE SLIDES DA APRESENTAÇÃO</h3>
+        <button class="btn-close" id="modal-close">&times;</button>
+      </div>
+      <div class="slide-grid-nav" id="slide-grid-nav">
+        <!-- Populated via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-msg" id="toast-msg">Mensagem Toast</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
