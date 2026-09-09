@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API: Contextualização | Fatec 2026.2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| API: Contextualização</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 22</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">API: Contextualização</h1>
+      <p class="cover-subtitle">Fundamentos, Estilos Arquiteturais, Protocolo HTTP, Padrões de Design RESTful e o Paradigma Design-First.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd> ou a tecla <kbd>M</kbd> para abrir o índice de slides.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: AGENDA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Visão Geral</span>
+        <h2 class="slide-title">Agenda & Roteiro da Aula</h2>
+        <p class="slide-subtitle">Uma jornada completa da base teórica de redes até as convenções modernas da indústria.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📖 Fundamentos & Arquitetura</div>
+          <div class="card-body">
+            <ul class="feature-list">
+              <li><strong>Conceito de API:</strong> Contrato formal e interoperabilidade.</li>
+              <li><strong>Protocolos & Estilos:</strong> REST, SOAP, GraphQL e gRPC.</li>
+              <li><strong>Ciclo de Engenharia:</strong> Code-First vs. Design-First.</li>
+              <li><strong>Caso de Uso do Semestre:</strong> Domínio da TaskFlow API.</li>
+              <li><strong>HTTP/HTTPS:</strong> Stateless, cabeçalhos e segurança TLS.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📐 Padrões & Boas Práticas RESTful</div>
+          <div class="card-body">
+            <ul class="feature-list">
+              <li><strong>Princípios de Roy Fielding:</strong> As 6 restrições essenciais.</li>
+              <li><strong>Maturidade de Richardson:</strong> Da rota RPC ao Nível 2 e 3.</li>
+              <li><strong>Métodos HTTP:</strong> Semântica, segurança e idempotência.</li>
+              <li><strong>Status Codes & RFC 9457 / RFC 7807:</strong> Tratamento semântico de erros (Problem Details).</li>
+              <li><strong>Design de Coleções & URIs:</strong> Pluralização e paginação.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        💡 <strong>Nota do Apresentador:</strong> Enfatizar que a parte prática passo a passo está documentada no arquivo laboratorial separado `04-pw-api-contextualizacao-pratica-apidog.md`.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: O QUE É UMA API -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Fundamentos</span>
+        <h2 class="slide-title">O que é uma API? O Contrato de Integração</h2>
+        <p class="slide-subtitle">A fronteira padronizada para sistemas heterogêneos dialogarem sem fricção.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <p style="font-size: 1.15rem; line-height: 1.6;">
+            Uma <strong>API (Application Programming Interface)</strong> é um conjunto formal de regras, protocolos e especificações que define a comunicação entre sistemas de software independentes.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title">🤝 Contrato Tecnologicamente Agnóstico</div>
+          <div class="card-body">
+            O cliente (frontend Web em Vue ou app mobile em Flutter) não precisa conhecer a linguagem interna do servidor (Python, Java ou Rust), nem o modelo físico de tabelas no banco de dados.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧩 Desacoplamento & Evolução</div>
+          <div class="card-body">
+            Provedor e consumidor evoluem em ritmos independentes, desde que a interface pública acordada no contrato permaneça estável e versionada.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: ANALOGIA DO RESTAURANTE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Metáfora Didática</span>
+        <h2 class="slide-title">A Analogia Clássica do Restaurante</h2>
+        <p class="slide-subtitle">Como as peças da arquitetura interagem no fluxo de solicitação e resposta.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">👤</div>
+          <div class="card-title">Você (Cliente)</div>
+          <div class="card-body">Sua aplicação frontend, app mobile ou script que solicita dados.</div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">📜</div>
+          <div class="card-title">O Cardápio</div>
+          <div class="card-body">A documentação da API (OpenAPI Specification) listando rotas e parâmetros.</div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">🛎️</div>
+          <div class="card-title">O Garçom (API)</div>
+          <div class="card-body">Transporta o pedido padronizado e retorna o prato preparado ao cliente.</div>
+        </div>
+
+        <div class="card" style="text-align: center;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">🍳</div>
+          <div class="card-title">A Cozinha (Servidor)</div>
+          <div class="card-body">Executa as regras de negócio, acessa o banco de dados e monta o payload.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-body">
+          <strong>Por que usamos APIs?</strong> 1. Modularidade • 2. Reutilização Multiplataforma • 3. Interoperabilidade Global • 4. Monetização de Serviços (Stripe, Google Maps, OpenWeather).
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: ESTILOS ARQUITETURAIS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Arquitetura de Software</span>
+        <h2 class="slide-title">Protocolos e Estilos Arquiteturais</h2>
+        <p class="slide-subtitle">Diferentes paradigmas de engenharia para problemas e contextos distintos.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 17%;">Característica</th>
+              <th class="col-featured" style="width: 23%;">REST (HTTP/JSON) <span class="badge badge-accent">Padrão da Web</span></th>
+              <th style="width: 20%;">SOAP (XML)</th>
+              <th style="width: 20%;">GraphQL</th>
+              <th style="width: 20%;">gRPC (Protobuf)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Paradigma</strong></td>
+              <td class="col-featured">Orientado a Recursos</td>
+              <td>Orientado a Ações</td>
+              <td>Orientado a Consultas/Grafo</td>
+              <td>RPC (Chamada Remota)</td>
+            </tr>
+            <tr>
+              <td><strong>Complexidade</strong></td>
+              <td class="col-featured"><span class="badge badge-success">Baixa / Intuitiva</span></td>
+              <td><span class="badge badge-danger">Alta (WSDL rígido)</span></td>
+              <td><span class="badge badge-warning">Média</span></td>
+              <td><span class="badge badge-warning">Média</span></td>
+            </tr>
+            <tr>
+              <td><strong>Formato Carga</strong></td>
+              <td class="col-featured"><strong>JSON</strong>, texto, binário</td>
+              <td>Estritamente XML</td>
+              <td>JSON</td>
+              <td>Binário Protocol Buffers</td>
+            </tr>
+            <tr>
+              <td><strong>Transporte</strong></td>
+              <td class="col-featured">HTTP/1.1, HTTP/2, HTTP/3</td>
+              <td>HTTP, SMTP, TCP</td>
+              <td>HTTP</td>
+              <td>Estritamente HTTP/2</td>
+            </tr>
+            <tr>
+              <td><strong>Contrato Formal</strong></td>
+              <td class="col-featured"><code>OpenAPI 3.0 / Swagger</code></td>
+              <td><code>WSDL / XSD</code></td>
+              <td><code>GraphQL Schema (SDL)</code></td>
+              <td><code>Protocol Buffers (.proto)</code></td>
+            </tr>
+            <tr>
+              <td><strong>Flexibilidade</strong></td>
+              <td class="col-featured">Recursos fixos via URIs</td>
+              <td>Operações RPC fixas</td>
+              <td><span class="badge badge-success">Altíssima (cliente define)</span></td>
+              <td>Métodos RPC tipados</td>
+            </tr>
+            <tr>
+              <td><strong>Cenário Ideal</strong></td>
+              <td class="col-featured"><strong>Web APIs Públicas e SaaS</strong></td>
+              <td>Legados bancários/governo</td>
+              <td>Frontends com dados aninhados</td>
+              <td>Microsserviços internos (East-West)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-4" style="margin-top: 14px;">
+        <div class="card" style="border-top: 3px solid var(--accent-cyan);">
+          <div class="card-title" style="font-size: 0.92rem;">🌐 REST (Web APIs & SaaS)</div>
+          <div class="card-body" style="font-size: 0.82rem;">
+            O padrão de ouro da Web. Aproveita cache HTTP nativo, ampla interoperabilidade e total desacoplamento entre cliente e servidor.
+          </div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-rose);">
+          <div class="card-title" style="font-size: 0.92rem;">🏛️ SOAP (Legado Corporativo)</div>
+          <div class="card-body" style="font-size: 0.82rem;">
+            Protocolo rigoroso com tipagem pesada em XML. Utilizado em integração entre sistemas bancários legados, governo e WS-Security.
+          </div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-purple);">
+          <div class="card-title" style="font-size: 0.92rem;">📊 GraphQL (Frontend-Driven)</div>
+          <div class="card-body" style="font-size: 0.82rem;">
+            Único endpoint POST onde o cliente requisita exatamente os campos necessários, eliminando <em>over-fetching</em> em apps móveis complexos.
+          </div>
+        </div>
+        <div class="card" style="border-top: 3px solid var(--accent-emerald);">
+          <div class="card-title" style="font-size: 0.92rem;">⚡ gRPC (Microsserviços)</div>
+          <div class="card-body" style="font-size: 0.82rem;">
+            Comunicação backend-to-backend de altíssimo throughput e baixíssima latência com payloads binários e streaming nativo sobre HTTP/2.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: CODE-FIRST VS DESIGN-FIRST -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Processo de Engenharia</span>
+        <h2 class="slide-title">Code-First vs. Design-First (Spec-Driven Design)</h2>
+        <p class="slide-subtitle">A escolha metodológica que define a velocidade e harmonia do time de produto.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-warning">
+          <div class="card-title">❌ Abordagem Code-First (Tradicional)</div>
+          <div class="card-body">
+            <p>1. O time de backend programa rotas e lógica no código.</p>
+            <p>2. A documentação (Swagger) é gerada automaticamente como subproduto.</p>
+            <p>3. O frontend fica bloqueado aguardando endpoints subirem em homologação.</p>
+            <p>4. <em>Resultado:</em> Divergências tardias de contrato e retrabalho mútuo.</p>
+          </div>
+        </div>
+
+        <div class="card card-success">
+          <div class="card-title">✅ Abordagem Design-First (Spec-Driven)</div>
+          <div class="card-body">
+            <p>1. O contrato OpenAPI 3.0 é acordado e desenhado antes do código.</p>
+            <p>2. Um <strong>Mock Server</strong> simula respostas verossímeis imediatamente.</p>
+            <p>3. Frontend e Backend programam em <strong>paralelo total</strong>.</p>
+            <p>4. <em>Resultado:</em> O contrato atua como Fonte Única da Verdade (SSOT).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: CASO DE USO TASKFLOW API -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Domínio da Disciplina</span>
+        <h2 class="slide-title">O Caso de Uso do Semestre: "TaskFlow API"</h2>
+        <p class="slide-subtitle">SaaS de gerenciamento ágil de projetos e tarefas de software que construiremos juntos.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗺️ Modelo Relacional Conceitual</div>
+        <div class="card-body">
+          <div class="code-block">
+            <pre><code>  ┌──────────────┐          ┌───────────────────────┐          ┌──────────────┐
+  │    Users     │ 1      N │       Projects        │ 1      N │    Tasks     │
+  │──────────────│◀─────────│───────────────────────│─────────▶│──────────────│
+  │ id (UUID)    │          │ id (UUID)             │          │ id (UUID)    │
+  │ name         │          │ name                  │          │ title        │
+  │ email (UQ)   │          │ slug (UQ)             │          │ description  │
+  │ role (ENUM)  │          │ owner_id (FK -> User) │          │ status (ENUM)│
+  │ created_at   │          │ created_at            │          │ priority     │
+  └──────────────┘          └───────────────────────┘          │ due_date     │
+                                                               │ project_id FK│
+                                                               └──────────────┘</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-top: 14px;">
+        <div class="badge-card"><strong>Aula 04:</strong> Fundamentos REST, OpenAPI e Mocks.</div>
+        <div class="badge-card"><strong>Aulas Seguintes:</strong> Backend Python, ORM e Banco SQL.</div>
+        <div class="badge-card"><strong>Fase Final:</strong> Autenticação JWT, Testes e Deploy.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: HTTP & HTTPS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Fundamentos de Rede</span>
+        <h2 class="slide-title">O Protocolo HTTP / HTTPS</h2>
+        <p class="slide-subtitle">O meio universal de transmissão de dados estruturados na Web.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🌐 Anatomia da Mensagem HTTP</div>
+          <div class="card-body">
+            <p>• <strong>Start-Line:</strong> Método HTTP, Path e versão do protocolo (ex: <code>POST /api/v1/tasks HTTP/1.1</code>).</p>
+            <p>• <strong>Headers:</strong> Metadados da requisição (<code>Content-Type: application/json</code>, <code>Authorization: Bearer ...</code>).</p>
+            <p>• <strong>Payload (Body):</strong> Dados serializados (documento JSON de criação/atualização).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔒 Camada de Segurança HTTPS (TLS)</div>
+          <div class="card-body">
+            <p>• Tráfego HTTP encapsulado em um túnel criptografado seguro.</p>
+            <p>• <strong>Confidencialidade:</strong> Impede interceptação de credenciais e tokens em trânsito.</p>
+            <p>• <strong>Integridade:</strong> Assegura que o pacote não foi adulterado no caminho.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: AS 6 RESTRIÇÕES REST -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Teoria de Roy Fielding</span>
+        <h2 class="slide-title">REST: As 6 Restrições Arquiteturais</h2>
+        <p class="slide-subtitle">Definidas no ano 2000 como alicerce para escalabilidade de sistemas distribuídos.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Cliente-Servidor</div>
+          <div class="card-body">Separação de responsabilidades de UI e armazenamento.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">2. Stateless</div>
+          <div class="card-body">Nenhuma sessão é armazenada na memória do servidor.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Cacheable</div>
+          <div class="card-body">Respostas declaram explicitamente permissão de cache.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Interface Uniforme</div>
+          <div class="card-body">Padronização universal de rotas, representações e mensagens.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">5. Sistema em Camadas</div>
+          <div class="card-body">Transparência em relação a proxies, CDNs e balanceadores.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">6. Código sob Demanda</div>
+          <div class="card-body">Opcional: envio de scripts executáveis pelo servidor.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: O PILAR STATELESS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">09. Escalabilidade de Sistemas</span>
+        <h2 class="slide-title">Por que a Arquitetura REST é Stateless?</h2>
+        <p class="slide-subtitle">Eliminando estados locais para permitir escalabilidade horizontal ilimitada.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-warning">
+          <div class="card-title">❌ Arquitetura Stateful (Com Sessão em RAM)</div>
+          <div class="card-body">
+            <p>• O servidor retém dados do usuário na memória do processo.</p>
+            <p>• Exige balanceamento com <em>Sticky Sessions</em> (afinidade de nó).</p>
+            <p>• Se o nó reiniciar ou cair, o usuário perde a sessão e é desconectado.</p>
+          </div>
+        </div>
+
+        <div class="card card-success">
+          <div class="card-title">✅ Arquitetura REST Stateless</div>
+          <div class="card-body">
+            <p>• Cada pacote HTTP contém todas as credenciais necessárias.</p>
+            <p>• Autenticação via <strong>JSON Web Token (JWT)</strong> no header <code>Authorization: Bearer &lt;token&gt;</code>.</p>
+            <p>• Qualquer máquina do cluster atende qualquer requisição sem dependência local.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: MATURIDADE DE RICHARDSON -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">10. Níveis de Maturidade</span>
+        <h2 class="slide-title">O Modelo de Maturidade de Richardson</h2>
+        <p class="slide-subtitle">Classificação da aderência prática de uma API aos conceitos REST.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="code-block">
+            <pre><code>  NÍVEL 3: Controles Hipermídia (HATEOAS)
+  ▲ A representação retorna links dinâmicos para as próximas ações (`_links`).
+  │
+  NÍVEL 2: Verbos HTTP Semânticos + Códigos de Status (Padrão da Indústria)
+  ▲ Uso estrito de GET, POST, PUT, DELETE e respostas 200, 201, 204, 400, 404, etc.
+  │
+  NÍVEL 1: Recursos Individuais
+  ▲ URIs exclusivas para cada entidade (`/api/v1/tasks/123`) em vez de endpoint único.
+  │
+  NÍVEL 0: O Pântano do POX (The Swamp of POX)
+  ■ Um único endpoint RPC (ex: `POST /apiService` trafegando comandos em JSON/XML).</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: MÉTODOS HTTP & IDEMPOTÊNCIA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">11. Semântica HTTP</span>
+        <h2 class="slide-title">Métodos HTTP: Segurança & Idempotência (RFC 9110)</h2>
+        <p class="slide-subtitle">A previsibilidade matemática que rege o protocolo HTTP.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 15%;">Método HTTP</th>
+              <th style="width: 35%;">Propósito Semântico</th>
+              <th style="width: 16%;">Seguro (Safe)?</th>
+              <th style="width: 16%;">Idempotente?</th>
+              <th style="width: 18%;">Corpo no Request?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-info">GET</span></td>
+              <td>Recupera a representação do recurso</td>
+              <td><span class="badge badge-success">SIM</span></td>
+              <td><span class="badge badge-success">SIM</span></td>
+              <td>Não recomendado</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-success">POST</span></td>
+              <td>Cria novo recurso subordinado</td>
+              <td><span class="badge badge-danger">NÃO</span></td>
+              <td><span class="badge badge-danger">NÃO</span></td>
+              <td>Sim (payload do recurso)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-warning">PUT</span></td>
+              <td>Substituição total do recurso</td>
+              <td><span class="badge badge-danger">NÃO</span></td>
+              <td><span class="badge badge-success">SIM</span></td>
+              <td>Sim (objeto completo)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">PATCH</span></td>
+              <td>Atualização parcial de atributos</td>
+              <td><span class="badge badge-danger">NÃO</span></td>
+              <td><span class="badge badge-warning">NÃO*</span></td>
+              <td>Sim (campos a alterar)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-danger">DELETE</span></td>
+              <td>Remove o recurso indicado</td>
+              <td><span class="badge badge-danger">NÃO</span></td>
+              <td><span class="badge badge-success">SIM</span></td>
+              <td>Opcional / Raro</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title">🛡️ Método Seguro (Safe)</div>
+          <div class="card-body">A operação é estritamente de leitura; não causa mutação de dados no servidor.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔁 Idempotência</div>
+          <div class="card-body">Executar a requisição 1 vez ou 100 vezes produz rigorosamente o mesmo estado final no banco de dados.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: STATUS CODES & PROBLEM DETAILS (RFC 9457 / RFC 7807) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">12. Tratamento de Erros</span>
+        <h2 class="slide-title">Status Codes & Problem Details: RFC 7807 ➔ RFC 9457</h2>
+        <p class="slide-subtitle">O padrão de erro do IETF: a moderna RFC 9457 (2023) consolidou e sucedeu a clássica RFC 7807.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧪 Explorador Interativo de Status Codes & Problem Details (RFC 9457 / RFC 7807)</div>
+        <div class="card-body" style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+          <select id="status-code-select" style="padding: 10px 14px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem;">
+            <option value="200">200 OK</option>
+            <option value="201">201 Created</option>
+            <option value="204">204 No Content</option>
+            <option value="400">400 Bad Request</option>
+            <option value="401">401 Unauthorized</option>
+            <option value="403">403 Forbidden</option>
+            <option value="404" selected>404 Not Found</option>
+            <option value="422">422 Unprocessable Entity</option>
+            <option value="500">500 Internal Server Error</option>
+          </select>
+          <span id="status-category-badge" class="badge">4xx Erro do Cliente</span>
+          <span id="status-description-text" style="color: var(--text-muted); font-size: 0.9rem; flex: 1;"></span>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title">📄 Payload Gerado (<code>application/problem+json</code>)</div>
+          <div class="card-body">
+            <div class="code-block" style="max-height: 230px; overflow-y: auto;">
+              <pre><code id="status-rfc7807-preview"></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+          <div class="card-title">🆕 Novo Modelo: Da RFC 7807 à RFC 9457 (Julho/2023)</div>
+          <div class="card-body" style="font-size: 0.85rem; line-height: 1.55;">
+            <p>• <strong>Transição Normativa:</strong> A <strong>RFC 9457</strong> é o padrão oficial vigente que tornou obsoleta a RFC 7807, preservando o media-type <code>application/problem+json</code>.</p>
+            <p>• <strong>Campos Canônicos:</strong> <code>type</code> (URI), <code>title</code> (título estável), <code>status</code> (código HTTP numérico), <code>detail</code> (contexto da falha) e <code>instance</code> (URI da ocorrência).</p>
+            <p>• <strong>Padrão <code>about:blank</code>:</strong> Na RFC 9457, quando o erro não possuir uma URI própria de documentação, o <code>type</code> assume <code>"about:blank"</code>, com significado dado pelo status HTTP.</p>
+            <p>• <strong>Extensibilidade Oficial:</strong> Formaliza o uso de membros customizados adicionais (ex: <code>invalidParams</code> para erros de validação de campos).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: FORMATOS JSON VS XML -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">13. Carga de Dados</span>
+        <h2 class="slide-title">Formatos de Dados: JSON vs. XML</h2>
+        <p class="slide-subtitle">Como os dados são serializados e transferidos na camada de aplicação.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🚀 JSON (JavaScript Object Notation)</div>
+          <div class="card-body">
+            <div class="code-block">
+              <pre><code>{
+  "id": "9b1deb4d...",
+  "title": "Configurar Docker",
+  "status": "DONE",
+  "tags": ["devops", "fatec"]
+}</code></pre>
+            </div>
+            <p style="margin-top: 8px;">• Leveza, legibilidade direta e suporte nativo em todas as linguagens modernas.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📜 XML (Extensible Markup Language)</div>
+          <div class="card-body">
+            <div class="code-block">
+              <pre><code>&lt;task id="9b1deb4d..."&gt;
+  &lt;title&gt;Configurar Docker&lt;/title&gt;
+  &lt;status&gt;DONE&lt;/status&gt;
+  &lt;tags&gt;&lt;tag&gt;devops&lt;/tag&gt;&lt;/tags&gt;
+&lt;/task&gt;</code></pre>
+            </div>
+            <p style="margin-top: 8px;">• Validação estrita de schemas com XSD e comum em integrações legadas SOAP.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: DESIGN DE URIS & LINTER INTERATIVO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">14. Diretrizes de Design</span>
+        <h2 class="slide-title">Design de Recursos, Nomenclatura & URIs</h2>
+        <p class="slide-subtitle">A URI identifica o substantivo; o método HTTP executa a ação.</p>
+      </div>
+
+      <div class="table-container">
+        <table class="table-guidelines">
+          <thead>
+            <tr>
+              <th style="width: 28%;">Diretriz de Design</th>
+              <th class="col-avoid" style="width: 36%;">Anti-Padrão (Evitar) ❌</th>
+              <th class="col-recommend" style="width: 36%;">Padrão Recomendado RESTful ✅</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Substantivos no Plural</strong></td>
+              <td class="col-avoid"><code class="code-avoid">/getTask</code>, <code class="code-avoid">/task/create</code></td>
+              <td class="col-recommend"><code class="code-recommend">/tasks</code>, <code class="code-recommend">/projects</code></td>
+            </tr>
+            <tr>
+              <td><strong>Sem Verbos na URL</strong></td>
+              <td class="col-avoid"><code class="code-avoid">POST /tasks/delete?id=1</code></td>
+              <td class="col-recommend"><code class="code-recommend">DELETE /tasks/1</code></td>
+            </tr>
+            <tr>
+              <td><strong>Minúsculas e Kebab-case</strong></td>
+              <td class="col-avoid"><code class="code-avoid">/projectTasks/userList</code></td>
+              <td class="col-recommend"><code class="code-recommend">/project-tasks</code>, <code class="code-recommend">/user-list</code></td>
+            </tr>
+            <tr>
+              <td><strong>Hierarquia Natural</strong></td>
+              <td class="col-avoid"><code class="code-avoid">/getTasksFromProject?id=5</code></td>
+              <td class="col-recommend"><code class="code-recommend">/projects/5/tasks</code></td>
+            </tr>
+            <tr>
+              <td><strong>Limite de Aninhamento</strong></td>
+              <td class="col-avoid"><code class="code-avoid">/orgs/1/teams/2/users/3/tasks</code></td>
+              <td class="col-recommend">Máx 2 níveis: <code class="code-recommend">/tasks?teamId=2</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Validador Interativo de URIs -->
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-title">🧪 Validador Semântico de URIs REST</div>
+        <div class="card-body" style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" id="uri-linter-input" value="/api/v1/getTasksList" style="flex: 1; padding: 8px 12px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 6px; font-family: var(--font-mono);" placeholder="Ex: /api/v1/tasks">
+          <button id="uri-linter-btn" class="btn-nav" style="padding: 8px 16px;">Avaliar URI</button>
+        </div>
+        <div id="uri-linter-feedback" style="margin-top: 10px;"></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: MATRIZ RESUMO DE ROTAS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">15. Padrão RESTful</span>
+        <h2 class="slide-title">Matriz Resumo de Endpoints RESTful</h2>
+        <p class="slide-subtitle">A convenção consolidada para coleções e recursos individuais.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 14%;">Verbo HTTP</th>
+              <th style="width: 25%;">Endpoint</th>
+              <th style="width: 38%;">Operação Semântica</th>
+              <th style="width: 23%;">Status Code Típico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-info">GET</span></td>
+              <td><code>/tasks</code></td>
+              <td>Lista coleção paginada de tarefas</td>
+              <td><code class="code-recommend">200 OK</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-success">POST</span></td>
+              <td><code>/tasks</code></td>
+              <td>Cria uma nova tarefa subordinada</td>
+              <td><code class="code-recommend">201 Created</code> (Header <code>Location</code>)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-info">GET</span></td>
+              <td><code>/tasks/{id}</code></td>
+              <td>Retorna os detalhes da tarefa indicada</td>
+              <td><code class="code-recommend">200 OK</code> ou <code class="code-avoid">404 Not Found</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-warning">PUT</span></td>
+              <td><code>/tasks/{id}</code></td>
+              <td>Substitui integralmente o registro</td>
+              <td><code class="code-recommend">200 OK</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-purple">PATCH</span></td>
+              <td><code>/tasks/{id}</code></td>
+              <td>Atualização parcial (ex: status/prioridade)</td>
+              <td><code class="code-recommend">200 OK</code></td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-danger">DELETE</span></td>
+              <td><code>/tasks/{id}</code></td>
+              <td>Exclui o registro especificado</td>
+              <td><code class="code-recommend">204 No Content</code> (sem corpo)</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-info">GET</span></td>
+              <td><code>/projects/{id}/tasks</code></td>
+              <td>Lista tarefas subordinadas a um projeto</td>
+              <td><code class="code-recommend">200 OK</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-body">
+          💡 <strong>Regra de Ouro RESTful:</strong> As URLs identificam o <em>recurso</em> no plural (<code>/tasks</code>) e seus identificadores específicos no path (<code>/tasks/{id}</code>). A intenção da operação é expressa unicamente através do método HTTP apropriado.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: COLEÇÕES & PAGINAÇÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">16. Navegação em Coleções</span>
+        <h2 class="slide-title">Design de Coleções: Paginação, Filtros e Ordenação</h2>
+        <p class="slide-subtitle">Garantindo alta performance e protegendo a memória do banco de dados.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📑 Envelope Paginado Padronizado</div>
+        <div class="card-body">
+          <div class="code-block">
+            <pre><code>{
+  "data": [ { "id": "9b1deb4d...", "title": "Modelar Banco", "status": "IN_PROGRESS" } ],
+  "meta": { "page": 1, "limit": 10, "totalItems": 42, "totalPages": 5, "hasNext": true }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title">🔍 Query Parameters Semânticos</div>
+          <div class="card-body">
+            <p>• <strong>Paginação:</strong> <code>GET /tasks?page=2&limit=10</code></p>
+            <p>• <strong>Filtros:</strong> <code>GET /tasks?status=IN_PROGRESS&priority=HIGH</code></p>
+            <p>• <strong>Busca:</strong> <code>GET /tasks?q=relatorio</code></p>
+            <p>• <strong>Ordenação:</strong> <code>GET /tasks?sort=-createdAt</code> (ordem decrescente)</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏷️ Versionamento de APIs</div>
+          <div class="card-body">
+            <p>• <strong>Recomendado (URI):</strong> <code>https://api.taskflow.dev/v1/tasks</code></p>
+            <p>• <strong>Por Cabeçalho:</strong> <code>Accept: application/vnd.taskflow.v1+json</code></p>
+            <p>• O versionamento por URI é explícito e previne quebras nos clientes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: SÍNCRONO VS ASSÍNCRONO INTERATIVO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">17. Modelos de Comunicação</span>
+        <h2 class="slide-title">Comunicação: Síncrona vs. Assíncrona</h2>
+        <p class="slide-subtitle">Como selecionar o modelo ideal para cada requisito de negócio.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🧭 Simulador de Arquitetura: Selecione o Cenário</div>
+        <div class="card-body">
+          <select id="sync-scenario-select" style="width: 100%; padding: 10px 14px; background: var(--bg-main); border: 1px solid var(--border-color); color: white; border-radius: 6px; font-family: var(--font-mono); font-size: 0.95rem;">
+            <option value="login">1. Autenticação e Login de Usuário</option>
+            <option value="task_details">2. Consulta de detalhes de uma Tarefa por ID</option>
+            <option value="video">3. Renderização pesada de vídeo em 4K</option>
+            <option value="payment">4. Confirmação de Pagamento via PIX</option>
+            <option value="chat">5. Chat colaborativo em tempo real</option>
+          </select>
+          <div id="sync-scenario-feedback" style="margin-top: 14px;"></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title">🔔 Webhooks (HTTP Push)</div>
+          <div class="card-body">O provedor de serviço emite um POST automático no seu servidor quando o evento ocorrer.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ WebSockets (Full-Duplex)</div>
+          <div class="card-body">Canal TCP contínuo e bidirecional para feeds dinâmicos e atualizações instantâneas.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 19: CONTRATOS VIVOS OPENAPI & APIDOG -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">18. Ferramental Moderno</span>
+        <h2 class="slide-title">A Nova Fronteira: Contratos Vivos com OpenAPI & Apidog</h2>
+        <p class="slide-subtitle">Transformando o contrato na espinha dorsal da engenharia de software.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">📐 OpenAPI 3.0 / Swagger</div>
+          <div class="card-body">
+            Especificação formal padronizada pela Linux Foundation para definir endpoints, parâmetros, esquemas de dados e segurança.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🤖 Smart Mocking Nativo</div>
+          <div class="card-body">
+            Servidores de simulação que geram dados aleatórios com Faker.js baseados nos nomes e regras dos atributos sem backend.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📑 Documentação Interativa</div>
+          <div class="card-body">
+            Portais vivos de documentação com console "Try it Out" e exemplos de requisição gerados automaticamente em várias linguagens.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-body">
+          <strong>O Ecossistema Apidog:</strong> Unifica em uma única interface os fluxos que antes demandavam Postman + Swagger Editor + Mockoon + Newman.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 20: ROTEIRO PRÁTICO NO ARQUIVO SEPARADO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">19. Laboratório Prático 🛠️</span>
+        <h2 class="slide-title">Laboratório Prático: TaskFlow API no Apidog</h2>
+        <p class="slide-subtitle">A atividade prática detalhada está documentada no arquivo laboratorial separado.</p>
+      </div>
+
+      <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+        <div class="card-title">📄 Arquivo do Laboratório Prático</div>
+        <div class="card-body">
+          <p style="font-size: 1.1rem;">
+            Abra no repositório o arquivo: <strong><code>04-pw-api-contextualizacao-pratica-apidog.md</code></strong>
+          </p>
+          <p style="margin-top: 10px; color: var(--text-muted);">
+            Um guia passo a passo completo cobrindo todas as etapas de execução prática no Apidog:
+          </p>
+          <ul class="feature-list" style="margin-top: 10px;">
+            <li>Criação da Workspace e Projeto HTTP "TaskFlow API".</li>
+            <li>Modelagem visual das rotas de <code>/tasks</code> (GET, POST, PATCH, DELETE).</li>
+            <li>Construção dos Data Schemas OpenAPI (<code>Task</code>, <code>CreateTaskDTO</code>, <code>ApiError</code> RFC 9457 / RFC 7807).</li>
+            <li>Configuração de Smart Mocks com regras Faker e Expectations para simulação de 404.</li>
+            <li>Consumo do Mock Server via terminal com <code>curl</code> sem backend prévio.</li>
+            <li>Desafio prático de fixação individual: modelagem do recurso <code>/projects</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 21: CONCLUSÃO & ROADMAP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">20. Conclusão & Próximos Passos</span>
+        <h2 class="slide-title">Do Contrato ao Software em Produção</h2>
+        <p class="slide-subtitle">Como o conhecimento de hoje pavimenta os próximos módulos da disciplina.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗺️ Trilha do Semestre</div>
+        <div class="card-body">
+          <div class="code-block">
+            <pre><code>[ HOJE: AULA 04 ]
+API: Contextualização ──▶ Padrões REST ──▶ Design-First ──▶ Laboratório Apidog (.md)
+                                                                  │
+                                  ┌───────────────────────────────┘
+                                  ▼
+[ PRÓXIMAS AULAS ]
+• API: Projeto & Setup Backend (Python / FastAPI / Pydantic)
+• Persistência com ORM (Supabase / PostgreSQL)
+• Autenticação & Autorização com JWT
+• Automação de Testes e CI/CD
+• Deploy em Produção no Render</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="badge-card" style="background: rgba(52, 211, 153, 0.1); border-color: #34d399; color: #34d399;">
+          🎓 <strong>Regra de Ouro:</strong> Quem projeta o contrato com excelência programa o backend com clareza e sem retrabalho.
+        </div>
+        <div class="badge-card" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8;">
+          🔗 <strong>Projeto Apidog Pronto:</strong> <code>src/TakFlow API.Apidog.json</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 22: AGRADECIMENTO & ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.3);">FATEC 2026.2 • PROGRAMAÇÃO WEB</span>
+      <h2 style="font-size: 3.2rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Obrigado! 🤘</h2>
+      <p style="font-size: 1.3rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 32px auto; line-height: 1.5;">
+        Dúvidas, perguntas ou discussões
+      </p>
+
+      <div class="card" style="max-width: 480px; text-align: left; margin: 0 auto; width: 100%; border-color: rgba(56, 189, 248, 0.3);">
+        <div class="card-title" style="font-size: 1.15rem; color: var(--accent-cyan);">👨‍🏫 Eduardo Cruz Araujo</div>
+        <div class="card-body">
+          <ul class="bullet-list" style="gap: 12px;">
+            <li><strong>E-mail:</strong> <a href="mailto:eduardo.araujo@cps.sp.gov.br" style="color: var(--accent-cyan); text-decoration: none;">eduardo.araujo@cps.sp.gov.br</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">linkedin.com/in/edcaraujo</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">github.com/edcaraujo</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Overview Grid Modal (Tecla M) -->
+  <div class="overview-modal" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Índice da Apresentação — API: Contextualização</h3>
+        <button class="modal-close" id="modal-close">✕</button>
+      </div>
+      <div class="slide-grid-nav" id="slide-grid-nav"></div>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div class="toast-msg" id="toast-msg"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
