@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Design: Arquitetura de Sistemas Distribuídos (Part. 1) | Fatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| System Design (Part. 1)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 19</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">System Design: Arquitetura de Sistemas Distribuídos</h1>
+      <p class="cover-subtitle">Infraestrutura de Rede, Anatomia da Requisição ("What happens when you type a URL"), URI vs URL vs URN, TCP vs UDP, Evolução HTTP (1.0, 1.1, 2.0 e 3.0/QUIC), Camadas HTTPS e Modelos de Tempo Real (Parte 1)</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd> ou a tecla <kbd>M</kbd> para abrir o índice de slides.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: FUNDAMENTOS & MODELO EM CAMADAS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Fundamentos de Infraestrutura</span>
+        <h2 class="slide-title">O Modelo em Camadas (OSI vs. TCP/IP) & Encapsulamento</h2>
+        <p class="slide-subtitle">Como as abstrações de rede organizam a comunicação entre nós distribuídos no planeta.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🌐 Pilha de Protocolos TCP/IP</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Aplicação (L7):</strong> HTTP, HTTPS, WebSockets, DNS, gRPC. Foco na lógica de negócio e APIs.</li>
+              <li><strong>Transporte (L4):</strong> TCP, UDP, QUIC. Gerencia portas, multiplexação e confiabilidade fim-a-fim.</li>
+              <li><strong>Rede / Internet (L3):</strong> IPv4 e IPv6. Responsável pelo roteamento global de pacotes via roteadores e BGP.</li>
+              <li><strong>Enlace / Física (L2/L1):</strong> Ethernet, Wi-Fi, Cabos Submarinos. Converte dados em frames e sinais elétricos/ópticos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">📦 Encapsulamento, MTU & MSS</div>
+          <div class="card-body">
+            <p><strong>MTU (Maximum Transmission Unit):</strong> 1500 bytes na rede Ethernet padrão.</p>
+            <p style="margin-top: 6px;"><strong>MSS (Maximum Segment Size):</strong> Limite útil de dados TCP por pacote:</p>
+            <div class="code-snippet" style="margin-top: 8px; font-size: 0.75rem;">MSS = MTU (1500B) - IP Header (20B) - TCP Header (20B) = 1460 Bytes</div>
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-cyan); padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.8rem;">
+              <strong>Princípio de System Design:</strong> Payloads maiores que 1460 bytes exigem múltiplos segmentos TCP, aumentando o número de ACKs e o impacto da perda de pacotes.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Explique que todo dado trafegado na Web sofre encapsulamento ao descer a pilha (ganhando cabeçalhos) e desencapsulamento ao subir no destino. O MSS de 1460 bytes é um limitador físico crucial para otimização de APIs e buffers.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ANATOMIA DOS IDENTIFICADORES: URI VS URL VS URN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Semântica de Endereçamento</span>
+        <h2 class="slide-title">Anatomia dos Identificadores: URI vs. URL vs. URN</h2>
+        <p class="slide-subtitle">Compreendendo o modelo hierárquico da RFC 3986 / RFC 8141 e a anatomia exata de cada padrão.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>🔍 INSPETOR DE IDENTIFICADORES</span>
+          </div>
+          <div class="toolbar-controls" id="identifier-tabs">
+            <button class="btn-nav active" data-tab="url">🔗 Anatomia da URL</button>
+            <button class="btn-nav" data-tab="urn">🏷️ Anatomia da URN</button>
+            <button class="btn-nav" data-tab="uri">🌐 Outras URIs</button>
+          </div>
+        </div>
+
+        <!-- URL Inspector Container -->
+        <div class="url-inspector-box" id="inspector-url-box">
+          <span class="url-part part-scheme active" data-part="scheme">https://</span>
+          <span class="url-part part-auth" data-part="auth">admin:token@</span>
+          <span class="url-part part-host" data-part="host">api.fatec.sp.gov.br</span>
+          <span class="url-part part-port" data-part="port">:8443</span>
+          <span class="url-part part-path" data-part="path">/v1/sistemas/alunos</span>
+          <span class="url-part part-query" data-part="query">?curso=ads&semestre=20262</span>
+          <span class="url-part part-hash" data-part="hash">#grade-curricular</span>
+        </div>
+
+        <!-- URN Inspector Container -->
+        <div class="url-inspector-box" id="inspector-urn-box" style="display: none;">
+          <span class="url-part part-urn-prefix" data-part="urn-prefix">urn:</span>
+          <span class="url-part part-urn-nid" data-part="urn-nid">isbn:</span>
+          <span class="url-part part-urn-nss" data-part="urn-nss">978-0-13-449416-6</span>
+          <span style="color: var(--text-dim); margin: 0 10px;">|</span>
+          <span class="url-part part-urn-prefix" data-part="urn-prefix">urn:</span>
+          <span class="url-part part-urn-nid" data-part="urn-nid">ietf:</span>
+          <span class="url-part part-urn-nss" data-part="urn-nss">rfc:7230</span>
+        </div>
+
+        <!-- Other URIs Inspector Container -->
+        <div class="url-inspector-box" id="inspector-uri-box" style="display: none;">
+          <span class="url-part part-uri-scheme" data-part="uri-mail-scheme">mailto:</span>
+          <span class="url-part part-uri-ssp" data-part="uri-mail-ssp">professor@fatec.sp.gov.br</span>
+          <span style="color: var(--text-dim); margin: 0 10px;">|</span>
+          <span class="url-part part-uri-scheme" data-part="uri-tel-scheme">tel:</span>
+          <span class="url-part part-uri-ssp" data-part="uri-tel-ssp">+55-16-99999-9999</span>
+        </div>
+
+        <div class="url-explain-card" id="url-explain-text">
+          <strong style="color: var(--accent-cyan);">Scheme (Protocolo):</strong> Define o protocolo de comunicação e as regras de transporte da requisição (ex: <code>https</code>, <code>http</code>, <code>wss</code>, <code>ftp</code>).
+        </div>
+      </div>
+
+      <!-- ByteByteGo Style Hierarchy Diagram Container -->
+      <div class="uri-hierarchy-container">
+        <div class="uri-umbrella-header">
+          ☂️ URI (Uniform Resource Identifier) • Superclasse / Identificador Global
+        </div>
+        <div class="uri-subsets-grid">
+          <div class="subset-card" style="border-color: rgba(56, 189, 248, 0.4);">
+            <div class="subset-title" style="color: var(--accent-cyan);">📍 URL (Uniform Resource Locator)</div>
+            <div class="subset-desc">
+              <strong>"Onde está e como acessar":</strong> Identifica o recurso através do seu endereço e protocolo de transporte na rede. Se o servidor mudar de endereço, a URL quebra.
+            </div>
+          </div>
+          <div class="subset-card" style="border-color: rgba(52, 211, 153, 0.4);">
+            <div class="subset-title" style="color: var(--accent-emerald);">🏷️ URN (Uniform Resource Name)</div>
+            <div class="subset-desc">
+              <strong>"Qual é o nome persistente":</strong> Identifica o recurso por um identificador exclusivo registrado no namespace, imutável e independente de localização ou servidor.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: JORNADA DA REQUISIÇÃO (PARTE 1: CACHE & DNS) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Ciclo de Vida da Web (Part. 1)</span>
+        <h2 class="slide-title">A Jornada da Requisição: Parsing, Cache & DNS Hierárquico</h2>
+        <p class="slide-subtitle">O que acontece nos primeiros milissegundos após o usuário digitar a URL e pressionar Enter.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">1️⃣ Parsing, HSTS & Caches Locais</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>HSTS Preload Check:</strong> O navegador consulta sua lista interna pré-compilada para forçar HTTPS imediatamente, prevenindo ataques de <em>SSL Stripping</em>.</li>
+              <li><strong>Browser Cache:</strong> Verifica se a URL já possui resposta válida no <em>Memory Cache</em> ou <em>Disk Cache</em> (`Cache-Control: max-age`, `immutable`).</li>
+              <li><strong>OS Cache & Hosts File:</strong> Consulta a tabela de resolução DNS do sistema operacional e o arquivo local <code>/etc/hosts</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">2️⃣ Árvore Hierárquica do DNS</div>
+          <div class="card-body">
+            <ol style="padding-left: 18px; line-height: 1.6;">
+              <li><strong>Recursive Resolver:</strong> Servidor DNS do ISP (ou 1.1.1.1 / 8.8.8.8) recebe a solicitação.</li>
+              <li><strong>Root Servers (.):</strong> 13 clusters mundiais que apontam para os servidores TLD.</li>
+              <li><strong>TLD Servers (.br, .com):</strong> Apontam para os Name Servers Autoritativos.</li>
+              <li><strong>Authoritative DNS:</strong> Retorna o registro final (Tipo **A** para IPv4 ou **AAAA** para IPv6) com o **TTL**.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: JORNADA DA REQUISIÇÃO (PARTE 2: BGP, TCP & TLS 1.3) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Ciclo de Vida da Web (Part. 2)</span>
+        <h2 class="slide-title">A Jornada da Requisição: Roteamento BGP, TCP & TLS 1.3</h2>
+        <p class="slide-subtitle">Roteamento global através de Sistemas Autônomos, conexão TCP e aperto de mão criptográfico.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🌍 Roteamento BGP & CDNs</div>
+          <div class="card-body">
+            <p><strong>BGP (Border Gateway Protocol):</strong> Roteia pacotes através de Sistemas Autônomos (AS) globais.</p>
+            <p style="margin-top: 8px;"><strong>Anycast CDN:</strong> A requisição atinge a borda (PoP) geograficamente mais próxima do usuário.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🤝 TCP 3-Way Handshake</div>
+          <div class="card-body">
+            <p>Estabelece canal confiável de transporte em 1 RTT:</p>
+            <div class="code-snippet" style="font-size: 0.75rem; margin-top: 6px;">1. SYN (seq=X) ➔
+2. 🠔 SYN-ACK (ack=X+1)
+3. ACK (seq=X+1) ➔</div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🔒 TLS 1.3 Handshake (1-RTT)</div>
+          <div class="card-body">
+            <p>Negociação de chaves Diffie-Hellman Ephemeral + envio de Certificado Digital X.509 em 1 único RTT.</p>
+            <p style="margin-top: 6px; font-size: 0.8rem; color: var(--accent-emerald);">Suporta <strong>0-RTT Resumption</strong> para conexões reincidentes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: JORNADA DA REQUISIÇÃO (PARTE 3: BACKEND & CRITICAL RENDERING PATH) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Ciclo de Vida da Web (Part. 3)</span>
+        <h2 class="slide-title">Processamento no Backend & Critical Rendering Path</h2>
+        <p class="slide-subtitle">Como o servidor gera a resposta e como o navegador processa o DOM, CSSOM e pinta os pixels na tela.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚙️ Backend & Reverse Proxy L7</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Reverse Proxy (NGINX/Envoy):</strong> Executa SSL Termination, compressão (Brotli/Gzip) e roteia para os nós de aplicação.</li>
+              <li><strong>App Server & Database:</strong> Autenticação via JWT/OAuth2, execução de regras de negócio, queries no PostgreSQL/MongoDB e cache Redis.</li>
+              <li><strong>Geração do HTTP Response:</strong> Retorna status (`200 OK`), headers e payload HTML/JSON.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">🎨 Critical Rendering Path no Navegador</div>
+          <div class="card-body">
+            <ol style="padding-left: 18px; line-height: 1.5; font-size: 0.8rem;">
+              <li><strong>DOM Tree:</strong> Tokens HTML convertidos em nós da árvore de documentos.</li>
+              <li><strong>CSSOM Tree:</strong> Regras CSS convertidas em árvore hierárquica de estilos.</li>
+              <li><strong>Render Tree:</strong> Junção de DOM + CSSOM (ignora <code>display: none</code>).</li>
+              <li><strong>Layout (Reflow):</strong> Calcula a geometria, coordenadas e tamanho de cada caixa.</li>
+              <li><strong>Paint & Compositing:</strong> Desenho de pixels e envio de camadas para aceleração na GPU.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: SIMULADOR INTERATIVO DA JORNADA DA REQUISIÇÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador Interativo: A Jornada da Requisição Web</h2>
+        <p class="slide-subtitle">Acompanhe a trajetória completa de um pacote desde o teclado até a renderização na GPU.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>🌐 VISUALIZADOR DA JORNADA PASSO A PASSO</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn-nav" id="btn-journey-prev">← Etapa Anterior</button>
+            <button class="btn-nav active" id="btn-journey-next">Avançar Etapa →</button>
+            <button class="btn-nav" id="btn-journey-reset">↺ Reset</button>
+          </div>
+        </div>
+
+        <div class="journey-stepper" id="journey-stepper">
+          <div class="journey-step active" data-step="0">
+            <div class="step-circle">1</div>
+            <span class="step-label">URL & Cache</span>
+          </div>
+          <div class="journey-step" data-step="1">
+            <div class="step-circle">2</div>
+            <span class="step-label">DNS Query</span>
+          </div>
+          <div class="journey-step" data-step="2">
+            <div class="step-circle">3</div>
+            <span class="step-label">TCP 3-Way</span>
+          </div>
+          <div class="journey-step" data-step="3">
+            <div class="step-circle">4</div>
+            <span class="step-label">TLS 1.3</span>
+          </div>
+          <div class="journey-step" data-step="4">
+            <div class="step-circle">5</div>
+            <span class="step-label">HTTP Request</span>
+          </div>
+          <div class="journey-step" data-step="5">
+            <div class="step-circle">6</div>
+            <span class="step-label">Render Paint</span>
+          </div>
+        </div>
+
+        <div class="journey-detail-box">
+          <div class="journey-diagram-node" id="journey-node-display">
+            <div style="color: var(--accent-cyan); font-weight: 700;" id="journey-node-title">CLIENTE</div>
+            <div style="font-size: 0.7rem; color: #888;" id="journey-node-sub">Navegador Web</div>
+          </div>
+          <div style="flex: 1;">
+            <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 6px;" id="journey-step-title">Etapa 1: Parsing de URL & Verificação de Cache Local</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;" id="journey-step-desc">
+              O usuário digita <code>https://fatec.sp.gov.br</code>. O navegador valida a sintaxe, consulta a lista <strong>HSTS Preload</strong> para garantir HTTPS e busca se o recurso já está disponível no <strong>Memory Cache</strong> ou no <strong>Disk Cache</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: PROTOCOLOS DE TRANSPORTE: TCP VS UDP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Camada de Transporte</span>
+        <h2 class="slide-title">Protocolos de Transporte: TCP vs. UDP</h2>
+        <p class="slide-subtitle">O dilema clássico da engenharia de redes: Confiabilidade absoluta vs. Velocidade e Latência mínima.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🛡️ TCP (Transmission Control Protocol)</div>
+          <div class="card-body">
+            <p><strong>Orientado a Conexão & Confiável (RFC 793):</strong></p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Garantia de Entrega e Ordem:</strong> Retransmissão automática de pacotes perdidos via números de sequência e ACKs.</li>
+              <li><strong>Controle de Congestionamento:</strong> Algoritmos como BBR e CUBIC modulam o tráfego evitando colapso na rede.</li>
+              <li><strong>Sliding Window:</strong> Controle de fluxo para não sobrecarregar o buffer do receptor.</li>
+              <li><strong>Overhead:</strong> Cabeçalho de 20 a 60 bytes + latência de handshakes.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">⚡ UDP (User Datagram Protocol)</div>
+          <div class="card-body">
+            <p><strong>Sem Conexão & Ultraleve (RFC 768):</strong></p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Best-Effort Delivery:</strong> "Dispare e esqueça" (Fire and forget). Sem handshakes (0ms setup time).</li>
+              <li><strong>Sem Retransmissões Nativas:</strong> Se um pacote for descartado na rede, a aplicação decide se ignora ou trata.</li>
+              <li><strong>Cabeçalho Mínimo:</strong> Apenas 8 bytes fixos. Mínimo overhead computacional.</li>
+              <li><strong>Casos de Uso:</strong> DNS, Streaming de vídeo ao vivo (WebRTC/VoIP), Jogos Multiplayer e a base do <strong>HTTP/3 (QUIC)</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: SIMULADOR VISUAL TCP VS UDP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Laboratório de Transporte</span>
+        <h2 class="slide-title">Simulador de Transmissão de Pacotes: TCP vs. UDP</h2>
+        <p class="slide-subtitle">Observe em velocidade controlada a entrega de pacotes, confirmações (ACKs), perdas de rede e retransmissões.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>📡 SIMULADOR DE FLUXO DE PACOTES</span>
+          </div>
+          <div class="toolbar-controls">
+            <button class="btn-nav active" id="btn-send-packets">🚀 Iniciar Envio (4 Pacotes)</button>
+            <button class="btn-nav" id="btn-toggle-loss" data-loss="false">💥 Perda no Pacote #3: NÃO</button>
+            <select class="btn-nav" id="sim-speed-select" style="padding: 5px 8px; cursor: pointer; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 8px;">
+              <option value="slow" selected>Velocidade: Lenta (Didática)</option>
+              <option value="normal">Velocidade: Normal</option>
+              <option value="fast">Velocidade: Rápida</option>
+            </select>
+            <button class="btn-nav" id="btn-reset-sim">↺ Reset</button>
+          </div>
+        </div>
+
+        <div class="packet-arena-v2" id="packet-arena">
+          <!-- TCP Lane Container -->
+          <div class="proto-lane-box" id="tcp-lane-box">
+            <div class="lane-header">
+              <span class="lane-title" style="color: var(--accent-cyan);">🛡️ FLUXO TCP (Orientado a Conexão & Confiável)</span>
+              <span class="lane-badge" id="tcp-status-badge">STATUS: PRONTO</span>
+            </div>
+            <div class="lane-interactive-track">
+              <div class="lane-node-v2">
+                <div class="node-icon">💻</div>
+                <div class="node-name" style="color: var(--accent-cyan);">Cliente TCP</div>
+                <div class="node-detail" id="tcp-client-detail">Buffer: 4 Segs</div>
+              </div>
+              <div class="lane-channel" id="tcp-channel">
+                <div class="channel-line-data" title="Canal de Dados (Cliente -> Servidor)">
+                  <span class="channel-label">Dados (Payload) ➔</span>
+                  <div class="packets-container" id="tcp-data-packets"></div>
+                </div>
+                <div class="channel-line-ack" title="Canal de Retorno (Servidor -> Cliente)">
+                  <span class="channel-label">🠔 ACKs / Confirmações</span>
+                  <div class="packets-container" id="tcp-ack-packets"></div>
+                </div>
+              </div>
+              <div class="lane-node-v2">
+                <div class="node-icon">🖥️</div>
+                <div class="node-name" style="color: var(--accent-emerald);">Servidor TCP</div>
+                <div class="node-detail" id="tcp-server-detail">Buffer: Aguardando</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- UDP Lane Container -->
+          <div class="proto-lane-box" id="udp-lane-box">
+            <div class="lane-header">
+              <span class="lane-title" style="color: var(--accent-purple);">⚡ FLUXO UDP (Sem Conexão / Streaming Fire-and-Forget)</span>
+              <span class="lane-badge" id="udp-status-badge" style="border-color: var(--accent-purple); color: var(--accent-purple);">STATUS: PRONTO</span>
+            </div>
+            <div class="lane-interactive-track">
+              <div class="lane-node-v2">
+                <div class="node-icon">📹</div>
+                <div class="node-name" style="color: var(--accent-purple);">Cliente Media</div>
+                <div class="node-detail" id="udp-client-detail">Buffer: 4 Datagramas</div>
+              </div>
+              <div class="lane-channel" id="udp-channel">
+                <div class="channel-line-data" style="height: 100%; border-bottom: none;" title="Canal UDP Unidirecional">
+                  <span class="channel-label">Datagramas Contínuos ➔</span>
+                  <div class="packets-container" id="udp-data-packets"></div>
+                </div>
+              </div>
+              <div class="lane-node-v2">
+                <div class="node-icon">📺</div>
+                <div class="node-name" style="color: var(--accent-amber);">Media Receiver</div>
+                <div class="node-detail" id="udp-server-detail">Buffer: Pronto</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Explanation Banner -->
+        <div class="sim-explanation-box" id="transport-explain-text">
+          Clique em <strong>"🚀 Iniciar Envio"</strong> para disparar a transmissão de 4 pacotes em ambos os protocolos. Ative a opção <strong>"💥 Perda no Pacote #3"</strong> para observar o comportamento de retransmissão e <em>Head-of-Line Blocking</em> no TCP versus a continuidade ininterrupta no UDP.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: EVOLUÇÃO DO HTTP: 1.0 E 1.1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Evolução dos Protocolos Web</span>
+        <h2 class="slide-title">Evolução do Protocolo HTTP: HTTP/1.0 a HTTP/1.1</h2>
+        <p class="slide-subtitle">A introdução do Keep-Alive, múltiplos domínios e o gargalo do Head-of-Line Blocking.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🕰️ HTTP/1.0 (1996)</div>
+          <div class="card-body">
+            <p><strong>1 Conexão TCP por Objeto:</strong></p>
+            <p style="margin-top: 8px; color: var(--accent-rose);">Cada imagem, CSS ou script exigia um novo TCP Handshake completo + fechamento de conexão.</p>
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-rose); padding: 10px; border-radius: 6px; margin-top: 12px; font-size: 0.8rem;">
+              Uma página com 50 ativos realizava 50 conexões TCP isoladas, saturando os servidores web e gerando latência catastrófica.
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🚀 HTTP/1.1 (1997 - RFC 2616/7230)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Keep-Alive:</strong> Reutilização da mesma conexão TCP para múltiplos requests sequenciais.</li>
+              <li><strong>Host Header:</strong> Permitiu hospedar múltiplos domínios virtuais no mesmo endereço IP.</li>
+              <li><strong>Chunked Transfer:</strong> Envio de dados em streaming sem saber o tamanho total prévio.</li>
+              <li><strong>Gargalo Crítico:</strong> <em>Head-of-Line Blocking</em> na camada de aplicação (requisições lentas travam as subsequentes).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: HTTP/2: MULTIPLEXAÇÃO E FRAMES BINÁRIOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Evolução dos Protocolos Web</span>
+        <h2 class="slide-title">HTTP/2: Protocolo Binário & Multiplexação (RFC 7540)</h2>
+        <p class="slide-subtitle">Múltiplos streams concorrentes em uma única conexão TCP e compressão HPACK.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🗂️ Frames & Streams Binários</div>
+          <div class="card-body">
+            <p>Substituiu mensagens em texto puro por frames binários tipados (DATA, HEADERS, SETTINGS, PING), eliminando ambiguidades sintáticas.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">⚡ Multiplexação Total</div>
+          <div class="card-body">
+            <p>Centenas de requisições e respostas trafegam intercaladas simultaneamente em uma <strong>única conexão TCP</strong> sem travar uma à outra na camada de aplicação.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">📦 Compressão HPACK</div>
+          <div class="card-body">
+            <p>Elimina a redundância de cabeçalhos repetitivos (ex: Cookies, User-Agent) através de tabelas de índices compartilhadas entre cliente e servidor.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; border-color: rgba(244, 63, 94, 0.4);">
+        <div class="card-title" style="color: var(--accent-rose);">⚠️ O Gargalo Remanescente: TCP Head-of-Line Blocking</div>
+        <div class="card-body" style="font-size: 0.85rem;">
+          Como todos os streams do HTTP/2 compartilham uma única fila TCP, a perda de um único pacote de qualquer stream faz com que a pilha TCP pause a entrega de <strong>TODOS os demais streams</strong> até que o pacote perdido seja retransmitido.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: HTTP/3 E O PROTOCOLO QUIC -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Evolução dos Protocolos Web</span>
+        <h2 class="slide-title">HTTP/3 & QUIC: O Transporte da Web Moderna sobre UDP</h2>
+        <p class="slide-subtitle">A superação do TCP HoL Blocking, conexão 0-RTT e migração transparente de rede (RFC 9000 / 9114).</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🚀 Inovações do Protocolo QUIC</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Construído sobre UDP:</strong> Opera no espaço de usuário, permitindo evolução rápida sem exigir atualizações no kernel dos sistemas operacionais.</li>
+              <li><strong>Streams Independentes no Transporte:</strong> A perda de um pacote em um stream de imagem atrasa apenas aquela imagem; todos os outros streams (CSS, JS) continuam fluindo sem interrupção!</li>
+              <li><strong>Handshake 1-RTT Unificado:</strong> Transporte e segurança TLS 1.3 são negociados em uma única troca de mensagens.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">📱 Migração de Conexão (Connection ID)</div>
+          <div class="card-body">
+            <p>No TCP tradicional, a conexão é identificada pela 4-tupla <code>(IP Origem, Porta Origem, IP Destino, Porta Destino)</code>. Se o usuário sai do Wi-Fi e entra no 4G/5G, seu IP muda e a conexão TCP é rompida.</p>
+            <div style="background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-emerald); padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.8rem;">
+              <strong>No QUIC / HTTP/3:</strong> A conexão é identificada por um <strong>Connection ID (CID)</strong> de 64 bits independente do IP. A troca de rede ocorre com <strong>zero interrupção</strong> para a aplicação.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: COMPARADOR WATERFALL DE HTTP (1.1 VS 2 VS 3) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Benchmark Arquitetural</span>
+        <h2 class="slide-title">Comparador de Latência & Waterfall: HTTP/1.1 vs 2.0 vs 3.0</h2>
+        <p class="slide-subtitle">Compare o impacto do número de conexões, multiplexação e perdas de pacotes na timeline de carregamento.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>⏱️ WATERFALL DE REQUISIÇÃO (6 ATIVOS SIMULTÂNEOS)</span>
+          </div>
+          <div class="toolbar-controls" id="http-version-tabs">
+            <button class="btn-nav" data-version="http1">HTTP/1.1</button>
+            <button class="btn-nav" data-version="http2">HTTP/2</button>
+            <button class="btn-nav active" data-version="http3">HTTP/3 (QUIC)</button>
+          </div>
+        </div>
+
+        <div class="http-waterfall-card">
+          <h4 style="color: var(--accent-cyan); font-size: 0.95rem; margin-bottom: 6px;" id="http-waterfall-title">HTTP/3 (QUIC sobre UDP)</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;" id="http-waterfall-desc">
+            Handshake unificado 1-RTT (Transporte + TLS 1.3). Todos os 6 ativos baixam simultaneamente com streams isolados no nível de transporte.
+          </p>
+
+          <div class="waterfall-bar-container">
+            <div class="waterfall-row">
+              <span class="waterfall-label">Handshake Setup</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 20%; background: var(--accent-emerald);" id="wf-http-handshake">50ms (1-RTT TLS 1.3)</div>
+              </div>
+            </div>
+            <div class="waterfall-row">
+              <span class="waterfall-label">Download Ativos</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 45%; background: var(--accent-cyan);" id="wf-http-download">150ms (Multiplexação UDP)</div>
+              </div>
+            </div>
+            <div class="waterfall-row">
+              <span class="waterfall-label">Tempo Total (PLR 2%)</span>
+              <div class="waterfall-track">
+                <div class="waterfall-segment" style="width: 50%; background: var(--accent-purple);" id="wf-http-total">200ms (Sem Bloqueio HoL)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: CAMADAS DE SEGURANÇA DO HTTPS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Criptografia & Integridade</span>
+        <h2 class="slide-title">Camadas de Segurança do HTTPS & TLS 1.3</h2>
+        <p class="slide-subtitle">Como os pilares de criptografia simétrica, assimétrica e cadeias de certificados blindam a Web.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🔐 Confidencialidade</div>
+          <div class="card-body">
+            <p><strong>Criptografia Simétrica de Alta Performance:</strong> Algoritmos como AES-256-GCM ou ChaCha20-Poly1305 garantem que intermediários (Provedores, Roteadores) vejam apenas dados indecifráveis.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🛡️ Integridade dos Dados</div>
+          <div class="card-body">
+            <p><strong>Autenticação de Mensagens (AEAD / HMAC):</strong> Garante que nenhum byte do payload foi alterado, injetado ou corrompido durante a transmissão na rede (*Anti-Tampering*).</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">📜 Autenticidade & PKI</div>
+          <div class="card-body">
+            <p><strong>Certificados Digitais X.509:</strong> Emitidos por Autoridades Certificadoras (CAs) confiáveis. Validam a identidade do servidor e garantem que você está conectado ao domínio legítimo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 14px;">
+        <div class="card">
+          <div class="card-title" style="font-size: 0.95rem;">⚡ HSTS & OCSP Stapling</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            <strong>HSTS:</strong> Força conexões HTTPS estritas.<br>
+            <strong>OCSP Stapling:</strong> O servidor anexa a prova de validade do certificado no handshake, eliminando consultas lentas do navegador à CA.
+          </div>
+        </div>
+
+        <div class="card" style="font-size: 0.95rem; border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🌐 SNI & ALPN</div>
+          <div class="card-body" style="font-size: 0.8rem;">
+            <strong>SNI (Server Name Indication):</strong> Permite ao servidor escolher o certificado correto para múltiplos domínios no mesmo IP.<br>
+            <strong>ALPN:</strong> Negocia a versão do protocolo (HTTP/2 ou HTTP/3) durante o TLS handshake.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: MODELOS DE COMUNICAÇÃO CONTÍNUA: SHORT VS LONG POLLING VS SSE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Tempo Real & Streaming (Part. 1)</span>
+        <h2 class="slide-title">Modelos de Comunicação Contínua: Polling vs. SSE</h2>
+        <p class="slide-subtitle">A superação do ciclo Request-Response tradicional para entrega contínua de eventos do servidor.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">⏱️ Short-Polling</div>
+          <div class="card-body">
+            <p><strong>Consulta em Intervalos Fixos:</strong> O cliente dispara requisições periódicas (ex: a cada 2s).</p>
+            <p style="margin-top: 8px; color: var(--accent-rose);">Altíssimo desperdício de banda e processamento com respostas 304 vazias.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">⏳ Long-Polling (Comet)</div>
+          <div class="card-body">
+            <p><strong>Conexão Suspensa:</strong> O servidor segura a requisição HTTP aberta até ter um dado novo.</p>
+            <p style="margin-top: 8px;">Assim que responde, a conexão é encerrada e o cliente imediatamente abre outra requisição.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">📡 Server-Sent Events (SSE)</div>
+          <div class="card-body">
+            <p><strong>Streaming Unidirecional (Server ➔ Client):</strong> Canal HTTP contínuo (`text/event-stream`).</p>
+            <p style="margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan);">Suporte nativo do navegador a reconexão automática. Padrão ouro para <strong>Streaming de Respostas de IA (LLMs)</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: WEBSOCKETS: COMUNICAÇÃO FULL-DUPLEX -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Tempo Real & Streaming (Part. 2)</span>
+        <h2 class="slide-title">WebSockets: Comunicação Full-Duplex Bidirecional (RFC 6455)</h2>
+        <p class="slide-subtitle">Canal de comunicação persistente em tempo real para jogos, mensageria e colaboração instantânea.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🔌 O Handshake de Upgrade HTTP</div>
+          <div class="card-body">
+            <p>A conexão inicia como HTTP tradicional e migra para WebSocket:</p>
+            <div class="code-snippet" style="font-size: 0.75rem; margin-top: 8px;">GET /chat HTTP/1.1
+Host: api.fatec.sp.gov.br
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==
+
+➔ RESPOSTA DO SERVIDOR:
+HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade</div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">⚡ Características Arquiteturais</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Full-Duplex Real:</strong> Cliente e servidor enviam mensagens a qualquer momento de forma concorrente.</li>
+              <li><strong>Overhead Mínimo:</strong> Apenas 2 a 10 bytes de cabeçalho por frame (sem headers HTTP repetitivos).</li>
+              <li><strong>Estado de Conexão (Stateful):</strong> Exige gestão de instâncias de servidores, Heartbeats (Ping/Pong) e Redis Pub/Sub para escala horizontal em clusters.</li>
+              <li><strong>Casos de Uso:</strong> Jogos multiplayer, edição colaborativa (Google Docs, Figma), chats e terminais remotos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: SIMULADOR DE MODELOS DE TEMPO REAL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Laboratório de Tempo Real</span>
+        <h2 class="slide-title">Simulador de Tráfego: Polling vs. SSE vs. WebSockets</h2>
+        <p class="slide-subtitle">Inspecione o fluxo de pacotes, consumo de cabeçalhos e latência de entrega em tempo real.</p>
+      </div>
+
+      <div class="interactive-widget">
+        <div class="widget-toolbar">
+          <div class="toolbar-title">
+            <span>🔴 CONSOLE DE EVENTOS EM TEMPO REAL</span>
+          </div>
+          <div class="toolbar-controls" id="realtime-mode-selector">
+            <button class="btn-nav" data-mode="short">Short-Polling</button>
+            <button class="btn-nav" data-mode="long">Long-Polling</button>
+            <button class="btn-nav" data-mode="sse">SSE (Streaming)</button>
+            <button class="btn-nav active" data-mode="ws">WebSockets (Full-Duplex)</button>
+            <button class="btn-nav" id="btn-rt-clear">🗑️ Limpar</button>
+          </div>
+        </div>
+
+        <div class="stream-console" id="stream-console">
+          <div class="stream-log-entry">
+            <span class="log-time">[14:32:00]</span>
+            <span class="log-client">[CLIENTE]</span>
+            <span>GET /live-stream (Upgrade: websocket) ➔ Conexão Estabelecida com sucesso.</span>
+          </div>
+          <div class="stream-log-entry">
+            <span class="log-time">[14:32:01]</span>
+            <span class="log-ws">[WS FRAME]</span>
+            <span>Servidor enviou: {"tipo": "COTACAO", "ativo": "VALE3", "valor": 68.45} (Overhead: 4 bytes)</span>
+          </div>
+          <div class="stream-log-entry">
+            <span class="log-time">[14:32:02]</span>
+            <span class="log-ws">[WS FRAME]</span>
+            <span>Cliente enviou: {"acao": "ORDEM_COMPRA", "qtd": 100} (Overhead: 6 bytes)</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center; justify-content: space-between; font-size: 0.8rem; background: #080c14; padding: 10px 14px; border-radius: 8px;">
+          <div><strong style="color: var(--accent-cyan);">Modelo Ativo:</strong> <span id="rt-active-model-name">WebSockets Full-Duplex</span></div>
+          <div><strong style="color: var(--accent-emerald);">Overhead Médio:</strong> <span id="rt-overhead-metric">~4 bytes/mensagem</span></div>
+          <div><strong style="color: var(--accent-purple);">Conexões Abertas:</strong> <span id="rt-connections-metric">1 Conexão TCP Persistente</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: MATRIZ ARQUITETURAL & GUIA DE DECISÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Matriz de Decisão Arquitetural</span>
+        <h2 class="slide-title">Guia de Decisão: Escolhendo o Protocolo e Modelo Ideal</h2>
+        <p class="slide-subtitle">Critérios técnicos e cenários reais para guiar decisões de System Design de alta escala.</p>
+      </div>
+
+      <table class="tech-table">
+        <thead>
+          <tr>
+            <th>Tecnologia</th>
+            <th>Sentido do Fluxo</th>
+            <th>Protocolo Base</th>
+            <th>Overhead / Msg</th>
+            <th>Melhor Caso de Uso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color: var(--accent-cyan);">HTTP/1.1 REST</strong></td>
+            <td>Cliente ➔ Servidor (Pull)</td>
+            <td>TCP</td>
+            <td>Alto (Headers completos)</td>
+            <td>APIs CRUD padrão, formulários, sistemas legados.</td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent-emerald);">HTTP/2 REST/gRPC</strong></td>
+            <td>Multiplexado Bi-direcional</td>
+            <td>TCP (Binário)</td>
+            <td>Médio (HPACK comprimido)</td>
+            <td>Microservices internos (gRPC), SPAs modernas e portais.</td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent-purple);">HTTP/3 (QUIC)</strong></td>
+            <td>Multiplexado Bi-direcional</td>
+            <td>UDP (QUIC)</td>
+            <td>Baixo (QPACK + 0-RTT)</td>
+            <td>Aplicações mobile, CDNs globais, redes com alta perda de pacotes.</td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent-amber);">Server-Sent Events</strong></td>
+            <td>Servidor ➔ Cliente (Push)</td>
+            <td>HTTP (`text/event-stream`)</td>
+            <td>Baixo (Stream contínuo)</td>
+            <td>Streaming de tokens de LLM/IA, feeds de notícias, dashboards.</td>
+          </tr>
+          <tr>
+            <td><strong style="color: var(--accent-rose);">WebSockets</strong></td>
+            <td>Full-Duplex (Bidirecional)</td>
+            <td>WS / WSS (TCP)</td>
+            <td>Mínimo (2-10 bytes/frame)</td>
+            <td>Jogos multiplayer, chats, edição colaborativa em tempo real.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- SLIDE 19: AGRADECIMENTO & ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.3);">FATEC 2026.2 • PROGRAMAÇÃO WEB</span>
+      <h2 style="font-size: 3.2rem; font-weight: 800; margin-bottom: 12px; color: var(--text-main);">Obrigado! 🤘</h2>
+      <p style="font-size: 1.3rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 32px auto; line-height: 1.5;">
+        Dúvidas, perguntas ou discussões?
+      </p>
+
+      <div class="card" style="max-width: 480px; text-align: left; margin: 0 auto; width: 100%; border-color: rgba(56, 189, 248, 0.3);">
+        <div class="card-title" style="font-size: 1.15rem; color: var(--accent-cyan);">👨‍🏫 Eduardo Cruz Araujo</div>
+        <div class="card-body">
+          <ul class="bullet-list" style="gap: 12px;">
+            <li><strong>E-mail:</strong> <a href="mailto:eduardo.araujo@cps.sp.gov.br" style="color: var(--accent-cyan); text-decoration: none;">eduardo.araujo@cps.sp.gov.br</a></li>
+            <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">linkedin.com/in/edcaraujo</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/edcaraujo" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">github.com/edcaraujo</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Grid / Overview Modal -->
+  <div class="modal-overlay" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📱 ÍNDICE DE SLIDES DA APRESENTAÇÃO</h3>
+        <button class="btn-close" id="modal-close">&times;</button>
+      </div>
+      <div class="slide-grid-nav" id="slide-grid-nav">
+        <!-- Populated dynamically via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-msg" id="toast-msg">Mensagem Toast</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
