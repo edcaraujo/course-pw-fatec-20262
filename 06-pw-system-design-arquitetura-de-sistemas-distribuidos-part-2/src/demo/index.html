@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Design: Arquitetura de Sistemas Distribuídos (Part. 2) | Fatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| System Design (Part. 2)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 26</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">System Design: Arquitetura de Sistemas Distribuídos (Part. 2)</h1>
+      <p class="cover-subtitle">Escalabilidade Vertical vs Horizontal, Métricas & SLAs, Intermediários de Rede (Proxies, L4/L7 Load Balancers, API Gateways), Proteção de Tráfego (Rate Limiting & Throttling), Caching Distribuído e CDNs Anycast.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd>, barra de espaço ou a tecla <kbd>M</kbd> para o índice completo.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: ESCALABILIDADE VERTICAL VS HORIZONTAL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Paradigmas de Escalabilidade</span>
+        <h2 class="slide-title">Escalabilidade Vertical (Scale-Up) vs. Horizontal (Scale-Out)</h2>
+        <p class="slide-subtitle">Como expandir o poder de processamento frente ao crescimento exponencial de usuários e dados.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🚀 Escalabilidade Vertical (Scale-Up)</div>
+          <div class="card-body">
+            <p>Consiste em turbinar o hardware de uma única máquina adicionando mais vCPUs, memória RAM e discos NVMe ultrarrápidos.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Vantagens:</strong> Simplicidade operacional, nenhuma latência de rede entre processos, consistência ACID direta em memória.</li>
+              <li><strong>Desvantagens:</strong> Teto físico de hardware, custo exponencial (Lei dos Rendimentos Decrescentes), Ponto Único de Falha (SPOF) e downtime em upgrades.</li>
+            </ul>
+            <div class="code-snippet" style="margin-top: 10px;">Cenário: Servidor de 128 vCPUs / 1TB RAM rodando Monolito PostgreSQL.</div>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🌐 Escalabilidade Horizontal (Scale-Out)</div>
+          <div class="card-body">
+            <p>Consiste em agrupar dezenas ou centenas de servidores menores (commodity hardware) coordenados por um Load Balancer.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Vantagens:</strong> Escalabilidade ilimitada, alta tolerância a falhas (nós descartáveis), elasticidade e auto-scaling dinâmico em nuvem.</li>
+              <li><strong>Desvantagens:</strong> Complexidade de orquestração, latência de rede, gerenciamento de estado e consistência eventual.</li>
+            </ul>
+            <div class="code-snippet" style="margin-top: 10px;">Cenário: 20 instâncias de 4 vCPUs / 16GB RAM atrás de um Nginx / ALB.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Enfatize que o Scale-Up resolve problemas até certo limite financeiro e físico. Sistemas modernos de alta disponibilidade adotam Scale-Out para a camada de aplicação stateless e replicação distribuída para bancos de dados.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: LEIS DE AMDAHL E GUSTAFSON -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Paradigmas de Escalabilidade</span>
+        <h2 class="slide-title">Leis Fundamentais: Lei de Amdahl & Lei de Gustafson</h2>
+        <p class="slide-subtitle">A matemática por trás do ganho de paralelismo e o impacto dos trechos de código sequenciais.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚖️ Lei de Amdahl (Tamanho Fixo)</div>
+          <div class="card-body">
+            <p>Mede a aceleração máxima (<em>Speedup</em>) ao adicionar <em>N</em> processadores onde <em>P</em> é a fração paralela e <em>(1 - P)</em> a sequencial:</p>
+            <div class="code-snippet" style="margin: 8px 0;">Speedup(N) = 1 / [ (1 - P) + (P / N) ]</div>
+            <p><strong>Exemplo Crítico:</strong> Se <strong>5%</strong> do código é estritamente serial (ex: locks de banco, serialização JSON), mesmo com infinitos nós o ganho nunca passará de <strong>20x</strong>!</p>
+            <div style="background: rgba(244,63,94,0.1); border-left: 3px solid var(--accent-rose); padding: 8px; border-radius: 4px; margin-top: 8px; font-size: 0.8rem;">
+              <strong>Princípio:</strong> Otimizar o gargalo sequencial gera mais resultado que adicionar centenas de servidores.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-emerald);">📈 Lei de Gustafson-Barsis (Escalável)</div>
+          <div class="card-body">
+            <p>Assume que conforme aumentamos os processadores, aumentamos também o volume total de dados processados:</p>
+            <div class="code-snippet" style="margin: 8px 0;">Speedup(N) = N - α(N - 1) = α + N(1 - α)</div>
+            <p>Onde <em>α</em> (alfa) é a fração serial. Em sistemas distribuídos de Big Data e streaming (Spark, Kafka), adicionar nós permite processar datasets muito maiores na mesma janela de tempo.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Explique que adicionar servidores não é bala de prata. Se a camada de banco tiver concorrência e travas exclusivas (serial fraction), a Lei de Amdahl estrangulará o sistema.
+      </div>
+    </section>
+
+    <!-- SLIDE 4: STATELESS VS STATEFUL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Paradigmas de Escalabilidade</span>
+        <h2 class="slide-title">Arquiteturas Stateless vs. Stateful & Sessão Distribuída</h2>
+        <p class="slide-subtitle">Como desacoplar o estado da aplicação para permitir escalonamento horizontal fluido.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">❌ Stateful com Memória Local</div>
+          <div class="card-body">
+            <p>A sessão do usuário fica na RAM do servidor em que ele logou.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li>Exige <strong>Sticky Sessions</strong> no Load Balancer.</li>
+              <li>Se o servidor cair, o usuário perde o carrinho e a sessão.</li>
+              <li>Auto-scaling interrompe conexões ativas.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">🔑 Tokens Criptografados (JWT)</div>
+          <div class="card-body">
+            <p>O estado e as claims viajam em cada requisição assinada criptograficamente.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li>Qualquer nó valida o token com a chave pública/secreta.</li>
+              <li>Zero chamadas a banco na validação.</li>
+              <li>Desafio: Revogação imediata de token antes de expirar.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">⚡ Cache Centralizado (Redis)</div>
+          <div class="card-body">
+            <p>Servidores são totalmente stateless; o estado volátil reside em cluster Redis.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li>Latência submilisegundo em RAM.</li>
+              <li>Revogação instantânea de sessões e permissões.</li>
+              <li>Nós da API podem ser criados ou destruídos sem impacto.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Stateless é o pilar da arquitetura moderna Cloud-Native e de microsserviços. Permite matar e criar instâncias dinamicamente sem afetar o usuário final.
+      </div>
+    </section>
+
+    <!-- SLIDE 5: MÉTRICAS CRÍTICAS & LEI DE LITTLE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Métricas & Performance</span>
+        <h2 class="slide-title">Métricas Críticas: Latência, Throughput & A Lei de Little</h2>
+        <p class="slide-subtitle">Definições rigorosas de desempenho e a fórmula que rege o dimensionamento de sistemas concorrentes.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">⏱️ Latência (Tempo)</div>
+          <div class="card-body">
+            <p>Tempo total decorrido para uma requisição transitar do cliente, ser processada e a resposta retornar (medida em milissegundos - ms).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚀 Throughput (Vazão)</div>
+          <div class="card-body">
+            <p>Volume de requisições ou transações completadas com sucesso por unidade de tempo (medido em RPS ou QPS).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌊 Bandwidth (Banda)</div>
+          <div class="card-body">
+            <p>Capacidade máxima de transmissão de dados do canal de rede por segundo (Gbps / Mbps).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; border-color: var(--accent-indigo);">
+        <div class="card-title" style="color: var(--accent-indigo);">📐 A Lei de Little: Equilíbrio em Filas Distribuídas</div>
+        <div class="card-body">
+          <p>Em qualquer sistema estável: <strong>L = λ × W</strong> &nbsp;⇒&nbsp; <strong>Throughput (λ) = L / W</strong></p>
+          <div class="code-snippet" style="margin-top: 6px; font-size: 0.8rem;">
+            Onde L = número de requisições concorrentes no sistema | W = tempo médio de resposta (latência) | λ = vazão (RPS)
+          </div>
+          <p style="margin-top: 8px;"><strong>Aplicação:</strong> Se sua API gasta <strong>W = 50ms (0.05s)</strong> por requisição e seu pool possui <strong>L = 100 threads ativas</strong>, o Throughput máximo sustentado será <strong>100 / 0.05 = 2.000 RPS</strong>.</p>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> A Lei de Little prova que se a latência subir de 50ms para 200ms sob alta carga, o throughput máximo cairá de 2000 RPS para 500 RPS se o número de threads for mantido.
+      </div>
+    </section>
+
+    <!-- SLIDE 6: PERCENTIS DE LATÊNCIA & SLA CALCULATOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Métricas & Performance</span>
+        <h2 class="slide-title">Percentis de Latência (P50..P99.9) & Calculadora de SLAs ("Noves")</h2>
+        <p class="slide-subtitle">Por que médias mascaram anomalias e quanto tempo de inatividade cada "Nove" de disponibilidade permite.</p>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-toolbar">
+          <div class="sim-controls-group">
+            <span class="sim-label">Selecione o SLA Alvo:</span>
+            <select class="sim-select" id="sla-select">
+              <option value="0.99">99.0% ("Dois Noves")</option>
+              <option value="0.999">99.9% ("Três Noves")</option>
+              <option value="0.9995">99.95% ("Três Noves e Meio")</option>
+              <option value="0.9999" selected>99.99% ("Quatro Noves")</option>
+              <option value="0.99999">99.999% ("Cinco Noves")</option>
+            </select>
+          </div>
+          <div class="sim-controls-group">
+            <span class="sim-label">Tráfego Mensal (Requisições):</span>
+            <input type="number" class="sim-input" id="sla-traffic" value="10000000" step="1000000" style="width: 140px;">
+          </div>
+        </div>
+
+        <div class="sla-calc-grid">
+          <div>
+            <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 8px;">📊 Orçamento Máximo de Indisponibilidade (Downtime)</div>
+            <table class="sla-table-result">
+              <tr><th>Janela Temporal</th><th>Downtime Máximo Permitido</th></tr>
+              <tr><td>Por Ano</td><td id="dt-year">52 minutos, 35 segundos</td></tr>
+              <tr><td>Por Mês</td><td id="dt-month">4 minutos, 23 segundos</td></tr>
+              <tr><td>Por Semana</td><td id="dt-week">1 minuto, 00 segundos</td></tr>
+              <tr><td>Por Dia</td><td id="dt-day">8.64 segundos</td></tr>
+            </table>
+          </div>
+
+          <div class="card" style="background: #060911;">
+            <div class="card-title" style="font-size: 0.9rem; color: var(--accent-amber);">🎯 Distribuição de Percentis vs. Tail Latency</div>
+            <div class="card-body" style="font-size: 0.8rem;">
+              <p>• <strong>P50 (Mediana):</strong> 15ms (Experiência de 50% dos usuários)</p>
+              <p>• <strong>P95:</strong> 45ms (Degradação moderada)</p>
+              <p>• <strong>P99:</strong> 180ms (1 em cada 100 requisições)</p>
+              <p>• <strong>P99.9 (Tail Latency):</strong> 1.850ms (Cauda longa com bloqueios e GC)</p>
+              <p style="margin-top: 6px; color: var(--accent-cyan);" id="failed-reqs-preview">Orçamento de Falhas: ~1.000 requisições permitidas com erro/mês.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Explique que em arquiteturas de microsserviços com dezenas de chamadas paralelas, a Tail Latency (P99) domina o tempo total da página para quase 40% dos usuários.
+      </div>
+    </section>
+
+    <!-- SLIDE 7: FORWARD PROXY VS REVERSE PROXY -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Intermediários de Rede: Forward Proxy vs. Reverse Proxy</h2>
+        <p class="slide-subtitle">Diferenciação estrutural, posições na topologia e propósitos de segurança.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-blue);">🛡️ Forward Proxy (Lado do Cliente)</div>
+          <div class="card-body">
+            <p>Intermedia requisições de clientes em uma rede interna para a Internet pública.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Objetivo:</strong> Proteger e anonimizar os clientes locais.</li>
+              <li><strong>Funções:</strong> Bloqueio e auditoria de tráfego de saída, cache corporativo, contorno de restrições geográficas.</li>
+              <li><strong>Exemplos:</strong> Squid, Zscaler, proxies corporativos de firewall.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">⚡ Reverse Proxy (Lado do Servidor)</div>
+          <div class="card-body">
+            <p>Intermedia requisições vindas da Internet para clusters de servidores privados.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Objetivo:</strong> Proteger, acelerar e orquestrar servidores de backend.</li>
+              <li><strong>Funções:</strong> Terminação TLS/SSL, compressão Gzip/Brotli, ocultação de IPs privados, mitigação de Slowloris.</li>
+              <li><strong>Exemplos:</strong> Nginx, HAProxy, Envoy, Caddy.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-title" style="font-size: 0.9rem;">🛠️ Configuração Nginx: Repasse de Headers de Rastreabilidade</div>
+        <div class="code-snippet">
+<span class="code-keyword">location</span> /api/ {
+    <span class="code-keyword">proxy_pass</span> http://cluster_backend;
+    <span class="code-keyword">proxy_set_header</span> Host $host;
+    <span class="code-keyword">proxy_set_header</span> X-Real-IP $remote_addr;
+    <span class="code-keyword">proxy_set_header</span> X-Forwarded-For $proxy_add_x_forwarded_for;
+    <span class="code-keyword">proxy_set_header</span> X-Forwarded-Proto $scheme;
+}</div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Destaque os headers X-Forwarded-*, essenciais para que o backend conheça o IP original e o protocolo real do cliente após passar pelo proxy reverso.
+      </div>
+    </section>
+
+    <!-- SLIDE 8: LOAD BALANCING L4 VS L7 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Load Balancing: Camada 4 (L4) vs. Camada 7 (L7)</h2>
+        <p class="slide-subtitle">Como a profundidade de inspeção de pacotes define o desempenho e a flexibilidade de roteamento.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚡ L4: Balanceamento de Transporte (TCP/UDP)</div>
+          <div class="card-body">
+            <p>Decisões tomadas exclusivamente no nível de pacotes IP e portas TCP/UDP.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Não inspeciona o payload HTTP:</strong> Não decodifica cookies, paths ou headers.</li>
+              <li><strong>Performance Extrema:</strong> Milhões de pacotes por segundo com baixíssimo overhead de CPU.</li>
+              <li><strong>Casos de Uso:</strong> AWS NLB, Linux IPVS, HAProxy modo TCP, balanceamento de bancos de dados.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🧠 L7: Balanceamento de Aplicação (HTTP/gRPC)</div>
+          <div class="card-body">
+            <p>Decisões inteligentes inspecionando todo o conteúdo da mensagem na Camada 7.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Roteamento por Rota e Headers:</strong> Envia <code>/pagamento</code> para um cluster e <code>/catalogo</code> para outro.</li>
+              <li><strong>Terminação TLS & Cookies:</strong> Descriptografa requisições e gerencia sessões.</li>
+              <li><strong>Casos de Uso:</strong> AWS ALB, Envoy Proxy, Nginx, Traefik, Kong.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Em arquiteturas de altíssima escala, utiliza-se L4 na camada frontal (AWS NLB) para distribuir tráfego bruto a dezenas de instâncias de L7 (Envoy/Nginx), que então fazem roteamento granular de microsserviços.
+      </div>
+    </section>
+
+    <!-- SLIDE 9: ALGORITMOS DE LOAD BALANCING EM DETALHE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Algoritmos de Load Balancing: Estáticos vs. Dinâmicos</h2>
+        <p class="slide-subtitle">Análise aprofundada dos mecanismos, complexidade algorítmica, trade-offs operacionais e cenários ideais de aplicação.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- 1. Round Robin & Weighted -->
+        <div class="card">
+          <div class="card-title">🔄 1. Round Robin & Weighted</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> Distribui as requisições de forma puramente sequencial e circular (S<sub>0</sub>, S<sub>1</sub>, S<sub>2</sub>...). No modo <em>Weighted</em>, servidores com maior capacidade (vCPUs/RAM) recebem proporções maiores de requisições consecutivas.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Complexidade <code>O(1)</code>, zero overhead de telemetria, não monitora estado em tempo real.</li>
+              <li><strong>Ponto Crítico:</strong> Assume que todas as requisições têm custos iguais; vulnerável a sobrecarga se tarefas forem computacionalmente heterogêneas.</li>
+              <li><strong>Caso Ideal:</strong> Clusters homogêneos com transações curtas (APIs REST CRUD e requisições HTTP de assets estáticos).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 2. Least Connections -->
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.35);">
+          <div class="card-title" style="color: var(--accent-cyan);">⚡ 2. Least Connections & Weighted</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> Roteia dinamicamente cada nova requisição para o nó com o menor número de conexões TCP/HTTP ativas simultâneas. Na versão ponderada, calcula a razão: <code>Conexões Ativas / Peso</code>.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Algoritmo dinâmico e adaptativo; equilibra naturalmente a saturação de threads no backend.</li>
+              <li><strong>Ponto Crítico:</strong> Exige que o balanceador centralize e rastreie o estado das conexões em tempo real com overhead de sincronização.</li>
+              <li><strong>Caso Ideal:</strong> Requisições de longa duração (WebSockets, uploads/downloads de arquivos, streaming e queries analíticas).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3. IP Hash & Source Affinity -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">🎯 3. IP Hash / Source Hash</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> Aplica uma função de dispersão (hash) sobre o IP de origem do cliente (<code>Hash(IP) % N</code>) para mapear deterministicamente aquele cliente ao mesmo servidor físico.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Fornece afinidade de sessão (Session Stickiness) em Camada 4 sem necessidade de cookies HTTP ou decodificação TLS.</li>
+              <li><strong>Ponto Crítico:</strong> Redes corporativas sob NAT/Forward Proxy compartilham o mesmo IP público, gerando sobrecarga assimétrica (<em>Hot Spot</em>) em um único nó.</li>
+              <li><strong>Caso Ideal:</strong> Aplicações legadas stateful com sessão em memória local sem replicação de cache.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 4. Consistent Hashing -->
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.35);">
+          <div class="card-title" style="color: var(--accent-purple);">🌐 4. Consistent Hashing (Vnodes)</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> Distribui servidores e chaves em um anel matemático circular de 0 a 2<sup>32</sup> - 1. Réplicas virtuais (<em>Virtual Nodes</em>) garantem dispersão estatisticamente uniforme no perímetro do anel.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Ao adicionar ou remover um servidor, apenas <em>K/N</em> chaves migram, prevenindo a perda em cascata de caches (<em>Cache Thundering</em>).</li>
+              <li><strong>Ponto Crítico:</strong> Complexidade matemática de cálculo e sincronização do anel de nós virtuais.</li>
+              <li><strong>Caso Ideal:</strong> Caches distribuídos (Memcached, Redis), balanceadores L7 e bancos particionados (DynamoDB, Cassandra).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 5. Least Response Time & TTFB -->
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-emerald);">⏱️ 5. Least Response Time (TTFB)</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> Combina o menor número de conexões ativas com a menor latência recente de resposta dos nós (Time to First Byte - TTFB) obtida por health checks ou tráfego real.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Desvia tráfego proativamente de instâncias que estejam sofrendo degradação transitória de I/O de disco ou sobrecarga de garbage collection.</li>
+              <li><strong>Ponto Crítico:</strong> Um servidor com erro que rejeite requisições instantaneamente pode aparentar falsamente "alta velocidade".</li>
+              <li><strong>Caso Ideal:</strong> Ambientes de nuvem com variações imprevisíveis de infraestrutura (<em>Noisy Neighbors</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 6. P2C & Peak EWMA -->
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.35);">
+          <div class="card-title" style="color: var(--accent-rose);">🚀 6. Power of Two (P2C) & Peak EWMA</div>
+          <div class="card-body">
+            <p><strong>Mecanismo:</strong> O <strong>P2C</strong> escolhe dois nós aleatoriamente e direciona para o de menor carga. O <strong>Peak EWMA</strong> calcula uma média móvel exponencial com sensibilidade a picos recentes de latência.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Características:</strong> Elimina matematicamente o <em>Herd Effect</em> (quando múltiplos LBs elegem o mesmo nó "ocioso" ao mesmo tempo). Complexidade <code>O(1)</code>.</li>
+              <li><strong>Ponto Crítico:</strong> Requer rastreamento contínuo de latência por conexão em nível de socket/stream.</li>
+              <li><strong>Caso Ideal:</strong> Proxies de altíssima escala e Service Meshes modernas (Envoy Proxy, Twitter Finagle).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Enfatize que não existe um algoritmo ideal para todos os cenários. Round Robin é ótimo para APIs stateless simples; Least Connections é indispensável para WebSockets e streams longos; Consistent Hashing protege clusters de cache de serem esvaziados; e P2C com Peak EWMA é o estado da arte em Service Meshes modernas para evitar o efeito manada.
+      </div>
+    </section>
+
+    <!-- SLIDE 10: INTERACTIVE LOAD BALANCER SIMULATOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Laboratório Interativo: Load Balancer & Algoritmos de Roteamento</h2>
+        <p class="slide-subtitle">Simule o balanceamento de requisições em tempo real entre servidores com falhas e pesos dinâmicos.</p>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-toolbar">
+          <div class="sim-controls-group">
+            <span class="sim-label">Algoritmo:</span>
+            <select class="sim-select" id="lb-algo-select">
+              <option value="round-robin">Round Robin (Circular)</option>
+              <option value="weighted">Weighted Round Robin (Ponderado)</option>
+              <option value="least-conn">Least Connections (Menor Conexão)</option>
+              <option value="ip-hash">IP Hash / Source Hash</option>
+              <option value="consistent-hash">Consistent Hashing (Anel Hash)</option>
+            </select>
+          </div>
+
+          <div class="sim-controls-group">
+            <button class="btn-nav btn-primary" id="btn-send-req">⚡ Enviar 1 Requisição</button>
+            <button class="btn-nav" id="btn-send-burst">🔥 Rajada (10 Req)</button>
+            <button class="btn-nav" id="btn-toggle-stream">▶ Auto Stream</button>
+            <button class="btn-nav" id="btn-reset-lb" style="color: var(--accent-rose);">Reset</button>
+          </div>
+        </div>
+
+        <div class="lb-arena" id="lb-arena">
+          <!-- Clients Box -->
+          <div class="lb-clients-box">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">CLIENTES EMISSORES</div>
+            <div class="client-node-item selected" data-client-id="0">
+              <span>📱 Client A</span>
+              <span style="font-family: var(--font-mono); color: var(--accent-cyan);">192.168.1.10</span>
+            </div>
+            <div class="client-node-item" data-client-id="1">
+              <span>💻 Client B</span>
+              <span style="font-family: var(--font-mono); color: var(--accent-emerald);">10.0.0.52</span>
+            </div>
+            <div class="client-node-item" data-client-id="2">
+              <span>🌐 Client C</span>
+              <span style="font-family: var(--font-mono); color: var(--accent-amber);">201.86.14.9</span>
+            </div>
+          </div>
+
+          <!-- LB Core -->
+          <div class="lb-core-box" id="lb-core-node">
+            <div class="lb-core-icon">⚖️</div>
+            <div class="lb-core-title">LOAD BALANCER</div>
+            <div class="lb-core-algo" id="lb-algo-badge">ROUND ROBIN</div>
+            <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">
+              Total: <span id="lb-total-reqs" style="color:#fff; font-weight:700;">0</span>
+            </div>
+          </div>
+
+          <!-- Servers Grid -->
+          <div class="lb-servers-grid">
+            <!-- Server 1 -->
+            <div class="server-node-card" id="srv-0">
+              <div class="server-info">
+                <div class="server-status-dot" id="srv-dot-0"></div>
+                <div>
+                  <div class="server-name">Server Alpha</div>
+                  <div class="server-meta">Peso: <span id="srv-weight-0">3</span> | 10.0.1.10</div>
+                </div>
+              </div>
+              <div class="server-load-bar-wrap">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted);">
+                  <span>Conexões Ativas</span>
+                  <span id="srv-conn-0">0</span>
+                </div>
+                <div class="server-load-bar-bg"><div class="server-load-bar-fill" id="srv-bar-0"></div></div>
+              </div>
+              <div class="server-stats">
+                Reqs: <span id="srv-count-0" style="color:var(--accent-cyan); font-weight:700;">0</span>
+              </div>
+              <button class="btn-nav" style="padding: 4px 8px; font-size: 0.72rem;" onclick="window.toggleServerHealth(0)">Simular Falha</button>
+            </div>
+
+            <!-- Server 2 -->
+            <div class="server-node-card" id="srv-1">
+              <div class="server-info">
+                <div class="server-status-dot" id="srv-dot-1"></div>
+                <div>
+                  <div class="server-name">Server Beta</div>
+                  <div class="server-meta">Peso: <span id="srv-weight-1">1</span> | 10.0.1.11</div>
+                </div>
+              </div>
+              <div class="server-load-bar-wrap">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted);">
+                  <span>Conexões Ativas</span>
+                  <span id="srv-conn-1">0</span>
+                </div>
+                <div class="server-load-bar-bg"><div class="server-load-bar-fill" id="srv-bar-1"></div></div>
+              </div>
+              <div class="server-stats">
+                Reqs: <span id="srv-count-1" style="color:var(--accent-cyan); font-weight:700;">0</span>
+              </div>
+              <button class="btn-nav" style="padding: 4px 8px; font-size: 0.72rem;" onclick="window.toggleServerHealth(1)">Simular Falha</button>
+            </div>
+
+            <!-- Server 3 -->
+            <div class="server-node-card" id="srv-2">
+              <div class="server-info">
+                <div class="server-status-dot" id="srv-dot-2"></div>
+                <div>
+                  <div class="server-name">Server Gamma</div>
+                  <div class="server-meta">Peso: <span id="srv-weight-2">2</span> | 10.0.1.12</div>
+                </div>
+              </div>
+              <div class="server-load-bar-wrap">
+                <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-muted);">
+                  <span>Conexões Ativas</span>
+                  <span id="srv-conn-2">0</span>
+                </div>
+                <div class="server-load-bar-bg"><div class="server-load-bar-fill" id="srv-bar-2"></div></div>
+              </div>
+              <div class="server-stats">
+                Reqs: <span id="srv-count-2" style="color:var(--accent-cyan); font-weight:700;">0</span>
+              </div>
+              <button class="btn-nav" style="padding: 4px 8px; font-size: 0.72rem;" onclick="window.toggleServerHealth(2)">Simular Falha</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Mostre aos alunos como o IP Hash mantém o mesmo cliente no mesmo servidor, enquanto o Least Connections reequilibra o tráfego se um servidor estiver ocupado com requisições pesadas.
+      </div>
+    </section>
+
+    <!-- SLIDE 11: HEALTH CHECKING VS HEARTBEATS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Detecção de Falhas: Health Checking vs. Heartbeats</h2>
+        <p class="slide-subtitle">Diferenciação conceitual, modelos Push vs. Pull e a armadilha operacional do "Nó Zumbi".</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.35);">
+          <div class="card-title" style="color: var(--accent-rose);">💓 Heartbeats (Batimento Cardíaco / PUSH)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 92" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-hb-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <!-- Nó / Worker -->
+                <rect x="10" y="8" width="105" height="42" rx="6" fill="#1e1523" stroke="#f43f5e" stroke-width="1.3"/>
+                <text x="62" y="25" fill="#f43f5e" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">Nó / Worker</text>
+                <text x="62" y="40" fill="#fda4af" font-size="7.5" text-anchor="middle" font-family="system-ui">Loop SO / Thread</text>
+
+                <!-- Seta PUSH -->
+                <line x1="118" y1="29" x2="225" y2="29" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#arr-hb-rose)"/>
+                <text x="172" y="21" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">PUSH: "Estou vivo"</text>
+                <text x="172" y="41" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">UDP/TCP ping a cada 1s</text>
+
+                <!-- Coordenador / Líder -->
+                <rect x="233" y="8" width="137" height="42" rx="6" fill="#0f172a" stroke="#64748b" stroke-width="1.2"/>
+                <text x="301" y="25" fill="#f8fafc" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">Coordenador / Líder</text>
+                <text x="301" y="40" fill="#94a3b8" font-size="7.5" text-anchor="middle" font-family="system-ui">Timeout &gt; 3s ➜ Reelege Líder</text>
+
+                <!-- Warning Nó Zumbi -->
+                <rect x="10" y="58" width="360" height="26" rx="5" fill="#291219" stroke="#f43f5e" stroke-width="0.9" stroke-dasharray="3,2"/>
+                <text x="190" y="75" fill="#fecdd3" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">⚠️ Risco de Nó Zumbi: se app travar em deadlock mas SO responder, Heartbeat mente!</text>
+              </svg>
+            </div>
+            <p><strong>Pergunta:</strong> <em>"O nó ainda está executando e conectado à rede?"</em></p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Direção:</strong> PUSH (emitido ativamente pelo próprio nó em intervalos regulares).</li>
+              <li><strong>Payload:</strong> Mínimo (ping UDP, frame TCP ou poucos bytes de pacote).</li>
+              <li><strong>O Risco do "Nó Zumbi":</strong> O nó continua disparando heartbeats porque a thread de rede do OS está viva, porém seu pool de banco está em deadlock ou a memória esgotada (OOM).</li>
+              <li><strong>Casos Típicos:</strong> Eleição Raft/Paxos (etcd), brokers de mensageria (RabbitMQ, Kafka), keepalive de VPNs e BGP.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🩺 Health Checking (Sondagem de Saúde / PULL)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 92" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-hc-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+                  </marker>
+                  <marker id="arr-hc-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                </defs>
+                <!-- Load Balancer -->
+                <rect x="10" y="8" width="105" height="44" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+                <text x="62" y="25" fill="#38bdf8" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">Load Balancer</text>
+                <text x="62" y="40" fill="#93c5fd" font-size="7.5" text-anchor="middle" font-family="system-ui">Sonda Ativa Externa</text>
+
+                <!-- Setas Duplas PULL & Response -->
+                <line x1="118" y1="21" x2="225" y2="21" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#arr-hc-cyan)"/>
+                <text x="172" y="16" fill="#38bdf8" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">PULL: GET /healthz</text>
+
+                <line x1="225" y1="39" x2="124" y2="39" stroke="#34d399" stroke-width="1.4" marker-end="url(#arr-hc-em)"/>
+                <text x="172" y="50" fill="#34d399" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">200 OK / 503 Falha</text>
+
+                <!-- Backend Service -->
+                <rect x="233" y="8" width="137" height="44" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+                <text x="301" y="25" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">Serviço Backend</text>
+                <text x="301" y="40" fill="#a7f3d0" font-size="7.5" text-anchor="middle" font-family="system-ui">Testa DB, memória, pools</text>
+
+                <!-- Blindagem Banner -->
+                <rect x="10" y="58" width="360" height="26" rx="5" fill="#06221c" stroke="#34d399" stroke-width="0.9"/>
+                <text x="190" y="75" fill="#a7f3d0" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">🛡️ Diagnóstico Real: se falhar 3x, LB isola o nó e clientes nunca veem erro 500!</text>
+              </svg>
+            </div>
+            <p><strong>Pergunta:</strong> <em>"O nó possui condições operacionais de atender clientes reais?"</em></p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Direção:</strong> PULL (sondagem externa disparada por Load Balancers ou orquestradores).</li>
+              <li><strong>Payload:</strong> Estruturado (requisição HTTP/gRPC com status code e JSON explicativo).</li>
+              <li><strong>Abordagens:</strong> <em>Ativa</em> (probes periódicas a cada 5s) vs. <em>Passiva</em> (detecção de anomalias por erros 5xx em tráfego real).</li>
+              <li><strong>Casos Típicos:</strong> AWS ALB/NLB, Nginx upstream, Envoy cluster health, Kubernetes probes.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; padding: 0; overflow: hidden;">
+        <table class="sla-table-result" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Mecanismo</th>
+              <th>Modelo de Tráfego</th>
+              <th>O que realmente avalia</th>
+              <th>Detecção de Deadlock / Falhas de App</th>
+              <th>Ação em caso de Falha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Heartbeat</strong></td>
+              <td><strong>PUSH</strong> (Nó envia)</td>
+              <td>Conectividade e existência física da máquina</td>
+              <td><span style="color: var(--accent-rose); font-weight:700;">Não detecta</span> (gera Nó Zumbi)</td>
+              <td>Declara nó desconectado / Eleição de líder</td>
+            </tr>
+            <tr>
+              <td><strong>Health Check</strong></td>
+              <td><strong>PULL</strong> (LB consulta)</td>
+              <td>Prontidão funcional e sanidade das dependências</td>
+              <td><span style="color: var(--accent-emerald); font-weight:700;">Detecta de imediato</span></td>
+              <td>Remove o nó da rota de tráfego de clientes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Enfatize a armadilha do Nó Zumbi: se a aplicação sofrer deadlock de threads, o Heartbeat continua funcionando no nível do OS/driver, mas apenas o Health Check identificará que os clientes receberão erro 500.
+      </div>
+    </section>
+
+    <!-- SLIDE 12: LIVENESS VS READINESS PROBES -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Sondagens em Microsserviços: Liveness vs. Readiness Probes</h2>
+        <p class="slide-subtitle">O ciclo de vida das sondagens e a prevenção do desastre em cascata do CrashLoopBackOff.</p>
+      </div>
+
+      <div class="svg-diagram-container large" style="margin-bottom: 12px; border-color: rgba(255, 255, 255, 0.1);">
+        <svg class="svg-diagram" viewBox="0 0 860 115" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr-pb-pur" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#c084fc"/>
+            </marker>
+            <marker id="arr-pb-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+            </marker>
+            <marker id="arr-pb-amb" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#fbbf24"/>
+            </marker>
+            <marker id="arr-pb-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+            </marker>
+          </defs>
+
+          <!-- 1. Startup Probe -->
+          <rect x="10" y="24" width="170" height="66" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.3"/>
+          <text x="95" y="44" fill="#c084fc" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">🚀 1. STARTUP PROBE</text>
+          <text x="95" y="60" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">Aguardando boot lento</text>
+          <text x="95" y="74" fill="#94a3b8" font-size="7.5" text-anchor="middle" font-family="system-ui">(JVM, Migrations de DB)</text>
+
+          <!-- Seta Sucesso para bifurcação -->
+          <path d="M 180 57 L 220 57" fill="none" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arr-pb-pur)"/>
+          <text x="200" y="50" fill="#c084fc" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">Sucesso</text>
+
+          <!-- Bifurcação vertical -->
+          <path d="M 230 57 L 245 57 L 245 28 L 260 28" fill="none" stroke="#34d399" stroke-width="1.4" marker-end="url(#arr-pb-em)"/>
+          <path d="M 230 57 L 245 57 L 245 86 L 260 86" fill="none" stroke="#f43f5e" stroke-width="1.4" marker-end="url(#arr-pb-rose)"/>
+
+          <!-- 2. Readiness Probe (Top Branch) -->
+          <rect x="265" y="8" width="225" height="42" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+          <text x="377" y="25" fill="#34d399" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">🚦 READINESS PROBE: GET /ready</text>
+          <text x="377" y="40" fill="#a7f3d0" font-size="7.5" text-anchor="middle" font-family="system-ui">Dependências: DB, Pool, Cache</text>
+
+          <!-- Seta Readiness Falha -->
+          <line x1="490" y1="29" x2="525" y2="29" stroke="#fbbf24" stroke-width="1.4" marker-end="url(#arr-pb-amb)"/>
+          <text x="507" y="23" fill="#fbbf24" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">Falhou?</text>
+
+          <!-- Consequência Readiness -->
+          <rect x="532" y="8" width="318" height="42" rx="6" fill="#2d1c03" stroke="#fbbf24" stroke-width="1.2"/>
+          <text x="691" y="25" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">🚫 Remove do Load Balancer (Zero Tráfego)</text>
+          <text x="691" y="40" fill="#fef08a" font-size="7.5" text-anchor="middle" font-family="system-ui">Container continua vivo! Reintegra ao normal assim que DB voltar.</text>
+
+          <!-- 3. Liveness Probe (Bottom Branch) -->
+          <rect x="265" y="65" width="225" height="42" rx="6" fill="#291219" stroke="#f43f5e" stroke-width="1.3"/>
+          <text x="377" y="82" fill="#f43f5e" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">💀 LIVENESS PROBE: GET /live</text>
+          <text x="377" y="97" fill="#fda4af" font-size="7.5" text-anchor="middle" font-family="system-ui">Loop de eventos interno &amp; Deadlock</text>
+
+          <!-- Seta Liveness Falha -->
+          <line x1="490" y1="86" x2="525" y2="86" stroke="#f43f5e" stroke-width="1.4" marker-end="url(#arr-pb-rose)"/>
+          <text x="507" y="80" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">Falhou?</text>
+
+          <!-- Consequência Liveness -->
+          <rect x="532" y="65" width="318" height="42" rx="6" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2"/>
+          <text x="691" y="82" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">⚡ SIGKILL &amp; RESTART (Mata e recria o Container)</text>
+          <text x="691" y="97" fill="#fecdd3" font-size="7.5" text-anchor="middle" font-family="system-ui">⚠️ CUIDADO: Se testar DB aqui, todo o cluster entra em CrashLoop!</text>
+        </svg>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">💀 Liveness Probe ("Você está vivo?")</div>
+          <div class="card-body">
+            <p><strong>Objetivo:</strong> Detectar estados irrecuperáveis (deadlocks travados, loops infinitos ou processos zumbis).</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Ação na Falha:</strong> O orquestrador (Kubernetes) <strong>REINICIA o container</strong> (SIGKILL).</li>
+              <li><strong>O que checar:</strong> Apenas a saúde interna do processo (loop de eventos, porta HTTP aberta).</li>
+              <li><strong>⚠️ ERRO GRAVE:</strong> NUNCA teste dependências externas (como Banco de Dados) no Liveness! Se o PostgreSQL oscilar por 10s, o Kubernetes matará todos os pods simultaneamente em loop de reinício (<em>CrashLoopBackOff</em>).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🚦 Readiness Probe ("Você está pronto?")</div>
+          <div class="card-body">
+            <p><strong>Objetivo:</strong> Saber se a aplicação concluiu o aquecimento e tem condições de processar requisições com sucesso.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Ação na Falha:</strong> O Load Balancer <strong>ISOLA o pod da rota</strong>. O container NÃO é reiniciado!</li>
+              <li><strong>O que checar:</strong> Conexão com banco de dados relacional, pools de conexão, aquecimento de cache e migrations.</li>
+              <li><strong>Recuperação Automática:</strong> Quando o banco restabelecer a conexão, a probe volta a dar 200 e o nó é reintegrado automaticamente sem downtime.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Esta é a regra de ouro em engenharia de confiabilidade: Liveness mata o processo (usado apenas para deadlocks); Readiness apenas fecha a cancela de entrada de tráfego temporariamente.
+      </div>
+    </section>
+
+    <!-- SLIDE 13: API GATEWAYS & BFF -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">API Gateways: A Camada de Orquestração de Borda & Padrão BFF</h2>
+        <p class="slide-subtitle">Centralizando segurança, telemetria, transformação de protocolos e roteamento de microsserviços.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🔐 Segurança & Autenticação</div>
+          <div class="card-body">
+            <p>Validação centralizada de tokens OAuth2/JWT e integração com OpenID Connect antes de repassar a chamada para microsserviços internos.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚡ Rate Limiting & Quotas</div>
+          <div class="card-body">
+            <p>Aplica cotas de requisições por API Key, IP ou usuário cadastrado, protegendo toda a malha de microsserviços em um único local.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 Observabilidade & Tracing</div>
+          <div class="card-body">
+            <p>Injeta cabeçalhos de rastreabilidade (<code>X-Correlation-ID</code> / OpenTelemetry W3C TraceContext) para auditoria distribuída de ponta a ponta.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px; border-color: var(--accent-purple);">
+        <div class="card-title" style="color: var(--accent-purple);">📱 O Padrão BFF (Backend For Frontend)</div>
+        <div class="card-body">
+          <p>Criação de gateways especializados para cada canal cliente (Mobile App vs. Web Browser vs. Parceiros B2B), agregando múltiplas chamadas de microsserviços e entregando payloads compactos e otimizados.</p>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Sem um API Gateway, cada microsserviço precisaria reimplementar autenticação, CORS, SSL e rate limiting, multiplicando riscos de vulnerabilidades e acoplamento.
+      </div>
+    </section>
+
+    <!-- SLIDE 14: MATRIZ COMPARATIVA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Intermediários de Rede</span>
+        <h2 class="slide-title">Matriz Comparativa dos Intermediários de Rede</h2>
+        <p class="slide-subtitle">Resumo estrutural para tomada de decisão arquitetural em System Design.</p>
+      </div>
+
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <table class="sla-table-result" style="width: 100%;">
+          <thead>
+            <tr>
+              <th>Intermediário</th>
+              <th>Camada OSI</th>
+              <th>Posição / Foco</th>
+              <th>Função Primária</th>
+              <th>Tecnologias de Referência</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Forward Proxy</strong></td>
+              <td>L4 / L7</td>
+              <td>Lado do Cliente</td>
+              <td>Anonimato, auditoria e filtro de saída</td>
+              <td>Squid, Zscaler</td>
+            </tr>
+            <tr>
+              <td><strong>Reverse Proxy</strong></td>
+              <td>L7</td>
+              <td>Lado do Servidor</td>
+              <td>Terminação SSL, compressão e defesa</td>
+              <td>Nginx, Caddy, Apache</td>
+            </tr>
+            <tr>
+              <td><strong>L4 Load Balancer</strong></td>
+              <td>L4 (TCP/UDP)</td>
+              <td>Borda de Infra</td>
+              <td>Distribuição bruta de pacotes em alta vazão</td>
+              <td>AWS NLB, HAProxy TCP, IPVS</td>
+            </tr>
+            <tr>
+              <td><strong>L7 Load Balancer</strong></td>
+              <td>L7 (HTTP)</td>
+              <td>Camada de Roteamento</td>
+              <td>Roteamento por URI, headers e cookies</td>
+              <td>AWS ALB, Envoy, Traefik</td>
+            </tr>
+            <tr>
+              <td><strong>API Gateway</strong></td>
+              <td>L7 (HTTP/gRPC/WS)</td>
+              <td>Borda de Microsserviços</td>
+              <td>Auth, Rate Limit, BFF, Transformação</td>
+              <td>Kong, APISIX, AWS API Gateway</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Destaque que esses componentes não são concorrentes, mas complementares: uma arquitetura moderna usa CDN + L4 NLB + API Gateway em cascata organizada.
+      </div>
+    </section>
+
+    <!-- SLIDE 15: RATE LIMITING VS THROTTLING -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Proteção de Infraestrutura</span>
+        <h2 class="slide-title">Proteção de Infraestrutura: Rate Limiting vs. Throttling</h2>
+        <p class="slide-subtitle">Estratégias de defesa ativa contra sobrecarga, scraping agressivo e ataques de negação de serviço.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🛑 Rate Limiting (Bloqueio Rígido)</div>
+          <div class="card-body">
+            <p>Se a taxa contratada for excedida, a requisição é rejeitada imediatamente com status <strong>HTTP 429 Too Many Requests</strong>.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Comportamento:</strong> Rejeição sem filas; cliente deve esperar o intervalo do cabeçalho <code>Retry-After</code>.</li>
+              <li><strong>Vantagem:</strong> Protege 100% o backend contra saturação de conexões.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">⏳ Throttling (Regulação / Delay)</div>
+          <div class="card-body">
+            <p>As requisições excedentes são colocadas em fila (buffer) ou processadas com delay intencional em vez de serem descartadas.</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Comportamento:</strong> Suaviza picos abruptos (Traffic Shaping) à custa de aumento controlado de latência.</li>
+              <li><strong>Vantagem:</strong> Melhora a taxa de sucesso se o cliente não puder reenviar.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <div class="card-title" style="font-size: 0.95rem;">📜 Cabeçalhos Padronizados pela IETF (RFC 6585)</div>
+        <div class="code-snippet" style="font-size: 0.8rem; margin-top: 4px;">
+<span class="code-keyword">RateLimit-Limit:</span> 100        <span class="code-comment"># Teto máximo de chamadas na janela</span>
+<span class="code-keyword">RateLimit-Remaining:</span> 23     <span class="code-comment"># Chamadas restantes até o bloqueio</span>
+<span class="code-keyword">RateLimit-Reset:</span> 45         <span class="code-comment"># Segundos restantes até a renovação total</span>
+<span class="code-keyword">Retry-After:</span> 60             <span class="code-comment"># Enviado no HTTP 429 indicando quando tentar de novo</span></div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Diferencie Rate Limiting (porta na cara com 429) de Throttling (fila de espera com aumento de latência). Ambos são aplicados na borda (API Gateway/Proxy).
+      </div>
+    </section>
+
+    <!-- SLIDE 16: TOKEN BUCKET VS LEAKY BUCKET -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Proteção de Infraestrutura</span>
+        <h2 class="slide-title">Algoritmos de Proteção: Token Bucket vs. Leaky Bucket</h2>
+        <p class="slide-subtitle">O embate entre tolerância a rajadas (Burstiness) e a suavização estrita de vazão (Traffic Shaping).</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Card 1: Token Bucket -->
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">🪙 1. Token Bucket (Balde de Tokens)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-cyan-16" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+                  </marker>
+                  <marker id="arr-emerald-16" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                  <marker id="arr-rose-16" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <!-- Gerador de Tokens -->
+                <rect x="10" y="10" width="120" height="28" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                <text x="70" y="28" fill="#38bdf8" font-size="11" font-weight="600" text-anchor="middle" font-family="system-ui">Refill: +R tokens/s</text>
+                
+                <!-- Seta do Refill -->
+                <line x1="70" y1="38" x2="70" y2="52" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-cyan-16)"/>
+                
+                <!-- Balde com Tokens -->
+                <rect x="15" y="55" width="110" height="55" rx="6" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+                <text x="70" y="74" fill="#fbbf24" font-size="12" text-anchor="middle" font-family="system-ui">🪙 🪙 🪙 🪙</text>
+                <text x="70" y="92" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="system-ui">Capacidade Máx (B)</text>
+                
+                <!-- Requisição Chegando -->
+                <rect x="155" y="45" width="95" height="34" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.5"/>
+                <text x="202" y="66" fill="#f8fafc" font-size="11" font-weight="600" text-anchor="middle" font-family="system-ui">Requisição</text>
+                
+                <!-- Linhas de Decisão -->
+                <path d="M 250 55 L 285 30 L 305 30" fill="none" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-emerald-16)"/>
+                <text x="280" y="24" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Tem Token</text>
+                
+                <path d="M 250 70 L 285 92 L 305 92" fill="none" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arr-rose-16)"/>
+                <text x="280" y="105" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Sem Token</text>
+                
+                <!-- Destinos -->
+                <rect x="310" y="15" width="100" height="30" rx="6" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+                <text x="360" y="34" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">200 OK (Consome)</text>
+                
+                <rect x="310" y="77" width="100" height="30" rx="6" fill="#4c0519" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="360" y="96" fill="#f43f5e" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">429 Rejeitado</text>
+              </svg>
+            </div>
+            <p><strong>Vantagens:</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><strong>Suporte a Rajadas (Burst Handling):</strong> Aceita picos imediatos de até <em>B</em> requisições (capacidade máxima do balde) sem rejeição, acompanhando a navegação real de usuários.</li>
+              <li><strong>Memória <code>O(1)</code>:</strong> Requer apenas 2 valores em RAM: <code>last_refill_timestamp</code> e <code>tokens</code>.</li>
+              <li><strong>Custos Dinâmicos:</strong> Pode debitar 1 token para consultas simples e 5 tokens para relatórios pesados.</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>Problemas & Limitações:</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><strong>Oscilações no Backend:</strong> Como permite rajadas, o backend ainda pode receber picos súbitos de <em>B</em> requisições no mesmo milissegundo.</li>
+              <li><strong>Aplicações Reais:</strong> AWS API Gateway, Kong, Stripe API, Guava RateLimiter.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: Leaky Bucket -->
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">💧 2. Leaky Bucket (Balde Furado / FIFO)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 420 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-rose-16b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                  <marker id="arr-emerald-16b" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                </defs>
+                <!-- Tráfego Entrante -->
+                <rect x="10" y="38" width="85" height="42" rx="6" fill="#0f172a" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="52" y="55" fill="#f43f5e" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Picos / Rajadas</text>
+                <text x="52" y="70" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="system-ui">100 RPS ~ 20 RPS</text>
+                
+                <line x1="95" y1="59" x2="115" y2="59" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arr-rose-16b)"/>
+                
+                <!-- Balde Furado / FIFO Buffer -->
+                <rect x="120" y="20" width="135" height="78" rx="8" fill="#1e293b" stroke="#38bdf8" stroke-width="1.5"/>
+                <text x="187" y="38" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Fila FIFO (Buffer B)</text>
+                <text x="187" y="56" fill="#38bdf8" font-size="13" text-anchor="middle" font-family="system-ui">💧 💧 💧 💧</text>
+                <text x="187" y="74" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="system-ui">Encheu? ──► 429 Drop</text>
+                <text x="187" y="89" fill="#f43f5e" font-size="9" font-weight="600" text-anchor="middle" font-family="system-ui">Queue Delay no Buffer</text>
+                
+                <!-- Vazamento Constante -->
+                <line x1="255" y1="59" x2="285" y2="59" stroke="#34d399" stroke-width="1.5" marker-end="url(#arr-emerald-16b)"/>
+                <text x="270" y="50" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Taxa R</text>
+                
+                <!-- Backend Protegido -->
+                <rect x="290" y="32" width="120" height="54" rx="6" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+                <text x="350" y="52" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">Servidores</text>
+                <text x="350" y="68" fill="#a7f3d0" font-size="9" text-anchor="middle" font-family="system-ui">Fluxo Suavizado</text>
+                <text x="350" y="80" fill="#a7f3d0" font-size="9" font-weight="600" text-anchor="middle" font-family="system-ui">(Traffic Shaping)</text>
+              </svg>
+            </div>
+            <p><strong>Vantagens:</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><strong>Suavização Estrita (Traffic Shaping):</strong> Elimina qualquer variação abrupta; a saída flui a uma vazão estritamente constante.</li>
+              <li><strong>Proteção Máxima a Sistemas Sensíveis:</strong> Ideal para bancos relacionais e sistemas legados que travam com picos de conexões concorrentes.</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>Problemas & Limitações:</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><strong>Penalidade de Latência (Queue Delay):</strong> Requisições legítimas esperam na fila mesmo que o servidor tenha CPUs ociosas naquele instante.</li>
+              <li><strong>Buffer Bloat:</strong> Sob tráfego contínuo elevado, a fila fica saturada, aumentando a latência antes de rejeitar em massa.</li>
+              <li><strong>Aplicações Reais:</strong> Módulo <code>limit_req</code> do Nginx, controle de congestionamento de redes TCP.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Compare a filosofia dos dois: Token Bucket foca na flexibilidade para o usuário final (suportando cliques rápidos em páginas web); Leaky Bucket foca na integridade incondicional do backend (forçando uma esteira de produção uniforme).
+      </div>
+    </section>
+
+    <!-- SLIDE 17: JANELAS TEMPORAIS E SLIDING WINDOWS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Proteção de Infraestrutura</span>
+        <h2 class="slide-title">Janelas Temporais: Janela Fixa vs. Janelas Deslizantes</h2>
+        <p class="slide-subtitle">A vulnerabilidade matemática da rajada de borda e os trade-offs de memória entre Log e Counter.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Card 1: Fixed Window -->
+        <div class="card">
+          <div class="card-title">🪟 Fixed Window Counter (Janela Fixa)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 420 125" xmlns="http://www.w3.org/2000/svg">
+                <!-- Janela 1 -->
+                <rect x="15" y="15" width="180" height="50" rx="6" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+                <text x="105" y="32" fill="#94a3b8" font-size="10" font-weight="600" text-anchor="middle" font-family="system-ui">Janela 1 [00:00 - 01:00]</text>
+                
+                <!-- Spike no fim da Janela 1 -->
+                <rect x="135" y="42" width="50" height="18" rx="4" fill="#f43f5e" opacity="0.3"/>
+                <text x="160" y="55" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">00:59 (100)</text>
+
+                <!-- Janela 2 -->
+                <rect x="225" y="15" width="180" height="50" rx="6" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+                <text x="315" y="32" fill="#94a3b8" font-size="10" font-weight="600" text-anchor="middle" font-family="system-ui">Janela 2 [01:00 - 02:00]</text>
+                
+                <!-- Spike no início da Janela 2 -->
+                <rect x="235" y="42" width="50" height="18" rx="4" fill="#f43f5e" opacity="0.3"/>
+                <text x="260" y="55" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">01:01 (100)</text>
+
+                <!-- Bracket / Destaque de 2 segundos -->
+                <path d="M 135 72 L 135 80 L 285 80 L 285 72" fill="none" stroke="#f43f5e" stroke-width="2"/>
+                <line x1="210" y1="80" x2="210" y2="90" stroke="#f43f5e" stroke-width="2"/>
+                
+                <!-- Alerta de 2x -->
+                <rect x="90" y="92" width="240" height="26" rx="5" fill="#4c0519" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="210" y="109" fill="#f43f5e" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">💥 200 reqs em 2s (Estouro 2x do Limite!)</text>
+              </svg>
+            </div>
+            <p><strong>Vantagens:</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li>Implementação trivial com apenas <code>INCR</code> e <code>EXPIRE</code> atômicos no Redis; complexidade <code>O(1)</code> de tempo e memória.</li>
+            </ul>
+            <p style="margin-top: 10px;"><strong>O Problema Crítico (Burst na Borda):</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li>Se o tráfego se concentrar no final de uma janela e no início da seguinte, o sistema processa até o <strong>dobro da capacidade máxima permitida</strong> em uma janela curta, desestabilizando a infraestrutura.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: Sliding Windows -->
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🌊 Janelas Deslizantes em Tempo Real</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 420 125" xmlns="http://www.w3.org/2000/svg">
+                <!-- Janela Móvel Deslizante -->
+                <rect x="15" y="10" width="390" height="42" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+                <text x="210" y="24" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Janela Móvel Deslizante de 60s [t - 60s ────► t]</text>
+                
+                <!-- Timestamps no Log -->
+                <rect x="35" y="28" width="55" height="18" rx="4" fill="#1e293b"/>
+                <text x="62" y="40" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">00:14</text>
+                <rect x="110" y="28" width="55" height="18" rx="4" fill="#1e293b"/>
+                <text x="137" y="40" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">00:32</text>
+                <rect x="195" y="28" width="55" height="18" rx="4" fill="#1e293b"/>
+                <text x="222" y="40" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">00:58</text>
+                <rect x="270" y="28" width="55" height="18" rx="4" fill="#1e293b"/>
+                <text x="297" y="40" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">01:02</text>
+                <rect x="340" y="28" width="55" height="18" rx="4" fill="#1e293b"/>
+                <text x="367" y="40" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">01:10</text>
+
+                <!-- Counter Interpolação Linear (Cloudflare) -->
+                <rect x="15" y="60" width="220" height="26" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="125" y="77" fill="#38bdf8" font-size="9" font-weight="600" text-anchor="middle" font-family="system-ui">Janela Anterior (70% peso = 70 reqs)</text>
+
+                <rect x="245" y="60" width="160" height="26" rx="5" fill="#0f172a" stroke="#34d399" stroke-width="1.2"/>
+                <text x="325" y="77" fill="#34d399" font-size="9" font-weight="600" text-anchor="middle" font-family="system-ui">Atual (30 reqs)</text>
+
+                <!-- Estimativa Cloudflare -->
+                <rect x="15" y="93" width="390" height="24" rx="4" fill="#064e3b" stroke="#34d399" stroke-width="1"/>
+                <text x="210" y="109" fill="#a7f3d0" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Cloudflare Counter: 70 + 30 = 100 reqs (Bloqueia borda com O(1) RAM!)</text>
+              </svg>
+            </div>
+            <p><strong>1. Sliding Window Log (Log Deslizante):</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><em>Vantagem:</em> 100% de precisão matemática sem aproximações.</li>
+              <li><em>Problema:</em> Consumo massivo de RAM (<code>O(M)</code>), pois armazena o timestamp de <strong>cada</strong> requisição no Redis. Proibitivo sob alto tráfego.</li>
+            </ul>
+            <p style="margin-top: 8px;"><strong>2. Sliding Window Counter (Janela Deslizante Híbrida):</strong></p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><em>Vantagem:</em> Complexidade <code>O(1)</code> armazenando apenas 2 inteiros por cliente, com precisão de 99.9% contra rajadas de borda.</li>
+              <li><em>Aplicações:</em> Algoritmo padrão utilizado na borda da <strong>Cloudflare</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> A Janela Fixa é perigosa em APIs públicas devido ao ataque de sincronização de borda. Mostre aos alunos como o Sliding Window Counter da Cloudflare resolve o problema com interpolação linear sem gastar memória.
+      </div>
+    </section>
+
+    <!-- SLIDE 18: INTERACTIVE RATE LIMITER PLAYGROUND -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Proteção de Infraestrutura</span>
+        <h2 class="slide-title">Laboratório Interativo: Playground de Rate Limiting</h2>
+        <p class="slide-subtitle">Compare o comportamento dos algoritmos Token Bucket, Leaky Bucket e Janelas Deslizantes em tempo real.</p>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-toolbar">
+          <div class="sim-controls-group">
+            <span class="sim-label">Algoritmo:</span>
+            <select class="sim-select" id="rl-algo-select">
+              <option value="token-bucket">Token Bucket (Balde de Tokens)</option>
+              <option value="leaky-bucket">Leaky Bucket (Balde Furado / FIFO)</option>
+              <option value="fixed-window">Fixed Window Counter (Janela Fixa)</option>
+              <option value="sliding-window">Sliding Window Counter (Janela Deslizante)</option>
+            </select>
+          </div>
+
+          <div class="sim-controls-group">
+            <button class="btn-nav btn-primary" id="btn-rl-request">⚡ Requisição Única</button>
+            <button class="btn-nav" id="btn-rl-burst">🔥 Rajada (15 Req)</button>
+            <button class="btn-nav" id="btn-rl-toggle">▶ Gerador Automático</button>
+            <button class="btn-nav" id="btn-rl-reset" style="color: var(--accent-rose);">Reset</button>
+          </div>
+        </div>
+
+        <div class="rate-limiter-arena">
+          <!-- Bucket Visualizer -->
+          <div class="bucket-visualizer-box">
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan);" id="rl-bucket-title">TOKEN BUCKET (Capacidade: 10)</div>
+            <div class="bucket-graphic">
+              <div class="bucket-liquid" id="rl-liquid-fill"></div>
+              <div class="bucket-token-count" id="rl-token-count">10 / 10</div>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); text-align: center;">
+              Taxa de Reposição: <span style="color: var(--accent-emerald);">2 tokens / segundo</span>
+            </div>
+          </div>
+
+          <!-- Metrics & Live Response Preview -->
+          <div class="rate-metrics-col">
+            <div class="rate-counters-grid">
+              <div class="rate-metric-card">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Total Enviadas</div>
+                <div class="rate-metric-val" id="rl-metric-total" style="color: #fff;">0</div>
+              </div>
+              <div class="rate-metric-card" style="border-color: rgba(52, 211, 153, 0.4);">
+                <div style="font-size: 0.75rem; color: var(--accent-emerald);">Permitidas (200 OK)</div>
+                <div class="rate-metric-val" id="rl-metric-allowed" style="color: var(--accent-emerald);">0</div>
+              </div>
+              <div class="rate-metric-card" style="border-color: rgba(244, 63, 94, 0.4);">
+                <div style="font-size: 0.75rem; color: var(--accent-rose);">Bloqueadas (429)</div>
+                <div class="rate-metric-val" id="rl-metric-blocked" style="color: var(--accent-rose);">0</div>
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 4px;">RESPOSTA HTTP & CABEÇALHOS IETF EM TEMPO REAL</div>
+              <div class="headers-live-preview" id="rl-headers-preview">
+                HTTP/1.1 200 OK<br>
+                Content-Type: application/json<br>
+                RateLimit-Limit: 10<br>
+                RateLimit-Remaining: 10<br>
+                RateLimit-Reset: 1s
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Mostre que o Token Bucket tolera rajadas imediatas até encher o balde, enquanto o Leaky Bucket força uma cadência estrita e uniforme de processamento.
+      </div>
+    </section>
+
+    <!-- SLIDE 19: RATE LIMITING DISTRIBUÍDO COM REDIS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Proteção de Infraestrutura</span>
+        <h2 class="slide-title">Rate Limiting Distribuído com Redis & Scripts Lua Atômicos</h2>
+        <p class="slide-subtitle">Como evitar condições de corrida (Race Conditions) em clusters com dezenas de instâncias de API.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚠️ O Problema das Race Conditions</div>
+          <div class="card-body">
+            <p>Em um cluster com múltiplos nós, dois clientes podem consultar o contador no Redis ao mesmo tempo (<code>GET</code>), ambos receberem valor 99 (limite 100), e ambos incrementarem (<code>INCR</code>), violando a cota!</p>
+            <p style="margin-top: 8px;"><strong>Solução Atômica:</strong> Executar a lógica inteira dentro de um <strong>Script Lua</strong> diretamente no motor mono-thread do Redis.</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 12px;">
+          <div class="card-title" style="font-size: 0.85rem; color: var(--accent-emerald);">📜 Script Lua Atômico no Redis</div>
+          <div class="code-snippet" style="font-size: 0.72rem;">
+<span class="code-keyword">local</span> key = KEYS[1]
+<span class="code-keyword">local</span> limit = tonumber(ARGV[1])
+<span class="code-keyword">local</span> now = tonumber(ARGV[2])
+<span class="code-keyword">local</span> window = tonumber(ARGV[3])
+
+redis.call(<span class="code-highlight">'ZREMRANGEBYSCORE'</span>, key, 0, now - window)
+<span class="code-keyword">local</span> count = redis.call(<span class="code-highlight">'ZCARD'</span>, key)
+
+<span class="code-keyword">if</span> count < limit <span class="code-keyword">then</span>
+    redis.call(<span class="code-highlight">'ZADD'</span>, key, now, now)
+    redis.call(<span class="code-highlight">'EXPIRE'</span>, key, window)
+    <span class="code-keyword">return</span> {1, limit - count - 1} <span class="code-comment">-- 200 OK</span>
+<span class="code-keyword">else</span>
+    <span class="code-keyword">return</span> {0, 0} <span class="code-comment">-- 429 Too Many Requests</span>
+<span class="code-keyword">end</span></div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> A atomicidade do Lua no Redis dispensa travas distribuídas complexas (Redlock), garantindo latência abaixo de 2ms para a checagem de rate limiting.
+      </div>
+    </section>
+
+    <!-- SLIDE 20: HIERARQUIA DE CACHING NA WEB -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">A Hierarquia de Caching na Web: Da Borda ao Banco de Dados</h2>
+        <p class="slide-subtitle">Como as camadas coordenadas aproximam o dado e aliviam a infraestrutura central.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Client-Side Cache</div>
+          <div class="card-body">
+            <p>Cache HTTP do Navegador, Service Workers e IndexedDB. Latência: <strong>0 a 1ms</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">2. Edge CDN (PoPs)</div>
+          <div class="card-body">
+            <p>Centenas de data centers globais da Cloudflare, CloudFront, Akamai. Latência: <strong>5 a 20ms</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. Reverse Proxy Cache</div>
+          <div class="card-body">
+            <p>Camada de aceleração Nginx/Varnish na borda do cluster. Latência: <strong>1 a 5ms</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">4. In-Memory Local</div>
+          <div class="card-body">
+            <p>Memória RAM da aplicação (Guava, Caffeine, Go SyncMap). Latência: <strong>&lt; 0.1ms</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">5. Distributed Cache</div>
+          <div class="card-body">
+            <p>Cluster Redis / Memcached compartilhado entre nós. Latência: <strong>1 a 3ms</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">6. Primary Database</div>
+          <div class="card-body">
+            <p>PostgreSQL / MySQL / MongoDB com I/O em disco. Latência: <strong>10 a 150ms+</strong>.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> A regra de ouro de System Design é interceptar a requisição no nível mais alto possível da hierarquia para economizar custos e processamento no banco.
+      </div>
+    </section>
+
+    <!-- SLIDE 21: PADRÕES ESTRATÉGICOS DE CACHE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">Padrões de Cache: Leitura e Escrita Estruturada</h2>
+        <p class="slide-subtitle">Cache-Aside (Lazy Loading), Write-Through, Write-Behind (Write-Back) e Write-Around.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Card 1: Cache-Aside -->
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">📥 1. Cache-Aside (Lazy Loading)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-c21" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#38bdf8"/>
+                  </marker>
+                  <marker id="arr-m21" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#34d399"/>
+                  </marker>
+                </defs>
+                <!-- App -->
+                <rect x="8" y="24" width="60" height="42" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="38" y="49" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">App</text>
+                
+                <!-- Setas App <-> Cache -->
+                <path d="M 68 35 L 125 22" fill="none" stroke="#38bdf8" stroke-width="1.2" marker-end="url(#arr-c21)"/>
+                <text x="95" y="24" fill="#94a3b8" font-size="8" font-family="system-ui">1. GET</text>
+                
+                <path d="M 125 32 L 68 45" fill="none" stroke="#f43f5e" stroke-width="1.2" marker-end="url(#arr-c21)"/>
+                <text x="95" y="47" fill="#f43f5e" font-size="8" font-weight="600" font-family="system-ui">2. MISS</text>
+
+                <!-- Cache Node -->
+                <rect x="130" y="8" width="95" height="30" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="177" y="27" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Cache (Redis)</text>
+                
+                <!-- Setas App <-> DB -->
+                <path d="M 68 55 L 125 65" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-c21)"/>
+                <text x="95" y="70" fill="#fbbf24" font-size="8" font-family="system-ui">3. Query</text>
+
+                <!-- DB Node -->
+                <rect x="130" y="52" width="95" height="30" rx="5" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="177" y="71" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Banco (SQL)</text>
+                
+                <!-- DB -> Cache Set -->
+                <path d="M 225 67 L 245 67 L 245 23 L 225 23" fill="none" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-m21)"/>
+                <text x="275" y="48" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">4. SET Cache</text>
+
+                <!-- Invalidação -->
+                <rect x="295" y="24" width="80" height="42" rx="5" fill="#1e293b" stroke="#f43f5e" stroke-width="1"/>
+                <text x="335" y="40" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Na Escrita:</text>
+                <text x="335" y="55" fill="#cbd5e1" font-size="8" text-anchor="middle" font-family="system-ui">DEL chave</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.80rem;">
+              <li><strong>Vantagem:</strong> Cache sob demanda (só armazena dados realmente lidos). Resiliente: se o cache cair, o DB assume.</li>
+              <li><strong>Invalidação:</strong> Na escrita, <strong>apaga (DEL)</strong> a chave do cache para forçar a próxima leitura a ler o DB atualizado.</li>
+              <li><strong>Trade-off:</strong> Penalidade tripla no 1º acesso (Miss). Risco de dados obsoletos se o DB for alterado diretamente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: Write-Through -->
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">✍️ 2. Write-Through (Escrita Síncrona)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-wt" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#34d399"/>
+                  </marker>
+                </defs>
+                <!-- App -->
+                <rect x="8" y="24" width="65" height="42" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="40" y="49" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">App</text>
+                
+                <!-- 1. WRITE -->
+                <line x1="73" y1="36" x2="115" y2="36" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-wt)"/>
+                <text x="94" y="30" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">1. Write</text>
+
+                <!-- Cache -->
+                <rect x="120" y="20" width="105" height="50" rx="6" fill="#0f172a" stroke="#34d399" stroke-width="1.5"/>
+                <text x="172" y="42" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Cache (RAM)</text>
+                <text x="172" y="56" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">Atualiza Imediato</text>
+                
+                <!-- 2. Síncrono -->
+                <line x1="225" y1="36" x2="265" y2="36" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-wt)"/>
+                <text x="245" y="30" fill="#34d399" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">2. Sync</text>
+
+                <!-- Banco -->
+                <rect x="270" y="20" width="100" height="50" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="320" y="42" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Banco (Disco)</text>
+                <text x="320" y="56" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">Persiste Dados</text>
+
+                <!-- 3. OK e 4. Retorno -->
+                <path d="M 270 54 L 120 54 L 73 54" fill="none" stroke="#94a3b8" stroke-dasharray="3,2" stroke-width="1" marker-end="url(#arr-wt)"/>
+                <text x="172" y="65" fill="#94a3b8" font-size="7.5" text-anchor="middle" font-family="system-ui">3 e 4: Confirmação 200 OK</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.80rem;">
+              <li><strong>Vantagem:</strong> Consistência estrita! Cache e Banco estão sempre 100% idênticos. Novas leituras são sempre Hits.</li>
+              <li><strong>Trade-off:</strong> Alta latência de escrita (aguarda 2 gravações em rede). Poluição de RAM com dados frios gravados e nunca relidos.</li>
+              <li><strong>Uso Típico:</strong> Saldos bancários, permissões de usuários, estoques críticos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 3: Write-Behind -->
+        <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">⚡ 3. Write-Behind (Write-Back Assíncrono)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-wb" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#fbbf24"/>
+                  </marker>
+                </defs>
+                <!-- App -->
+                <rect x="8" y="24" width="60" height="42" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="38" y="49" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">App</text>
+                
+                <!-- 1. WRITE -->
+                <line x1="68" y1="36" x2="100" y2="36" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-wb)"/>
+                <text x="84" y="30" fill="#fbbf24" font-size="8" font-weight="600" text-anchor="middle" font-family="system-ui">1. Write</text>
+
+                <!-- Retorno Imediato -->
+                <line x1="100" y1="52" x2="68" y2="52" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-wb)"/>
+                <text x="84" y="62" fill="#34d399" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">200 OK ~1ms</text>
+
+                <!-- Cache -->
+                <rect x="105" y="20" width="85" height="50" rx="6" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="147" y="42" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Cache (RAM)</text>
+                <text x="147" y="56" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">Fila em Memória</text>
+                
+                <!-- Fila / Worker Assíncrono -->
+                <path d="M 190 35 L 225 22" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-wb)"/>
+                <rect x="230" y="10" width="140" height="28" rx="5" fill="#1e293b" stroke="#fbbf24" stroke-width="1"/>
+                <text x="300" y="28" fill="#fbbf24" font-size="9" font-weight="600" text-anchor="middle" font-family="system-ui">Worker Batch Coalescing</text>
+
+                <!-- DB Persistência -->
+                <path d="M 300 38 L 300 52" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-wb)"/>
+                <rect x="230" y="54" width="140" height="28" rx="5" fill="#0f172a" stroke="#64748b" stroke-width="1"/>
+                <text x="300" y="72" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="system-ui">Bulk INSERT no DB</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.80rem;">
+              <li><strong>Vantagem:</strong> Throughput extremo de escrita. Permite <em>Write Coalescing</em> (agrupa 100 likes num único UPDATE SQL).</li>
+              <li><strong>Risco Crítico:</strong> 💥 <strong>Perda de Dados</strong> se o nó de cache reiniciar antes de descarregar a fila no DB!</li>
+              <li><strong>Uso Típico:</strong> Métricas de IoT, contadores de visualizações, telemetria.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 4: Write-Around -->
+        <div class="card" style="border-color: rgba(168, 85, 247, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🛡️ 4. Write-Around (Bypass de Cache)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 380 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-wa" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#c084fc"/>
+                  </marker>
+                </defs>
+                <!-- App -->
+                <rect x="8" y="24" width="65" height="42" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="40" y="49" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">App</text>
+                
+                <!-- Cache Intacto no Topo -->
+                <rect x="180" y="8" width="180" height="30" rx="5" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+                <text x="270" y="27" fill="#c084fc" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">🛡️ Cache Intacto (Zero Poluição)</text>
+
+                <!-- 1. WRITE Direto no DB -->
+                <path d="M 73 45 L 175 65" fill="none" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arr-wa)"/>
+                <text x="120" y="48" fill="#c084fc" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">1. Write Direto</text>
+
+                <!-- DB -->
+                <rect x="180" y="52" width="180" height="30" rx="5" fill="#0f172a" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="270" y="71" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Banco de Dados (Disco)</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.80rem;">
+              <li><strong>Vantagem:</strong> Preserva a memória RAM do Redis intacta para dados quentes, contornando gravações volumosas de arquivos.</li>
+              <li><strong>Trade-off:</strong> Cache Miss garantido na 1ª leitura posterior do dado recém-gravado.</li>
+              <li><strong>Uso Típico:</strong> Upload de vídeos/imagens, logs de auditoria, históricos anuais.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Para 90% das aplicações web, a combinação ideal é <strong>Cache-Aside</strong> para leitura e <strong>Write-Around</strong> para uploads ou dados frios.
+      </div>
+    </section>
+
+    <!-- SLIDE 22: POLÍTICAS DE EVICÇÃO (LRU / LFU / TTL) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">Políticas de Evicção: LRU, LFU e Gerenciamento de TTL</h2>
+        <p class="slide-subtitle">Como os motores de cache descartam chaves quando a memória RAM atinge 100% de capacidade.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Card 1: LRU -->
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">⏱️ 1. LRU (Least Recently Used)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-lru-g" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#34d399"/>
+                  </marker>
+                  <marker id="arr-lru-r" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <!-- Head / MRU -->
+                <rect x="10" y="30" width="75" height="42" rx="6" fill="#064e3b" stroke="#34d399" stroke-width="1.5"/>
+                <text x="47" y="47" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">HEAD (MRU)</text>
+                <text x="47" y="62" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">Recente</text>
+
+                <!-- Nó Meio -->
+                <rect x="120" y="30" width="75" height="42" rx="6" fill="#0f172a" stroke="#64748b" stroke-width="1"/>
+                <text x="157" y="55" fill="#cbd5e1" font-size="9" text-anchor="middle" font-family="system-ui">Nó Meio</text>
+
+                <!-- Tail / LRU -->
+                <rect x="235" y="30" width="75" height="42" rx="6" fill="#4c0519" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="272" y="47" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">TAIL (LRU)</text>
+                <text x="272" y="62" fill="#fecdd3" font-size="8" text-anchor="middle" font-family="system-ui">Mais Antigo</text>
+
+                <!-- Links bidirecionais -->
+                <line x1="85" y1="46" x2="118" y2="46" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="118" y1="56" x2="85" y2="56" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="195" y1="46" x2="233" y2="46" stroke="#94a3b8" stroke-width="1"/>
+                <line x1="233" y1="56" x2="195" y2="56" stroke="#94a3b8" stroke-width="1"/>
+
+                <!-- Ações -->
+                <path d="M 157 28 L 157 14 L 55 14 L 55 26" fill="none" stroke="#34d399" stroke-width="1.2" marker-end="url(#arr-lru-g)"/>
+                <text x="110" y="10" fill="#34d399" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">GET: Move p/ Head O(1)</text>
+
+                <path d="M 272 74 L 272 95 L 305 95" fill="none" stroke="#f43f5e" stroke-width="1.2" marker-end="url(#arr-lru-r)"/>
+                <text x="220" y="98" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Evicção O(1) na Cauda!</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Mecânica:</strong> Descarta o item acessado há mais tempo. Baseado puramente na <strong>recência temporal</strong>.</li>
+              <li><strong>Estrutura:</strong> Hash Table + Lista Duplamente Encadeada (complexidade <code>O(1)</code> de leitura e escrita).</li>
+              <li><strong>Fraqueza:</strong> <em>Scan Pollution</em> (uma query varrendo 100k registros frios expulsa todos os dados quentes da RAM).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: LFU -->
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">📊 2. LFU (Least Frequently Used)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-lfu-r" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <!-- Balde Freq 1 -->
+                <rect x="8" y="18" width="90" height="52" rx="5" fill="#1e293b" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="53" y="34" fill="#f43f5e" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">1 Acesso</text>
+                <rect x="18" y="42" width="70" height="20" rx="3" fill="#0f172a"/>
+                <text x="53" y="55" fill="#cbd5e1" font-size="8" text-anchor="middle" font-family="system-ui">[Chave Nova]</text>
+
+                <!-- Balde Freq 10 -->
+                <rect x="115" y="18" width="90" height="52" rx="5" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+                <text x="160" y="34" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">10 Acessos</text>
+                <rect x="125" y="42" width="70" height="20" rx="3" fill="#0f172a"/>
+                <text x="160" y="55" fill="#cbd5e1" font-size="8" text-anchor="middle" font-family="system-ui">[Chave User]</text>
+
+                <!-- Balde Freq 1000 -->
+                <rect x="222" y="18" width="90" height="52" rx="5" fill="#1e293b" stroke="#34d399" stroke-width="1.2"/>
+                <text x="267" y="34" fill="#34d399" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">1.000+ Acessos</text>
+                <rect x="232" y="42" width="70" height="20" rx="3" fill="#064e3b"/>
+                <text x="267" y="55" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">[Hot Banner]</text>
+
+                <!-- Seta de Descarte -->
+                <line x1="53" y1="72" x2="53" y2="88" stroke="#f43f5e" stroke-width="1.5" marker-end="url(#arr-lfu-r)"/>
+                <text x="53" y="103" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Descarta Menor Freq</text>
+                
+                <!-- Decay rate tag -->
+                <rect x="145" y="85" width="165" height="22" rx="4" fill="#0f172a" stroke="#fbbf24" stroke-width="1"/>
+                <text x="227" y="99" fill="#fbbf24" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">Decay Factor reduz antigas</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Mecânica:</strong> Descarta o item com <strong>menor contagem de acessos</strong>. Foco na popularidade real.</li>
+              <li><strong>Vantagem:</strong> Imune a varreduras sequenciais passageiras.</li>
+              <li><strong>Fraqueza:</strong> <em>Cache Starvation</em> (item da Black Friday com 1M de acessos fica preso na RAM mesmo após o evento). Mitigado por fator de decaimento (decay).</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 3: TTL -->
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">⏳ 3. TTL (Time-To-Live) & Expiração</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <!-- TTL Fixo Risco -->
+                <rect x="10" y="10" width="300" height="42" rx="5" fill="#0f172a" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="20" y="25" fill="#f43f5e" font-size="8.5" font-weight="700" font-family="system-ui">TTL Fixo (3600s):</text>
+                <line x1="110" y1="22" x2="250" y2="22" stroke="#64748b" stroke-width="1.5"/>
+                <circle cx="250" cy="22" r="5" fill="#f43f5e"/>
+                <text x="200" y="42" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">T=3600s (Todas expiram juntas! 💥)</text>
+
+                <!-- TTL Jitter Solução -->
+                <rect x="10" y="58" width="300" height="47" rx="5" fill="#0f172a" stroke="#34d399" stroke-width="1.2"/>
+                <text x="20" y="73" fill="#34d399" font-size="8.5" font-weight="700" font-family="system-ui">TTL com Jitter:</text>
+                <text x="20" y="88" fill="#a7f3d0" font-size="7.5" font-family="system-ui">3600s + random(0, 300s)</text>
+                <!-- Expirações dispersas -->
+                <circle cx="160" cy="78" r="3.5" fill="#34d399"/>
+                <circle cx="195" cy="78" r="3.5" fill="#34d399"/>
+                <circle cx="230" cy="78" r="3.5" fill="#34d399"/>
+                <circle cx="270" cy="78" r="3.5" fill="#34d399"/>
+                <text x="215" y="98" fill="#34d399" font-size="7" font-weight="600" text-anchor="middle" font-family="system-ui">Expirações Suaves no Tempo</text>
+              </svg>
+            </div>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Finalidade:</strong> Delimita o tempo máximo de vida útil para dados voláteis (sessões, tokens, cotações).</li>
+              <li><strong>O Risco do TTL Fixo:</strong> Milhares de chaves configuradas com <code>TTL=3600</code> expiram no mesmo milissegundo.</li>
+              <li><strong>Solução:</strong> <strong>TTL Jitter</strong> (<code>TTL = base + random(0, Δ)</code>) para dispersar a expiração.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> No Redis, a política <code>allkeys-lru</code> é o padrão da indústria. Use <code>volatile-lru</code> se desejar que apenas chaves com TTL sejam candidatas à evicção.
+      </div>
+    </section>
+
+    <!-- SLIDE 23: ANOMALIAS CRÍTICAS DE CACHE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">Falhas Críticas: 💥 Avalanche, 🦬 Thundering Herd e 🕵️ Penetration</h2>
+        <p class="slide-subtitle">Padrões de colapso de infraestrutura em alta escala e as estratégias de engenharia para neutralizá-los.</p>
+      </div>
+
+      <div class="grid-3">
+        <!-- Card 1: Avalanche -->
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">💥 1. Cache Avalanche</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-av-r" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <!-- Cache esvaziando em massa -->
+                <rect x="10" y="10" width="300" height="34" rx="5" fill="#1e293b" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="160" y="24" fill="#f43f5e" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">Milhares de Chaves Expiram Juntas! (0% Hit)</text>
+                <text x="160" y="38" fill="#94a3b8" font-size="7.5" text-anchor="middle" font-family="system-ui">❌ key:101  ❌ key:102  ❌ key:103  ❌ key:104</text>
+
+                <!-- Tsunami de requisições descendo -->
+                <line x1="70" y1="46" x2="70" y2="66" stroke="#f43f5e" stroke-width="1.8" marker-end="url(#arr-av-r)"/>
+                <line x1="160" y1="46" x2="160" y2="66" stroke="#f43f5e" stroke-width="1.8" marker-end="url(#arr-av-r)"/>
+                <line x1="250" y1="46" x2="250" y2="66" stroke="#f43f5e" stroke-width="1.8" marker-end="url(#arr-av-r)"/>
+                <text x="160" y="60" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">10.000 req/s em MISS Direto</text>
+
+                <!-- Banco em Colapso -->
+                <rect x="10" y="70" width="300" height="38" rx="5" fill="#4c0519" stroke="#f43f5e" stroke-width="1.5"/>
+                <text x="160" y="87" fill="#f43f5e" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">💥 Banco de Dados: CPU 100% (Crash)</text>
+                <text x="160" y="101" fill="#fecdd3" font-size="8" text-anchor="middle" font-family="system-ui">Connection Pool Exhaustion</text>
+              </svg>
+            </div>
+            <p style="font-size: 0.80rem; margin-top: 4px;"><strong>Causa:</strong> TTL idêntico para milhões de chaves populadas em lote ou reinicialização de nó sem réplica.</p>
+            <p style="font-size: 0.80rem; margin-top: 4px; color: var(--accent-emerald);"><strong>Mitigações:</strong></p>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>TTL Jitter:</strong> <code>TTL = 3600 + random(0, 300)</code>.</li>
+              <li><strong>Redis Cluster Multi-AZ:</strong> Failover com réplicas.</li>
+              <li><strong>Cache Warming:</strong> Aquecimento prévio em deploy.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 2: Thundering Herd -->
+        <div class="card" style="border-color: rgba(245, 158, 11, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">🦬 2. Thundering Herd (Stampede)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-th-a" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#fbbf24"/>
+                  </marker>
+                </defs>
+                <!-- Hot Key Expira -->
+                <rect x="10" y="10" width="300" height="30" rx="5" fill="#1e293b" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="160" y="24" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">1 Única "Hot Key" Expira (ex: home_banner)</text>
+                <text x="160" y="35" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">5.000 requisições simultâneas em paralelo</text>
+
+                <!-- Convergência no DB -->
+                <path d="M 40 42 L 130 68" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-th-a)"/>
+                <path d="M 160 42 L 160 68" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-th-a)"/>
+                <path d="M 280 42 L 190 68" fill="none" stroke="#fbbf24" stroke-width="1.2" marker-end="url(#arr-th-a)"/>
+                <text x="160" y="58" fill="#fbbf24" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">5.000 Queries Idênticas Simultâneas!</text>
+
+                <!-- DB Sobrecarga -->
+                <rect x="10" y="72" width="300" height="36" rx="5" fill="#2d1c03" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="160" y="88" fill="#fbbf24" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Sobrecarga por Duplicação de Trabalho</text>
+                <text x="160" y="100" fill="#fef08a" font-size="7.5" text-anchor="middle" font-family="system-ui">Solução: Lock SETNX ou XFetch Probabilístico</text>
+              </svg>
+            </div>
+            <p style="font-size: 0.80rem; margin-top: 4px;"><strong>Causa:</strong> Vencimento de chave quente sob concorrência massiva.</p>
+            <p style="font-size: 0.80rem; margin-top: 4px; color: var(--accent-emerald);"><strong>Mitigações:</strong></p>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Distributed Mutex:</strong> <code>SET key val NX PX</code> (só 1 thread vai ao DB; outras esperam).</li>
+              <li><strong>Algoritmo XFetch:</strong> Refresh probabilístico antes do TTL vencer.</li>
+              <li><strong>Stale-While-Revalidate:</strong> Serve dado expirado enquanto atualiza em background.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 3: Penetration -->
+        <div class="card" style="border-color: rgba(168, 85, 247, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🕵️ 3. Cache Penetration</div>
+          <div class="card-body">
+            <div class="svg-diagram-container">
+              <svg class="svg-diagram" viewBox="0 0 320 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-cp-p" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+                    <path d="M0,0 L5,2.5 L0,5 Z" fill="#c084fc"/>
+                  </marker>
+                </defs>
+                <!-- Atacante com Chave Inexistente -->
+                <rect x="10" y="10" width="95" height="38" rx="5" fill="#0f172a" stroke="#c084fc" stroke-width="1.2"/>
+                <text x="57" y="25" fill="#c084fc" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">Busca Inválida</text>
+                <text x="57" y="40" fill="#e9d5ff" font-size="7.5" text-anchor="middle" font-family="system-ui">ID = -99999</text>
+
+                <!-- Fura o Cache -->
+                <line x1="107" y1="29" x2="135" y2="29" stroke="#c084fc" stroke-width="1.2" marker-end="url(#arr-cp-p)"/>
+
+                <rect x="140" y="10" width="85" height="38" rx="5" fill="#1e293b" stroke="#64748b" stroke-width="1"/>
+                <text x="182" y="26" fill="#94a3b8" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Cache (MISS)</text>
+                <text x="182" y="40" fill="#cbd5e1" font-size="7" text-anchor="middle" font-family="system-ui">Não grava NULL</text>
+
+                <!-- Fura direto no DB -->
+                <line x1="227" y1="29" x2="245" y2="29" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arr-cp-p)"/>
+
+                <rect x="250" y="10" width="60" height="38" rx="5" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="280" y="26" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Banco DB</text>
+                <text x="280" y="40" fill="#fecdd3" font-size="7" text-anchor="middle" font-family="system-ui">Disk I/O</text>
+
+                <!-- Blindagem / Solução -->
+                <rect x="10" y="56" width="300" height="50" rx="5" fill="#0f172a" stroke="#34d399" stroke-width="1.2"/>
+                <text x="160" y="72" fill="#34d399" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">🛡️ Blindagem Recomendada:</text>
+                <text x="160" y="86" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">1. Bloom Filter na Borda (Bloqueia 100% certo)</text>
+                <text x="160" y="99" fill="#cbd5e1" font-size="7.5" text-anchor="middle" font-family="system-ui">2. Cache de NULL com TTL curto (30 a 60s)</text>
+              </svg>
+            </div>
+            <p style="font-size: 0.80rem; margin-top: 4px;"><strong>Causa:</strong> Atacante ou crawler buscando IDs que NÃO existem no DB.</p>
+            <p style="font-size: 0.80rem; margin-top: 4px; color: var(--accent-emerald);"><strong>Mitigações:</strong></p>
+            <ul class="bullet-list" style="font-size: 0.78rem;">
+              <li><strong>Bloom Filter na Borda:</strong> Estrutura probabilística que bloqueia chaves inexistentes com 100% de certeza.</li>
+              <li><strong>Cache de Valor Nulo:</strong> Salva <code>id: NULL</code> com TTL de 60s no Redis.</li>
+              <li><strong>Validação de Input:</strong> Bloqueio de IDs negativos no Gateway.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Diferencie com clareza: Avalanche = muitas chaves expirando; Thundering Herd = uma única chave popular expirando; Penetration = chaves inexistentes que furam o cache.
+      </div>
+    </section>
+
+    <!-- SLIDE 24: INTERACTIVE CACHE ANOMALY LAB -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">Laboratório Interativo: Hierarquia de Cache & Anomalias</h2>
+        <p class="slide-subtitle">Simule o fluxo de requisições pelas camadas e experimente falhas críticas (Avalanche, Stampede, Penetration).</p>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-toolbar">
+          <div class="sim-controls-group">
+            <button class="btn-nav btn-primary" id="btn-flow-hit">⚡ Cache Hit (CDN)</button>
+            <button class="btn-nav" id="btn-flow-redis">⚡ Cache Hit (Redis)</button>
+            <button class="btn-nav" id="btn-flow-miss">🐢 Cache Miss (DB Fetch)</button>
+          </div>
+
+          <div class="sim-controls-group">
+            <span class="sim-label" style="color: var(--accent-amber);">Simular Anomalia:</span>
+            <button class="btn-nav" id="btn-sim-avalanche" style="border-color: var(--accent-rose);">💥 Cache Avalanche</button>
+            <button class="btn-nav" id="btn-sim-stampede" style="border-color: var(--accent-amber);">🦬 Thundering Herd</button>
+            <button class="btn-nav" id="btn-sim-penetration" style="border-color: var(--accent-purple);">🕵️ Cache Penetration</button>
+          </div>
+        </div>
+
+        <div class="cache-hierarchy-grid">
+          <div class="cache-layer-node" id="c-node-client">
+            <div class="cache-layer-icon">📱</div>
+            <div class="cache-layer-name">Browser Cache</div>
+            <div class="cache-layer-latency">0ms</div>
+          </div>
+          <div class="cache-layer-node" id="c-node-cdn">
+            <div class="cache-layer-icon">🌐</div>
+            <div class="cache-layer-name">Edge CDN (PoP)</div>
+            <div class="cache-layer-latency">8ms</div>
+          </div>
+          <div class="cache-layer-node" id="c-node-proxy">
+            <div class="cache-layer-icon">🛡️</div>
+            <div class="cache-layer-name">Reverse Proxy</div>
+            <div class="cache-layer-latency">15ms</div>
+          </div>
+          <div class="cache-layer-node" id="c-node-redis">
+            <div class="cache-layer-icon">⚡</div>
+            <div class="cache-layer-name">Redis Cluster</div>
+            <div class="cache-layer-latency">22ms</div>
+          </div>
+          <div class="cache-layer-node" id="c-node-db">
+            <div class="cache-layer-icon">🗄️</div>
+            <div class="cache-layer-name">PostgreSQL DB</div>
+            <div class="cache-layer-latency">120ms</div>
+          </div>
+        </div>
+
+        <div class="anomaly-lab-box" id="anomaly-log-box">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size: 0.8rem; font-weight: 700; color: #fff;" id="anomaly-title">Status da Infraestrutura: Saudável</span>
+            <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);" id="anomaly-metric">Latência Efetiva: --</span>
+          </div>
+          <div style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;" id="anomaly-desc">
+            Selecione uma ação acima para visualizar o trânsito da requisição pelas camadas de cache ou disparar cenários de estresse.
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Explique as 3 mitigações: TTL Jitter (Avalanche), Distributed Mutex/XFetch (Thundering Herd) e Bloom Filters (Penetration).
+      </div>
+    </section>
+
+    <!-- SLIDE 25: CDNS & HTTP CACHE HEADERS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Caching Distribuído & CDNs</span>
+        <h2 class="slide-title">Content Delivery Networks (CDNs) & Sandbox de Cabeçalhos HTTP</h2>
+        <p class="slide-subtitle">Roteamento Anycast BGP, Origin Shield e a semântica dos headers Cache-Control, ETag e 304 Not Modified.</p>
+      </div>
+
+      <div class="simulator-container">
+        <div class="sim-toolbar">
+          <div class="sim-controls-group">
+            <span class="sim-label">Diretiva Cache-Control:</span>
+            <select class="sim-select" id="http-cc-select">
+              <option value="public, max-age=3600, s-maxage=86400">public, max-age=3600, s-maxage=86400 (Assets Estáticos)</option>
+              <option value="private, no-cache">private, no-cache (Exige Revalidação via ETag)</option>
+              <option value="no-store">no-store (Proibido Salvar em Disco)</option>
+              <option value="public, max-age=60, stale-while-revalidate=30">stale-while-revalidate=30 (Atualização Assíncrona)</option>
+            </select>
+          </div>
+
+          <div class="sim-controls-group">
+            <button class="btn-nav btn-primary" id="btn-http-first">1ª Requisição (Download Completo)</button>
+            <button class="btn-nav" id="btn-http-cond">2ª Requisição (If-None-Match: ETag)</button>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top: 6px;">
+          <div class="card" style="background: #060911;">
+            <div class="card-title" style="font-size: 0.85rem; color: var(--accent-cyan);">📥 Requisição do Cliente</div>
+            <div class="code-snippet" id="http-req-preview">
+GET /api/v1/cursos HTTP/1.1
+Host: api.fatec.sp.gov.br
+Accept: application/json</div>
+          </div>
+
+          <div class="card" style="background: #060911;">
+            <div class="card-title" style="font-size: 0.85rem; color: var(--accent-emerald);">📤 Resposta do Servidor / CDN</div>
+            <div class="code-snippet" id="http-res-preview">
+HTTP/1.1 200 OK
+Content-Type: application/json
+Cache-Control: public, max-age=3600, s-maxage=86400
+ETag: W/"a9c41f92e8d"
+CF-Cache-Status: HIT
+Payload Size: 42.5 KB (Transferido)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Enfatize o impacto do status 304 Not Modified: o payload trafegado é de exatamente 0 bytes, poupando banda massiva em clientes móveis.
+      </div>
+    </section>
+
+    <!-- SLIDE 26: BLUEPRINT DE PRODUÇÃO & ENCERRAMENTO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Arquitetura Integrada</span>
+        <h2 class="slide-title">Blueprint de Produção: Arquitetura Integrada de Alta Performance</h2>
+        <p class="slide-subtitle">A síntese de todos os componentes de System Design operando em harmonia.</p>
+      </div>
+
+      <div class="svg-diagram-container large" style="border-color: rgba(56, 189, 248, 0.4); background: #070c18; padding: 14px 18px; margin-bottom: 12px;">
+        <svg class="svg-diagram" viewBox="0 0 940 375" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="bp-arr-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+            </marker>
+            <marker id="bp-arr-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+            </marker>
+            <marker id="bp-arr-amb" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#fbbf24"/>
+            </marker>
+            <marker id="bp-arr-pur" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#c084fc"/>
+            </marker>
+            <marker id="bp-arr-blue" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#60a5fa"/>
+            </marker>
+          </defs>
+
+          <!-- ================= TIER 1: GLOBAL EDGE ================= -->
+          <!-- Clientes Globais -->
+          <rect x="10" y="10" width="165" height="50" rx="7" fill="#0f172a" stroke="#94a3b8" stroke-width="1.3"/>
+          <text x="92" y="30" fill="#f8fafc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">📱 💻 Clientes Globais</text>
+          <text x="92" y="46" fill="#94a3b8" font-size="7.5" text-anchor="middle" font-family="system-ui">HTTP/3 (QUIC) • TLS 1.3</text>
+
+          <!-- Seta Clientes -> DNS Anycast -->
+          <line x1="175" y1="35" x2="205" y2="35" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#bp-arr-cyan)"/>
+
+          <!-- DNS Anycast -->
+          <rect x="210" y="10" width="165" height="50" rx="7" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+          <text x="292" y="30" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">🌐 DNS Anycast BGP</text>
+          <text x="292" y="46" fill="#93c5fd" font-size="7.5" text-anchor="middle" font-family="system-ui">Cloudflare • Route 53 (Geo-DNS)</text>
+
+          <!-- Seta DNS -> Edge CDN -->
+          <line x1="375" y1="35" x2="405" y2="35" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#bp-arr-cyan)"/>
+
+          <!-- Edge CDN & WAF -->
+          <rect x="410" y="10" width="220" height="50" rx="7" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.3"/>
+          <text x="520" y="30" fill="#a5b4fc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">🛡️ Edge CDN &amp; WAF</text>
+          <text x="520" y="46" fill="#c7d2fe" font-size="7.5" text-anchor="middle" font-family="system-ui">DDoS Shield • Cache-Control Edge</text>
+
+          <!-- Seta Edge CDN -> Cache Hit -->
+          <line x1="630" y1="35" x2="665" y2="35" stroke="#34d399" stroke-width="1.4" marker-end="url(#bp-arr-em)"/>
+          <text x="647" y="27" fill="#34d399" font-size="7" font-weight="700" text-anchor="middle" font-family="system-ui">Hit 95%</text>
+
+          <!-- Cache Hit Retorno -->
+          <rect x="670" y="10" width="260" height="50" rx="7" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+          <text x="800" y="30" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">⚡ 200 OK Direto da Edge (PoP)</text>
+          <text x="800" y="46" fill="#a7f3d0" font-size="7.5" text-anchor="middle" font-family="system-ui">Latência ~8ms • Zero carga na origem</text>
+
+          <!-- Seta Edge CDN -> L4 LB (MISS) -->
+          <path d="M 520 60 L 520 84" fill="none" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#bp-arr-cyan)"/>
+          <text x="528" y="74" fill="#38bdf8" font-size="7.5" font-weight="600" text-anchor="start" font-family="system-ui">MISS / Rotas Dinâmicas</text>
+
+          <!-- ================= TIER 2: L4 INGRESS LOAD BALANCER ================= -->
+          <rect x="290" y="88" width="460" height="44" rx="7" fill="#082f49" stroke="#0284c7" stroke-width="1.3"/>
+          <text x="520" y="105" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">⚖️ L4 Network Load Balancer (AWS NLB / Linux IPVS / eBPF)</text>
+          <text x="520" y="121" fill="#bae6fd" font-size="7.8" text-anchor="middle" font-family="system-ui">TCP Multiplexing • Alta Vazão (Milhões RPS) • Zero Inspeção L7 • Encaminhamento Ultrarrápido</text>
+
+          <!-- Seta L4 LB -> API Gateway -->
+          <line x1="520" y1="132" x2="520" y2="154" stroke="#c084fc" stroke-width="1.4" marker-end="url(#bp-arr-pur)"/>
+          <text x="528" y="146" fill="#c084fc" font-size="7.5" font-weight="600" text-anchor="start" font-family="system-ui">TCP Passthrough</text>
+
+          <!-- ================= TIER 3: API GATEWAY & REVERSE PROXY ================= -->
+          <rect x="210" y="158" width="620" height="52" rx="8" fill="#2e1065" stroke="#a855f7" stroke-width="1.4"/>
+          <text x="520" y="177" fill="#c084fc" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">🚪 API Gateway &amp; Reverse Proxy (Envoy / Kong / Nginx)</text>
+          <text x="520" y="192" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">🔐 JWT Auth &amp; OIDC • 🔀 Roteamento L7 por URI • 📊 OpenTelemetry Tracing • 🛡️ Rate Limiter (Token Bucket)</text>
+          <text x="520" y="203" fill="#fef08a" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">Sincronização atômica de cotas no Redis via Lua Scripts (RFC 6585: 429 Retry-After)</text>
+
+          <!-- Conexão Gateway -> Redis (Rate Limit Check) -->
+          <path d="M 210 184 C 18 184, 18 344, 38 344" fill="none" stroke="#c084fc" stroke-width="1.2" stroke-dasharray="3,2" marker-end="url(#bp-arr-pur)"/>
+          <text x="25" y="240" fill="#c084fc" font-size="6.8" font-weight="600" text-anchor="middle" transform="rotate(-90 25 240)" font-family="system-ui">Token Bucket Rate Limiting (EVALSHA)</text>
+
+          <!-- Bifurcação Gateway -> Microsserviços -->
+          <!-- Rota Pedidos -->
+          <path d="M 380 210 L 380 226 L 245 226 L 245 240" fill="none" stroke="#60a5fa" stroke-width="1.4" marker-end="url(#bp-arr-blue)"/>
+          <text x="310" y="222" fill="#93c5fd" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">/api/v1/pedidos (Checkout)</text>
+
+          <!-- Rota Catálogo -->
+          <path d="M 660 210 L 660 226 L 795 226 L 795 240" fill="none" stroke="#60a5fa" stroke-width="1.4" marker-end="url(#bp-arr-blue)"/>
+          <text x="730" y="222" fill="#93c5fd" font-size="7.5" font-weight="600" text-anchor="middle" font-family="system-ui">/api/v1/catalogo (Busca / Feed)</text>
+
+          <!-- ================= TIER 4: MICROSSERVIÇOS / K8S PODS ================= -->
+          <!-- Microsserviço de Pedidos -->
+          <rect x="90" y="242" width="310" height="48" rx="7" fill="#0f172a" stroke="#3b82f6" stroke-width="1.3"/>
+          <text x="245" y="260" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">📦 Microsserviço de Pedidos (Go / Rust)</text>
+          <text x="245" y="274" fill="#cbd5e1" font-size="7.5" text-anchor="middle" font-family="system-ui">Transações de Checkout • Workers • Probes K8s</text>
+          <text x="245" y="284" fill="#94a3b8" font-size="6.8" text-anchor="middle" font-family="system-ui">Readiness: Conexão DB | Liveness: Event Loop</text>
+
+          <!-- Microsserviço de Catálogo -->
+          <rect x="640" y="242" width="310" height="48" rx="7" fill="#0f172a" stroke="#3b82f6" stroke-width="1.3"/>
+          <text x="795" y="260" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">📚 Microsserviço de Catálogo (Spring Boot / Node)</text>
+          <text x="795" y="274" fill="#cbd5e1" font-size="7.5" text-anchor="middle" font-family="system-ui">Consultas Intensivas • Read-Heavy • Probes K8s</text>
+          <text x="795" y="284" fill="#94a3b8" font-size="6.8" text-anchor="middle" font-family="system-ui">Readiness: Warmup Cache | Liveness: Processo Ativo</text>
+
+          <!-- ================= TIER 5: PERSISTÊNCIA & CACHE DISTRIBUÍDO ================= -->
+          <!-- Cluster Redis -->
+          <rect x="40" y="318" width="410" height="52" rx="7" fill="#022c22" stroke="#10b981" stroke-width="1.4"/>
+          <text x="245" y="336" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">⚡ Cluster Redis Distribuído (In-Memory Data Store)</text>
+          <text x="245" y="350" fill="#a7f3d0" font-size="7.5" text-anchor="middle" font-family="system-ui">• Cache-Aside (TTL + Jitter Anti-Avalanche) • Locks Distribuídos SETNX</text>
+          <text x="245" y="362" fill="#6ee7b7" font-size="7.5" text-anchor="middle" font-family="system-ui">• Rate Limiting Counters • Bloom Filters contra Penetration</text>
+
+          <!-- PostgreSQL Cluster -->
+          <rect x="490" y="318" width="410" height="52" rx="7" fill="#361804" stroke="#f59e0b" stroke-width="1.4"/>
+          <text x="695" y="336" fill="#fbbf24" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">🗄️ PostgreSQL Distribuído (Cluster HA &amp; Replicas)</text>
+          <text x="695" y="350" fill="#fde68a" font-size="7.5" text-anchor="middle" font-family="system-ui">• Master / Primário: Escritas ACID &amp; Transações de Pedidos</text>
+          <text x="695" y="362" fill="#fcd34d" font-size="7.5" text-anchor="middle" font-family="system-ui">• Read Replicas: Consultas de Catálogo via Replicação Assíncrona</text>
+
+          <!-- Conexões Serviços -> Dados -->
+          <!-- Pedidos -> Redis (Locks e Sessões) -->
+          <line x1="180" y1="290" x2="180" y2="314" stroke="#10b981" stroke-width="1.3" marker-end="url(#bp-arr-em)"/>
+          <text x="174" y="304" fill="#10b981" font-size="7" font-weight="600" text-anchor="end" font-family="system-ui">Cache / Locks</text>
+
+          <!-- Pedidos -> DB Master (Escritas ACID) -->
+          <path d="M 320 290 L 320 304 L 540 304 L 540 314" fill="none" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#bp-arr-amb)"/>
+          <text x="430" y="301" fill="#f59e0b" font-size="7" font-weight="600" text-anchor="middle" font-family="system-ui">Escritas ACID (Master)</text>
+
+          <!-- Catálogo -> Redis (Cache Hit/Miss) -->
+          <path d="M 720 290 L 720 304 L 380 304 L 380 314" fill="none" stroke="#10b981" stroke-width="1.3" marker-end="url(#bp-arr-em)"/>
+          <text x="550" y="301" fill="#10b981" font-size="7" font-weight="600" text-anchor="middle" font-family="system-ui">Cache Hit/Miss</text>
+
+          <!-- Catálogo -> DB Read Replica (Leituras) -->
+          <line x1="840" y1="290" x2="840" y2="314" stroke="#f59e0b" stroke-width="1.3" marker-end="url(#bp-arr-amb)"/>
+          <text x="848" y="304" fill="#f59e0b" font-size="7" font-weight="600" text-anchor="start" font-family="system-ui">Leituras (Replicas)</text>
+        </svg>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+        <div>
+          <div style="font-size: 0.95rem; font-weight: 700; color: #fff;">Eduardo Cruz Araujo</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">Fatec Ribeirão Preto • ADS • Programação Web 2026.2</div>
+        </div>
+        <a href="https://github.com/edcaraujo/course-pw-fatec-20262" target="_blank" class="btn-nav btn-primary">
+          ⭐ Repositório da Disciplina
+        </a>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Faça a síntese final conectando a Parte 1 (Redes, DNS, TCP, HTTP/QUIC, WebSockets) com a Parte 2 (Escalabilidade, Proxies, LBs, Gateways, Rate Limiting, Caches e CDNs).
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Slide Overview Modal (M) -->
+  <div class="modal-overlay" id="overview-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">🗺️ Índice de Slides da Aula</div>
+        <button class="modal-close" id="modal-close" title="Fechar (Esc / M)">&times;</button>
+      </div>
+      <div class="slide-grid-nav" id="slide-grid-nav"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toast-msg">Notificação</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
