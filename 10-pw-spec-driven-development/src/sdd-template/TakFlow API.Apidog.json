@@ -1,0 +1,2328 @@
+{
+  "apidogProject": "1.0.0",
+  "$schema": {
+    "app": "apidog",
+    "type": "project",
+    "version": "1.2.0"
+  },
+  "info": {
+    "name": "TakFlow API",
+    "description": "",
+    "mockRule": {
+      "rules": [],
+      "enableSystemRule": true
+    }
+  },
+  "projectSetting": {
+    "id": "1371926",
+    "auth": {},
+    "securityScheme": {},
+    "gateway": [],
+    "language": "pt-BR",
+    "apiStatuses": [
+      "developing",
+      "testing",
+      "released",
+      "deprecated"
+    ],
+    "mockSettings": {
+      "engine": "fakerjs",
+      "defaultTimezone": "America/Sao_Paulo",
+      "defaultDateFormat": "--ISO 8601--"
+    },
+    "preProcessors": [],
+    "postProcessors": [],
+    "advancedSettings": {
+      "allowAutomationWriteAutomationCreatedSprintBranch": true,
+      "enableJsonc": false,
+      "enableBigint": false,
+      "responseValidate": true,
+      "enableTestScenarioSetting": false,
+      "enableYAPICompatScript": false,
+      "isDefaultUrlEncoding": 3,
+      "publishedDocUrlRules": {
+        "defaultRule": "SLUGIFY_WITH_RESOURCE_KEY",
+        "resourceKeyStandard": "NEW"
+      }
+    },
+    "initialDisabledMockIds": [],
+    "servers": [
+      {
+        "id": "default",
+        "name": "Servidor Padrão",
+        "moduleId": 1439449
+      }
+    ],
+    "cloudMock": {
+      "enable": true,
+      "security": "free",
+      "tokenKey": "apidogToken",
+      "isCreatedAutomaticallyByDefaultConfigFromAdmin": false
+    }
+  },
+  "apiCollection": [
+    {
+      "name": "Root",
+      "id": 10427183,
+      "auth": {},
+      "securityScheme": {},
+      "parentId": 0,
+      "serverId": "",
+      "description": "",
+      "identityPattern": {
+        "httpApi": {
+          "type": "methodAndPath",
+          "bodyType": "",
+          "fields": []
+        }
+      },
+      "shareSettings": {},
+      "visibility": "SHARED",
+      "moduleId": 1439449,
+      "preProcessors": [
+        {
+          "id": "inheritProcessors",
+          "type": "inheritProcessors",
+          "data": {}
+        }
+      ],
+      "postProcessors": [
+        {
+          "id": "inheritProcessors",
+          "type": "inheritProcessors",
+          "data": {}
+        }
+      ],
+      "inheritPostProcessors": {},
+      "inheritPreProcessors": {},
+      "items": [
+        {
+          "name": "Tasks",
+          "id": 10589057,
+          "auth": {},
+          "securityScheme": {},
+          "parentId": 0,
+          "serverId": "",
+          "description": "",
+          "identityPattern": {
+            "httpApi": {
+              "type": "inherit",
+              "bodyType": "",
+              "fields": []
+            }
+          },
+          "shareSettings": {},
+          "visibility": "INHERITED",
+          "moduleId": 1439449,
+          "preProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "postProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "inheritPostProcessors": {},
+          "inheritPreProcessors": {},
+          "items": [
+            {
+              "name": "Listar tarefas paginadas",
+              "api": {
+                "id": "43338096",
+                "method": "get",
+                "path": "/api/v1/tasks",
+                "parameters": {
+                  "path": [],
+                  "query": [
+                    {
+                      "id": "9KxpKgIs6O",
+                      "name": "page",
+                      "required": false,
+                      "enable": true,
+                      "description": "Número da página atual (1-indexed)",
+                      "example": "",
+                      "type": "integer",
+                      "schema": {
+                        "type": "integer",
+                        "default": 1,
+                        "minimum": 1
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "NKqdja3Wq2",
+                      "name": "limit",
+                      "required": false,
+                      "enable": true,
+                      "description": "Quantidade máxima de itens por página",
+                      "example": "",
+                      "type": "integer",
+                      "schema": {
+                        "type": "integer",
+                        "default": 10,
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "o3F8vy68B7",
+                      "name": "status",
+                      "required": false,
+                      "enable": true,
+                      "description": "Filtrar pelo estado da tarefa",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "TODO",
+                          "IN_PROGRESS",
+                          "DONE",
+                          "BLOCKED"
+                        ]
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "Hrch4MG9Nz",
+                      "name": "priority",
+                      "required": false,
+                      "enable": true,
+                      "description": "Filtrar por prioridade",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "LOW",
+                          "MEDIUM",
+                          "HIGH"
+                        ]
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "qKB7E2S9c8",
+                      "name": "search",
+                      "required": false,
+                      "enable": true,
+                      "description": "Termo para busca de correspondência no título ou descrição",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string"
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {},
+                "responses": [
+                  {
+                    "id": "195047805",
+                    "code": "200",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551225"
+                    },
+                    "itemSchema": {},
+                    "description": "Coleção paginada de tarefas recuperada com sucesso",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "123593087",
+                    "code": "400",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Parâmetros de consulta inválidos",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "none",
+                  "parameters": [],
+                  "required": false,
+                  "additionalContentTypes": [],
+                  "oasExtensions": ""
+                },
+                "description": "Retorna uma lista paginada de tarefas com filtros opcionais de status, prioridade e busca textual.",
+                "tags": [
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 6,
+                "cases": [
+                  {
+                    "id": 58077120,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "195047805",
+                    "parameters": {
+                      "path": [],
+                      "query": [
+                        {
+                          "id": "5WU8ncITCd",
+                          "relatedId": "9KxpKgIs6O",
+                          "relatedName": "page",
+                          "name": "page",
+                          "type": "integer",
+                          "value": "",
+                          "enable": true,
+                          "description": "Número da página atual (1-indexed)",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "Fk8mZRTH7E",
+                          "relatedId": "NKqdja3Wq2",
+                          "relatedName": "limit",
+                          "name": "limit",
+                          "type": "integer",
+                          "value": "",
+                          "enable": true,
+                          "description": "Quantidade máxima de itens por página",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "d3GLpeI51D",
+                          "relatedId": "o3F8vy68B7",
+                          "relatedName": "status",
+                          "name": "status",
+                          "type": "string",
+                          "value": "",
+                          "enable": true,
+                          "description": "Filtrar pelo estado da tarefa",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "8kCEU2E4Ax",
+                          "relatedId": "Hrch4MG9Nz",
+                          "relatedName": "priority",
+                          "name": "priority",
+                          "type": "string",
+                          "value": "",
+                          "enable": true,
+                          "description": "Filtrar por prioridade",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "UzjRn71HXm",
+                          "relatedId": "qKB7E2S9c8",
+                          "relatedName": "search",
+                          "name": "search",
+                          "type": "string",
+                          "value": "",
+                          "enable": true,
+                          "description": "Termo para busca de correspondência no título ou descrição",
+                          "isDelete": false
+                        }
+                      ],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "type": "none",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {
+                  "enable": false
+                },
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Criar nova tarefa",
+              "api": {
+                "id": "43338097",
+                "method": "post",
+                "path": "/api/v1/tasks",
+                "parameters": {
+                  "query": [],
+                  "path": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {
+                  "query": [],
+                  "body": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "responses": [
+                  {
+                    "id": "115441535",
+                    "code": "201",
+                    "name": "",
+                    "headers": [
+                      {
+                        "name": "Location",
+                        "type": "string",
+                        "description": "URI do recurso recém-criado",
+                        "schema": {
+                          "type": "string",
+                          "example": "/api/v1/tasks/9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                        },
+                        "id": "f8cd18c1-7efa-4b1d-b26b-7aedc4755465",
+                        "required": true
+                      }
+                    ],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551220"
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa criada com sucesso",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "125533620",
+                    "code": "400",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Requisição malformada (JSON inválido)",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "158156096",
+                    "code": "422",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Erro semântico de validação nos campos informados",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "application/json",
+                  "parameters": [],
+                  "jsonSchema": {
+                    "$ref": "#/definitions/17551221"
+                  },
+                  "required": true,
+                  "mediaType": "application/json",
+                  "examples": [
+                    {
+                      "mediaType": "application/json",
+                      "value": "{\n    \"id\": \"8a47f75b-60e3-4b9e-94fd-fa3002a8b741\",\n    \"title\": \"doloribus cum nostrum\",\n    \"description\": \"Placeat praesentium inventore deleniti aliquid rerum facilis. Velit id hic. Fugit laborum ratione consequuntur nemo quia pariatur quasi. Nesciunt cupiditate nihil omnis optio inventore veritatis. Pariatur laboriosam recusandae impedit distinctio. Dolorem vel distinctio sit quaerat suscipit explicabo repellat autem et.\",\n    \"priority\": \"HIGH\",\n    \"dueDate\": \"2026-07-07\",\n    \"projectId\": \"48\"\n}"
+                    }
+                  ],
+                  "oasExtensions": ""
+                },
+                "description": "Cadastra uma nova tarefa no sistema a partir dos dados submetidos.",
+                "tags": [
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 12,
+                "cases": [
+                  {
+                    "id": 58077121,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "115441535",
+                    "parameters": {
+                      "path": [],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "data": "",
+                      "type": "application/json",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Obter detalhes de uma tarefa",
+              "api": {
+                "id": "43338098",
+                "method": "get",
+                "path": "/api/v1/tasks/{id}",
+                "parameters": {
+                  "path": [
+                    {
+                      "id": "id#0",
+                      "name": "id",
+                      "required": true,
+                      "enable": true,
+                      "description": "Identificador único UUID da tarefa",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "query": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {},
+                "responses": [
+                  {
+                    "id": "174667518",
+                    "code": "200",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551220"
+                    },
+                    "itemSchema": {},
+                    "description": "Detalhes da tarefa localizados com sucesso",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "110288801",
+                    "code": "404",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa não encontrada para o UUID especificado",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "none",
+                  "parameters": [],
+                  "required": false,
+                  "additionalContentTypes": [],
+                  "oasExtensions": ""
+                },
+                "description": "",
+                "tags": [
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 18,
+                "cases": [
+                  {
+                    "id": 58077122,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "174667518",
+                    "parameters": {
+                      "path": [
+                        {
+                          "id": "id#0",
+                          "relatedId": "id#0",
+                          "relatedName": "id",
+                          "name": "id",
+                          "value": "",
+                          "enable": true
+                        }
+                      ],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "type": "none",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Atualizar tarefa parcialmente",
+              "api": {
+                "id": "43338099",
+                "method": "patch",
+                "path": "/api/v1/tasks/{id}",
+                "parameters": {
+                  "query": [],
+                  "path": [
+                    {
+                      "id": "id#0",
+                      "name": "id",
+                      "required": true,
+                      "enable": true,
+                      "description": "Identificador único UUID da tarefa",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {
+                  "query": [],
+                  "body": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "responses": [
+                  {
+                    "id": "168199301",
+                    "code": "200",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551220"
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa atualizada com sucesso",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "160166182",
+                    "code": "404",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa inexistente",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "174163872",
+                    "code": "422",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Dados de atualização inválidos",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "application/json",
+                  "parameters": [],
+                  "jsonSchema": {
+                    "$ref": "#/definitions/17551222"
+                  },
+                  "required": true,
+                  "mediaType": "application/json",
+                  "examples": [
+                    {
+                      "mediaType": "application/json",
+                      "value": "{\n    \"title\": \"eligendi fugit saepe\",\n    \"description\": \"Voluptatibus odit a reiciendis. Commodi maiores temporibus error fuga doloremque sunt. Sequi consequuntur maiores.\\nNisi ipsa earum nesciunt odio quas facere. Ea sint nam ipsam totam possimus. Quae nam culpa similique.\\nQuos nam adipisci eaque qui placeat corrupti hic magni. Cumque laborum fuga temporibus ipsa eos iure possimus. Quas optio nulla.\",\n    \"status\": \"TODO\",\n    \"priority\": \"MEDIUM\",\n    \"dueDate\": \"2026-09-15\"\n}"
+                    }
+                  ],
+                  "oasExtensions": ""
+                },
+                "description": "",
+                "tags": [
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 24,
+                "cases": [
+                  {
+                    "id": 58077123,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "168199301",
+                    "parameters": {
+                      "path": [
+                        {
+                          "id": "id#0",
+                          "relatedId": "id#0",
+                          "relatedName": "id",
+                          "name": "id",
+                          "value": "",
+                          "enable": true
+                        }
+                      ],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "data": "",
+                      "type": "application/json",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Remover tarefa do sistema",
+              "api": {
+                "id": "43338100",
+                "method": "delete",
+                "path": "/api/v1/tasks/{id}",
+                "parameters": {
+                  "path": [
+                    {
+                      "id": "id#0",
+                      "name": "id",
+                      "required": true,
+                      "enable": true,
+                      "description": "Identificador único UUID da tarefa",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "query": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {},
+                "responses": [
+                  {
+                    "id": "199951444",
+                    "code": "204",
+                    "headers": [],
+                    "jsonSchema": {
+                      "type": "object",
+                      "properties": {}
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa removida com êxito (sem conteúdo no corpo)",
+                    "contentType": "noContent",
+                    "oasExtensions": ""
+                  },
+                  {
+                    "id": "124913197",
+                    "code": "404",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551226"
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefa inexistente para remoção",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "none",
+                  "parameters": [],
+                  "required": false,
+                  "additionalContentTypes": [],
+                  "oasExtensions": ""
+                },
+                "description": "",
+                "tags": [
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 30,
+                "cases": [
+                  {
+                    "id": 58077124,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "199951444",
+                    "parameters": {
+                      "path": [
+                        {
+                          "id": "id#0",
+                          "relatedId": "id#0",
+                          "relatedName": "id",
+                          "name": "id",
+                          "value": "",
+                          "enable": true
+                        }
+                      ],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "type": "none",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            }
+          ]
+        },
+        {
+          "name": "Projects",
+          "id": 10589058,
+          "auth": {},
+          "securityScheme": {},
+          "parentId": 0,
+          "serverId": "",
+          "description": "",
+          "identityPattern": {
+            "httpApi": {
+              "type": "inherit",
+              "bodyType": "",
+              "fields": []
+            }
+          },
+          "shareSettings": {},
+          "visibility": "INHERITED",
+          "moduleId": 1439449,
+          "preProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "postProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "inheritPostProcessors": {},
+          "inheritPreProcessors": {},
+          "items": [
+            {
+              "name": "Listar projetos cadastrados",
+              "api": {
+                "id": "43338101",
+                "method": "get",
+                "path": "/api/v1/projects",
+                "parameters": {
+                  "query": [
+                    {
+                      "id": "UXD7N3hYJi",
+                      "name": "page",
+                      "required": false,
+                      "enable": true,
+                      "description": "",
+                      "example": "",
+                      "type": "integer",
+                      "schema": {
+                        "type": "integer",
+                        "default": 1
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "2OXiaYBTR9",
+                      "name": "limit",
+                      "required": false,
+                      "enable": true,
+                      "description": "",
+                      "example": "",
+                      "type": "integer",
+                      "schema": {
+                        "type": "integer",
+                        "default": 10
+                      },
+                      "omitGeneratedExample": false
+                    },
+                    {
+                      "id": "pnL1c71iTN",
+                      "name": "status",
+                      "required": false,
+                      "enable": true,
+                      "description": "",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "enum": [
+                          "ACTIVE",
+                          "ARCHIVED",
+                          "ON_HOLD"
+                        ]
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "path": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {
+                  "query": [],
+                  "body": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "responses": [
+                  {
+                    "id": "149193259",
+                    "code": "200",
+                    "name": "",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17554045"
+                    },
+                    "itemSchema": {},
+                    "description": "Lista de projetos recuperada",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "none",
+                  "parameters": [],
+                  "required": false,
+                  "mediaType": "",
+                  "examples": [],
+                  "oasExtensions": ""
+                },
+                "description": "",
+                "tags": [
+                  "Projects"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 6,
+                "cases": [
+                  {
+                    "id": 58077125,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "149193259",
+                    "parameters": {
+                      "path": [],
+                      "query": [
+                        {
+                          "id": "2Hi5IlgHIU",
+                          "relatedId": "UXD7N3hYJi",
+                          "relatedName": "page",
+                          "name": "page",
+                          "type": "integer",
+                          "value": "",
+                          "enable": true,
+                          "description": "",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "4zAsziPCFl",
+                          "relatedId": "2OXiaYBTR9",
+                          "relatedName": "limit",
+                          "name": "limit",
+                          "type": "integer",
+                          "value": "",
+                          "enable": true,
+                          "description": "",
+                          "isDelete": false
+                        },
+                        {
+                          "id": "B8Ac1fnhiq",
+                          "relatedId": "pnL1c71iTN",
+                          "relatedName": "status",
+                          "name": "status",
+                          "type": "string",
+                          "value": "",
+                          "enable": true,
+                          "description": "",
+                          "isDelete": false
+                        }
+                      ],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "type": "none",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Criar novo projeto",
+              "api": {
+                "id": "43338102",
+                "method": "post",
+                "path": "/api/v1/projects",
+                "parameters": {
+                  "path": [],
+                  "query": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {},
+                "responses": [
+                  {
+                    "id": "149420919",
+                    "code": "201",
+                    "headers": [],
+                    "jsonSchema": {
+                      "$ref": "#/definitions/17551223"
+                    },
+                    "itemSchema": {},
+                    "description": "Projeto criado com sucesso",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "application/json",
+                  "parameters": [],
+                  "jsonSchema": {
+                    "$ref": "#/definitions/17551224"
+                  },
+                  "mediaType": "application/json",
+                  "oasExtensions": "",
+                  "required": true,
+                  "additionalContentTypes": []
+                },
+                "description": "",
+                "tags": [
+                  "Projects"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 12,
+                "cases": [
+                  {
+                    "id": 58077126,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "149420919",
+                    "parameters": {
+                      "path": [],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "data": "",
+                      "type": "application/json",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            },
+            {
+              "name": "Listar tarefas vinculadas a um projeto específico",
+              "api": {
+                "id": "43338103",
+                "method": "get",
+                "path": "/api/v1/projects/{projectId}/tasks",
+                "parameters": {
+                  "path": [
+                    {
+                      "id": "projectId#0",
+                      "name": "projectId",
+                      "required": true,
+                      "enable": true,
+                      "description": "",
+                      "example": "",
+                      "type": "string",
+                      "schema": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "omitGeneratedExample": false
+                    }
+                  ],
+                  "query": [],
+                  "cookie": [],
+                  "header": []
+                },
+                "auth": {},
+                "securityScheme": {},
+                "commonParameters": {},
+                "responses": [
+                  {
+                    "id": "175757619",
+                    "code": "200",
+                    "headers": [],
+                    "jsonSchema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/17551220"
+                      }
+                    },
+                    "itemSchema": {},
+                    "description": "Tarefas do projeto",
+                    "contentType": "json",
+                    "mediaType": "application/json",
+                    "oasExtensions": ""
+                  }
+                ],
+                "responseExamples": [],
+                "requestBody": {
+                  "type": "none",
+                  "parameters": [],
+                  "required": false,
+                  "additionalContentTypes": [],
+                  "oasExtensions": ""
+                },
+                "description": "",
+                "tags": [
+                  "Projects",
+                  "Tasks"
+                ],
+                "status": "released",
+                "serverId": "",
+                "operationId": "",
+                "sourceUrl": "",
+                "ordering": 18,
+                "cases": [
+                  {
+                    "id": 58077127,
+                    "type": "DEBUG_CASE",
+                    "path": null,
+                    "name": "Sucesso",
+                    "responseId": "175757619",
+                    "parameters": {
+                      "path": [
+                        {
+                          "id": "projectId#0",
+                          "relatedId": "projectId#0",
+                          "relatedName": "projectId",
+                          "name": "projectId",
+                          "value": "",
+                          "enable": true
+                        }
+                      ],
+                      "query": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "commonParameters": {},
+                    "requestBody": {
+                      "parameters": [],
+                      "type": "none",
+                      "generateMode": "normal"
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "requestResult": null,
+                    "visibility": "INHERITED",
+                    "moduleId": 1439449,
+                    "categoryId": 0,
+                    "tagIds": [],
+                    "apiTestDataList": [],
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    },
+                    "inheritPreProcessors": {
+                      "enable": {},
+                      "defaultEnable": {}
+                    }
+                  }
+                ],
+                "mocks": [],
+                "customApiFields": "{}",
+                "advancedSettings": {
+                  "disabledSystemHeaders": {}
+                },
+                "mockScript": {},
+                "codeSamples": [],
+                "commonResponseStatus": {},
+                "responseChildren": [],
+                "visibility": "INHERITED",
+                "moduleId": 1439449,
+                "oasExtensions": "",
+                "type": "http",
+                "preProcessors": [],
+                "postProcessors": [],
+                "inheritPostProcessors": {},
+                "inheritPreProcessors": {}
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "socketCollection": [],
+  "docCollection": [],
+  "webSocketCollection": [],
+  "socketIOCollection": [],
+  "mcpClientCollection": [],
+  "responseCollection": [
+    {
+      "_databaseId": 1737031,
+      "updatedAt": "2026-09-02T23:04:28.000Z",
+      "id": 1737031,
+      "name": "Root",
+      "type": "root",
+      "children": [
+        {
+          "_databaseId": 1746906,
+          "updatedAt": "2026-09-09T16:41:58.000Z",
+          "id": 1746906,
+          "name": "Raiz",
+          "type": "",
+          "children": [],
+          "moduleId": 1439449,
+          "parentId": 0,
+          "ordering": [],
+          "items": []
+        }
+      ],
+      "moduleId": 1439449,
+      "parentId": 0,
+      "ordering": [],
+      "items": []
+    }
+  ],
+  "schemaCollection": [
+    {
+      "id": 3733693,
+      "name": "Root",
+      "visibility": "SHARED",
+      "moduleId": 1439449,
+      "items": [
+        {
+          "id": 3749817,
+          "name": "Task",
+          "visibility": "INHERITED",
+          "moduleId": 1439449,
+          "items": [
+            {
+              "name": "Task",
+              "displayName": "",
+              "id": "#/definitions/17551220",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "title",
+                    "status",
+                    "priority",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "x-apidog-mock": "{{$string.uuid}}",
+                      "examples": [
+                        "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 100,
+                      "x-apidog-mock": "{{$lorem.words}}",
+                      "examples": [
+                        "Configurar pipeline de CI/CD"
+                      ]
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "x-apidog-mock": "{{$lorem.text}}",
+                      "examples": [
+                        "Implementar GitHub Actions para linting e execução automática de testes."
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "TODO",
+                        "IN_PROGRESS",
+                        "DONE",
+                        "BLOCKED"
+                      ],
+                      "examples": [
+                        "IN_PROGRESS"
+                      ]
+                    },
+                    "priority": {
+                      "type": "string",
+                      "enum": [
+                        "LOW",
+                        "MEDIUM",
+                        "HIGH"
+                      ],
+                      "default": "MEDIUM",
+                      "examples": [
+                        "HIGH"
+                      ]
+                    },
+                    "dueDate": {
+                      "type": "string",
+                      "format": "date-time",
+                      "examples": [
+                        "2026-09-15T18:00:00Z"
+                      ],
+                      "x-apidog-mock": "{{$date.future|format('yyyy-MM-dd HH:mm:ss')}}"
+                    },
+                    "projectId": {
+                      "type": "string",
+                      "format": "uuid",
+                      "examples": [
+                        "a4e82b71-12cd-4f56-89ab-cdef01234567"
+                      ],
+                      "x-apidog-mock": "{{$string.uuid}}"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "examples": [
+                        "2026-09-02T13:45:00Z"
+                      ],
+                      "x-apidog-mock": "{{$date.now|format('yyyy-MM-dd HH:mm:ss')}}"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "examples": [
+                        "2026-09-02T13:45:00Z"
+                      ],
+                      "x-apidog-mock": "{{$date.future|format('yyyy-MM-dd HH:mm:ss')}}"
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "id",
+                    "title",
+                    "description",
+                    "status",
+                    "priority",
+                    "dueDate",
+                    "projectId",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "CreateTaskRequest",
+              "displayName": "",
+              "id": "#/definitions/17551221",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "x-apidog-refs": {
+                    "01M23H9MD6MD33YMA2Q1KDDH9N": {
+                      "$ref": "#/definitions/17551220",
+                      "x-apidog-overrides": {
+                        "updatedAt": null,
+                        "createdAt": null,
+                        "status": null
+                      }
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "01M23H9MD6MD33YMA2Q1KDDH9N"
+                  ],
+                  "properties": {}
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "UpdateTaskRequest",
+              "displayName": "",
+              "id": "#/definitions/17551222",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "x-apidog-refs": {
+                    "01M23HB1VEXEDY1KY79KB061Z1": {
+                      "$ref": "#/definitions/17551220",
+                      "x-apidog-overrides": {
+                        "projectId": null,
+                        "createdAt": null,
+                        "updatedAt": null,
+                        "id": null
+                      }
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "01M23HB1VEXEDY1KY79KB061Z1"
+                  ],
+                  "properties": {}
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "TaskListResponse",
+              "displayName": "",
+              "id": "#/definitions/17551225",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/17552089"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/definitions/17551228"
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "data",
+                    "meta"
+                  ]
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "TaskResponse",
+              "displayName": "",
+              "id": "#/definitions/17552089",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "$ref": "#/definitions/17551220"
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            }
+          ]
+        },
+        {
+          "id": 3749819,
+          "name": "Project",
+          "visibility": "INHERITED",
+          "moduleId": 1439449,
+          "items": [
+            {
+              "name": "Project",
+              "displayName": "",
+              "id": "#/definitions/17551223",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "name",
+                    "slug",
+                    "status",
+                    "createdAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "x-apidog-mock": "{{$string.uuid}}"
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 3,
+                      "maxLength": 80,
+                      "examples": [
+                        "Portal do Aluno"
+                      ],
+                      "x-apidog-mock": "{{$lorem.words}}"
+                    },
+                    "slug": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9-]+$",
+                      "examples": [
+                        "portal-do-aluno"
+                      ],
+                      "x-apidog-mock": "{{$lorem.slug}}"
+                    },
+                    "description": {
+                      "type": "string",
+                      "examples": [
+                        "Plataforma de notas e presenças acadêmicas."
+                      ],
+                      "x-apidog-mock": "{{$lorem.text}}"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "ACTIVE",
+                        "ARCHIVED",
+                        "ON_HOLD"
+                      ],
+                      "default": "ACTIVE"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.now|format('yyyy-MM-dd HH:mm:ss')}}"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "x-apidog-mock": "{{$date.future|format('yyyy-MM-dd HH:mm:ss')}}"
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "id",
+                    "name",
+                    "slug",
+                    "description",
+                    "status",
+                    "createdAt",
+                    "updatedAt"
+                  ]
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "CreateProjectRequest",
+              "displayName": "",
+              "id": "#/definitions/17551224",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "x-apidog-refs": {
+                    "01M23VDTEAADKPJGX3QV847RCK": {
+                      "$ref": "#/definitions/17551223",
+                      "x-apidog-overrides": {
+                        "id": null,
+                        "status": null,
+                        "createdAt": null,
+                        "updatedAt": null
+                      }
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "01M23VDTEAADKPJGX3QV847RCK"
+                  ],
+                  "properties": {}
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "ProjectResponse",
+              "displayName": "",
+              "id": "#/definitions/17554044",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "$ref": "#/definitions/17551223"
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "ProjectListResponse",
+              "displayName": "",
+              "id": "#/definitions/17554045",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/17551223"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/definitions/17551228"
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "data",
+                    "meta"
+                  ],
+                  "required": [
+                    "data",
+                    "meta"
+                  ],
+                  "x-apidog-refs": {}
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            }
+          ]
+        },
+        {
+          "id": 3749821,
+          "name": "Shared",
+          "visibility": "INHERITED",
+          "moduleId": 1439449,
+          "items": [
+            {
+              "name": "Meta",
+              "displayName": "",
+              "id": "#/definitions/17551228",
+              "description": "",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "required": [
+                    "page",
+                    "limit",
+                    "totalItems",
+                    "totalPages",
+                    "hasNext"
+                  ],
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "examples": [
+                        1
+                      ],
+                      "minimum": 1,
+                      "default": 1,
+                      "x-apidog-mock": "{{$number.int(min=1,max=100)}}"
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "examples": [
+                        10
+                      ],
+                      "default": 10,
+                      "minimum": 1,
+                      "maximum": 100,
+                      "x-apidog-mock": "{{$number.int(min=1,max=100)}}"
+                    },
+                    "totalItems": {
+                      "type": "integer",
+                      "examples": [
+                        42
+                      ],
+                      "x-apidog-mock": "{{$number.int(min=0,max=10000)}}"
+                    },
+                    "totalPages": {
+                      "type": "integer",
+                      "examples": [
+                        5
+                      ],
+                      "x-apidog-mock": "{{$number.int(min=1,max=100)}}"
+                    },
+                    "hasNext": {
+                      "type": "boolean",
+                      "examples": [
+                        true
+                      ],
+                      "x-apidog-mock": "{{$datatype.boolean}}"
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "page",
+                    "limit",
+                    "totalItems",
+                    "totalPages",
+                    "hasNext"
+                  ]
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            },
+            {
+              "name": "Error",
+              "displayName": "",
+              "id": "#/definitions/17551226",
+              "description": "Especificação de erro padronizada conforme RFC 9457 / RFC 7807 (Problem Details)",
+              "schema": {
+                "jsonSchema": {
+                  "type": "object",
+                  "description": "Especificação de erro padronizada conforme RFC 9457 / RFC 7807 (Problem Details)",
+                  "required": [
+                    "type",
+                    "title",
+                    "status",
+                    "detail",
+                    "instance"
+                  ],
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "format": "uri",
+                      "examples": [
+                        "https://api.taskflow.dev/errors/validation-error"
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "examples": [
+                        "Erro de Validação Semântica"
+                      ]
+                    },
+                    "status": {
+                      "type": "integer",
+                      "examples": [
+                        422
+                      ]
+                    },
+                    "detail": {
+                      "type": "string",
+                      "examples": [
+                        "O campo 'title' é obrigatório e deve possuir no mínimo 3 caracteres."
+                      ]
+                    },
+                    "instance": {
+                      "type": "string",
+                      "examples": [
+                        "/api/v1/tasks"
+                      ]
+                    },
+                    "invalidParams": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "examples": [
+                              "title"
+                            ]
+                          },
+                          "reason": {
+                            "type": "string",
+                            "examples": [
+                              "Tamanho inferior a 3 caracteres"
+                            ]
+                          }
+                        },
+                        "x-apidog-orders": [
+                          "name",
+                          "reason"
+                        ]
+                      }
+                    }
+                  },
+                  "x-apidog-orders": [
+                    "type",
+                    "title",
+                    "status",
+                    "detail",
+                    "instance",
+                    "invalidParams"
+                  ]
+                }
+              },
+              "visibility": "INHERITED",
+              "moduleId": 1439449
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "securitySchemeCollection": [
+    {
+      "id": 2177213,
+      "moduleId": 1439449,
+      "name": "Root",
+      "items": [
+        {
+          "id": 2229475,
+          "moduleId": 1439449,
+          "name": "Raiz",
+          "items": [],
+          "ordering": []
+        }
+      ],
+      "ordering": []
+    }
+  ],
+  "oasComponentCollection": [],
+  "requestCollection": [
+    {
+      "name": "Root",
+      "children": [],
+      "ordering": [
+        "requestFolder.11121084"
+      ],
+      "items": []
+    }
+  ],
+  "apiTestCaseCollection": [
+    {
+      "id": 0,
+      "name": "Root",
+      "children": [],
+      "items": []
+    }
+  ],
+  "testCaseReferences": [],
+  "environments": [],
+  "commonScripts": [],
+  "databaseConnections": [],
+  "globalVariables": [],
+  "commonParameters": null,
+  "customFunctions": [],
+  "projectTestCaseCategories": [
+    {
+      "id": 1795159,
+      "name": "Positivo",
+      "description": "Entradas válidas e resultados esperados corretos, representando um uso típico."
+    },
+    {
+      "id": 1795160,
+      "name": "Negativo",
+      "description": "Entradas negativas ou inválidas, como campos ausentes, tipos incorretos, métodos não suportados etc."
+    },
+    {
+      "id": 1795161,
+      "name": "Limite",
+      "description": "Condições extremas ou de limite, como comprimento máximo de string, valores vazios, zero, null etc."
+    },
+    {
+      "id": 1795162,
+      "name": "Segurança",
+      "description": "Casos que podem expor riscos de segurança da API."
+    },
+    {
+      "id": 1795163,
+      "name": "Outros",
+      "description": "Casos não classificados nas categorias existentes."
+    }
+  ],
+  "projectTestCaseTags": [
+    {
+      "id": 8701660,
+      "name": "Somente campos obrigatórios",
+      "description": "Enviar apenas os campos obrigatórios com valores válidos, omitindo todos os opcionais, para testar a requisição mínima válida."
+    },
+    {
+      "id": 8701661,
+      "name": "Semântica válida",
+      "description": "Usar valores sintaticamente corretos que também façam sentido na lógica de negócio ou no contexto do domínio."
+    },
+    {
+      "id": 8701662,
+      "name": "Cobertura de combinações de enum",
+      "description": "Para todos os parâmetros do tipo enum, aplicar design ortogonal para construir sistematicamente combinações de casos de teste dos parâmetros e de seus valores de enum, dedicadas a testar a cobertura de enums."
+    },
+    {
+      "id": 8701663,
+      "name": "Outro caso positivo",
+      "description": "Fornecer entradas realistas e válidas que atendam à especificação da API, produzindo o resultado correto e esperado."
+    },
+    {
+      "id": 8701664,
+      "name": "Campos obrigatórios ausentes",
+      "description": "Omitir um ou mais campos obrigatórios no corpo ou nos parâmetros da requisição."
+    },
+    {
+      "id": 8701665,
+      "name": "Valores inválidos",
+      "description": "Fornecer valores com tipo e formato corretos, mas logicamente inválidos para o campo."
+    },
+    {
+      "id": 8701666,
+      "name": "Erros de tipo",
+      "description": "Usar valores com tipos de dados incorretos, como enviar uma string em vez de um inteiro."
+    },
+    {
+      "id": 8701667,
+      "name": "Erros de formato",
+      "description": "Fornecer valores em formato incorreto, por exemplo, padrão de data errado ou endereço de e-mail malformado."
+    },
+    {
+      "id": 8701668,
+      "name": "Erros semânticos",
+      "description": "Usar valores sintática e formalmente corretos que sejam logicamente impossíveis ou violem regras do domínio."
+    },
+    {
+      "id": 8701669,
+      "name": "Outro caso negativo",
+      "description": "Fornecer entradas inválidas ou inesperadas que devem acionar o tratamento de erros ou a rejeição pela API."
+    },
+    {
+      "id": 8701670,
+      "name": "Nulo",
+      "description": "Deve ser o literal JSON `null` (não vazio, não \"null\")."
+    },
+    {
+      "id": 8701671,
+      "name": "Zero",
+      "description": "Deve ser o literal numérico 0."
+    },
+    {
+      "id": 8701672,
+      "name": "Valores vazios",
+      "description": "Deve ser \"\"."
+    },
+    {
+      "id": 8701673,
+      "name": "Valores máximos",
+      "description": "Fornecer os valores mínimo e máximo permitidos exatos para campos numéricos ou de data."
+    },
+    {
+      "id": 8701674,
+      "name": "Valores mínimos",
+      "description": "Fornecer os valores mínimo e máximo permitidos exatos para campos numéricos ou de data."
+    },
+    {
+      "id": 8701675,
+      "name": "Estouro",
+      "description": "Fornecer valores logo além dos limites mínimo ou máximo permitidos."
+    },
+    {
+      "id": 8701676,
+      "name": "Subfluxo",
+      "description": "Fornecer valores logo além dos limites mínimo ou máximo permitidos."
+    },
+    {
+      "id": 8701677,
+      "name": "Strings muito longas",
+      "description": "Fornecer strings mais longas que o comprimento máximo permitido ou mais curtas que o comprimento mínimo exigido."
+    },
+    {
+      "id": 8701678,
+      "name": "Strings muito curtas",
+      "description": "Fornecer strings mais longas que o comprimento máximo permitido ou mais curtas que o comprimento mínimo exigido."
+    },
+    {
+      "id": 8701679,
+      "name": "Autorização em nível de objeto comprometida",
+      "description": "Usuários acessam ou manipulam objetos de dados sem a devida autorização."
+    },
+    {
+      "id": 8701680,
+      "name": "Controle de acesso",
+      "description": "Restringir os recursos e as ações que os usuários podem acessar com base em papéis, permissões ou atributos."
+    },
+    {
+      "id": 8701681,
+      "name": "Falhas de autenticação",
+      "description": "A autenticação é fraca, está mal configurada ou foi contornada, permitindo acesso não autorizado."
+    },
+    {
+      "id": 8701682,
+      "name": "Injeção SQL",
+      "description": "Inserir código SQL malicioso nas entradas para testar vulnerabilidades de injeção SQL."
+    },
+    {
+      "id": 8701683,
+      "name": "Injeção XSS",
+      "description": "Injetar JavaScript ou tags HTML para testar vulnerabilidades de XSS."
+    },
+    {
+      "id": 8701684,
+      "name": "Entrada fuzz",
+      "description": "Enviar cargas úteis grandes ou geradas aleatoriamente para testar validação de entrada e estabilidade."
+    },
+    {
+      "id": 8701685,
+      "name": "Injeção de comandos",
+      "description": "Inserir comandos de shell nas entradas para testar vulnerabilidades de execução de comandos."
+    },
+    {
+      "id": 8701686,
+      "name": "Injeção JSON",
+      "description": "Inserir estruturas JSON maliciosas ou inesperadas para testar análise e validação."
+    },
+    {
+      "id": 8701687,
+      "name": "Injeção NoSQL",
+      "description": "Fornecer consultas ou operadores específicos de NoSQL para testar injeção."
+    },
+    {
+      "id": 8701688,
+      "name": "Outros",
+      "description": "Casos não classificados nas categorias existentes."
+    }
+  ],
+  "projectAssociations": [],
+  "moduleSettings": [
+    {
+      "id": "1439449",
+      "name": "Módulo predefinido",
+      "description": "API de gerenciamento ágil de tarefas e projetos para a disciplina de Programação Web (Fatec 2026.2). Especificação concebida sob o paradigma Design-First com simulação integral em Smart Mocks.",
+      "moduleVariables": [],
+      "openApiInfo": {}
+    }
+  ]
+}

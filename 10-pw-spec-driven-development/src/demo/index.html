@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spec-Driven Development (SDD) & Google Antigravity | Fatec Ribeirão Preto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| Spec-Driven Development (SDD) no Antigravity</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 18</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2 • AULA 10</span>
+      <h1 class="cover-title">Spec-Driven Development (SDD) na Prática</h1>
+      <p class="cover-subtitle">Do fim do "Vibe Coding" à Engenharia de Software Determinística com Agentes de IA. Aplicação prática dos 4 pilares (Constitution, Specify, Plan e Tasks & Implement) integrando contratos OpenAPI do Apidog (TaskFlow API) ao ecossistema Google Antigravity.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec Ribeirão Preto - SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd>, barra de espaço, <kbd>P</kbd> para notas do professor ou <kbd>M</kbd> para o índice completo.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: AGENDA (ESTRUTURA DE 2H) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">00. Roteiro da Aula (2h / 120 min)</span>
+        <h2 class="slide-title">Agenda: Spec-Driven Development na Prática</h2>
+        <p class="slide-subtitle">Transição estruturada da tentativa e erro no chat para um fluxo de engenharia previsível e escalável.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">⚡ 1. O Fim do "Vibe Coding" e o SDD (20 min)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>A transição de escrever código imperativo para descrever intenções rigorosas.</li>
+              <li>Apresentação das 4 Fases: <strong>Constitution, Specify, Plan, Implement</strong>.</li>
+              <li>Como Agentes de IA no <strong>Google Antigravity</strong> consomem esses artefatos de forma previsível.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">📜 2. Fases 1 & 2: Constitution e Specify com Apidog (40 min)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Constitution:</strong> Criação de <code>STYLEGUIDE.md</code> (regras técnicas/arquitetura) e <code>AGENTS.md</code> (personas nativas do Antigravity).</li>
+              <li><strong>Specify:</strong> Uso do contrato exportado do Apidog (<code>TakFlow API.Apidog.json</code>) + criação do <code>SPEC.md</code>.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-purple);">
+          <div class="card-title" style="color: var(--accent-purple);">🧭 3. Fase 3: A Etapa Crucial do "Plan" (30 min)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>Por que nunca devemos pular direto da especificação para o código.</li>
+              <li>Acionando a persona <code>[Tech Lead]</code> para sintetizar Constitution + Specification em um <code>PLAN.md</code>.</li>
+              <li>A revisão e auditoria humana (<em>Human-in-the-Loop</em>) do plano gerado.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🛠️ 4. Fase 4: Tasks & Implement no Antigravity (30 min)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>Execução granular (<em>Task by Task</em>) usando <code>[Backend Coder]</code> no Google Antigravity.</li>
+              <li>Consulta contínua à Constitution para garantir conformidade com Pydantic v2 e RFC 9457.</li>
+              <li>Verificação automatizada de contrato com <code>[QA Engineer]</code> e <code>pytest</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Nota do Professor:</strong> Destaque aos alunos que esta aula conecta diretamente o projeto que modelamos na Aula 04 (TaskFlow API no Apidog) com os conceitos de arquitetura das aulas 08 e 09.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: VIBE CODING VS SDD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. O Fim do Vibe Coding (20 min)</span>
+        <h2 class="slide-title">Anatomia do "Vibe Coding" vs. Engenharia SDD</h2>
+        <p class="slide-subtitle">Por que pedir funcionalidades de forma improvisada no chat colapsa em projetos reais?</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: var(--accent-rose);">
+          <div class="card-title" style="color: var(--accent-rose);">🎲 O Ciclo Vicioso do "Vibe Coding"</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Prompts Vagos e Imperativos:</strong> <em>"Cria uma API de tarefas aí"</em>, <em>"Deu erro na linha 40, arruma"</em>.</li>
+              <li><strong>Deriva Arquitetural (Architectural Drift):</strong> No turno 1 a IA usa <em>Repository Pattern</em>; no turno 5 injeta queries direto na rota HTTP.</li>
+              <li><strong>Quebra Silenciosa de Contrato:</strong> A IA troca <code>dueDate</code> por <code>due_date</code> e ignora o padrão <strong>RFC 9457 (Problem Details)</strong>.</li>
+              <li><strong>Context Rot (Poluição de Contexto):</strong> O histórico do chat acumula stacktraces e tentativas falhas, degradando a atenção do LLM.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🏛️ O Fluxo Determinístico do SDD</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>A Especificação é a Fonte da Verdade:</strong> Artefatos versionados no Git governam o agente em qualquer sessão.</li>
+              <li><strong>Redução de Entropia:</strong> O agente não "adivinha" nomes de rotas, status HTTP ou regex — ele lê <code>TakFlow API.Apidog.json</code>.</li>
+              <li><strong>Separação de Papéis (Personas):</strong> Quem planeja (<code>[Tech Lead]</code>) é proibido de codar antes da aprovação humana.</li>
+              <li><strong>Execução Atômica e Auditável:</strong> Cada passo do <code>PLAN.md</code> gera diffs pequenos e verificáveis por testes.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Nota do Professor:</strong> Explique que no desenvolvimento tradicional a especificação é descartada após o código ficar pronto; no SDD, a especificação e a constituição são os ativos permanentes do repositório.
+      </div>
+    </section>
+
+    <!-- SLIDE 4: AS 4 FASES DO SDD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Metodologia SDD</span>
+        <h2 class="slide-title">Os 4 Pilares do Spec-Driven Development</h2>
+        <p class="slide-subtitle">Portões de qualidade sequenciais que transformam agentes de IA em engenheiros previsíveis.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card" style="border-top: 4px solid var(--accent-amber);">
+          <div class="card-title" style="color: var(--accent-amber);">1. Constitution</div>
+          <div class="card-body">
+            <p><strong>As Regras Imutáveis</strong></p>
+            <p style="margin-top: 8px;">Define <strong>COMO</strong> codificar e <strong>QUEM</strong> atua no projeto.</p>
+            <pre style="margin-top: 10px;"><code>• STYLEGUIDE.md
+• AGENTS.md
+• Stack & Camadas
+• RFC 9457</code></pre>
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">2. Specify</div>
+          <div class="card-body">
+            <p><strong>Intenção & Contrato</strong></p>
+            <p style="margin-top: 8px;">Define <strong>O QUE</strong> será construído sem ambiguidade.</p>
+            <pre style="margin-top: 10px;"><code>• Apidog Export
+  (TakFlow API.json)
+• SPEC.md
+• Schema-First</code></pre>
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--accent-purple);">
+          <div class="card-title" style="color: var(--accent-purple);">3. Plan</div>
+          <div class="card-body">
+            <p><strong>Roteiro Técnico</strong></p>
+            <p style="margin-top: 8px;">Define <strong>EM QUE ORDEM</strong> construir (sem código!).</p>
+            <pre style="margin-top: 10px;"><code>• [Tech Lead]
+• PLAN.md
+• Ordem Topológica
+• Revisão Humana!</code></pre>
+          </div>
+        </div>
+
+        <div class="card" style="border-top: 4px solid var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">4. Implement</div>
+          <div class="card-body">
+            <p><strong>Tasks & Execução</strong></p>
+            <p style="margin-top: 8px;">Constrói <strong>PASSO A PASSO</strong> com validação contínua.</p>
+            <pre style="margin-top: 10px;"><code>• [Backend Coder]
+• [QA Engineer]
+• Diffs Granulares
+• Pytest 100%</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 18px;">
+        <div class="card-title">🔄 Como o Agente Consome Tudo Isso?</div>
+        <div class="card-body">
+          <p>Em cada turno de execução na Fase 4, o agente mantém ativos na <strong>Janela de Contexto</strong> a <em>Constitution</em> (<code>AGENTS.md</code> + <code>STYLEGUIDE.md</code>), a <em>Specification</em> (<code>SPEC.md</code> + <code>TakFlow API.Apidog.json</code>) e o estado atual do <code>PLAN.md</code>, garantindo que a tarefa #10 tenha a mesma fidelidade arquitetural da tarefa #1.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: SIMULADOR 1 - VIBE CODING VS SDD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador: Vibe Coding vs. Spec-Driven Development</h2>
+        <p class="slide-subtitle">Compare o impacto na conformidade do contrato OpenAPI/RFC 9457 e no consumo de tokens ao longo das iterações.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">📊 Analisador de Estabilidade Arquitetural & Contexto</div>
+          <span class="status-pill valid" id="sdd-sim-badge">Pronto para Simulação</span>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Abordagem de Desenvolvimento</label>
+              <select class="form-select" id="sim1-mode">
+                <option value="vibe">🎲 Vibe Coding (Prompts improvisados no chat sem Spec/Plan)</option>
+                <option value="sdd" selected>🏛️ Spec-Driven Development (Constitution + Apidog + Plan)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Quantidade de Entregas / Iterações na API</label>
+              <select class="form-select" id="sim1-iterations">
+                <option value="3">3 Entregas (Início do Projeto)</option>
+                <option value="6" selected>6 Entregas (CRUD Tasks + Projects + Filtros)</option>
+                <option value="10">10 Entregas (Sistema Completo + Evolução v1.1)</option>
+              </select>
+            </div>
+
+            <button class="btn-nav btn-primary" id="btn-run-sim1" style="width: 100%; justify-content: center; padding: 10px;">
+              ⚡ Simular Evolução do Projeto
+            </button>
+
+            <div class="grid-2" style="margin-top: 14px;">
+              <div class="card" style="padding: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">FIDELIDADE AO APIDOG</div>
+                <div id="sim1-fidelity" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-emerald); margin-top: 4px;">100%</div>
+              </div>
+              <div class="card" style="padding: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-mono);">RETRABALHO / BUGS</div>
+                <div id="sim1-rework" style="font-size: 1.5rem; font-weight: 800; color: var(--accent-cyan); margin-top: 4px;">0 falhas</div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label class="form-label">Linha do Tempo de Execução do Agente</label>
+            <div class="waterfall-container" id="sim1-timeline"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: ECOSSISTEMA GOOGLE ANTIGRAVITY -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Plataforma AI-First</span>
+        <h2 class="slide-title">O Ecossistema Google Antigravity na Prática</h2>
+        <p class="slide-subtitle">Como a plataforma descobre regras, gerencia contexto e executa fluxos SDD nativamente.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">🗂️ Descoberta de Regras</div>
+          <div class="card-body">
+            <p>O Antigravity percorre o diretório atual até a raiz do repositório e carrega <strong>automaticamente</strong>:</p>
+            <pre style="margin-top: 8px;"><code>• AGENTS.md (na raiz)
+• GEMINI.md (na raiz)
+• .agents/rules/*.md</code></pre>
+            <p style="margin-top: 8px;">Orçamento dedicado: até <strong>24 KB por arquivo</strong> e <strong>20.000 tokens</strong> para regras sempre ativas.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-purple);">💬 Menções @ e Slash /</div>
+          <div class="card-body">
+            <p>No Chat Canvas da IDE ou do Antigravity 2.0, injete contexto cirúrgico:</p>
+            <pre style="margin-top: 8px;"><code>• @SPEC.md
+• @STYLEGUIDE.md
+• @"TakFlow API.Apidog.json"
+• /plan (Modo Planejamento)
+• /grill-me (Entrevista SDD)</code></pre>
+            <p style="margin-top: 8px;">Garante foco absoluto nos artefatos oficiais do projeto.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-emerald);">🧩 Progressive Disclosure</div>
+          <div class="card-body">
+            <p>Skills em <code>.agents/skills/&lt;nome&gt;/SKILL.md</code> não sobrecarregam a memória do modelo:</p>
+            <pre style="margin-top: 8px;"><code>1. Apenas name + description
+   entram no prompt inicial.
+2. O manual completo só é
+   lido quando ativado!</code></pre>
+            <p style="margin-top: 8px;">Permite dezenas de workflows sem estourar tokens.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Nota do Professor:</strong> Mostre aos alunos na tela do Antigravity onde ficam o menu de <code>@</code> (menções de arquivos) e o menu de <code>/</code> (slash commands como <code>/plan</code> e <code>/grill-me</code>).
+      </div>
+    </section>
+
+    <!-- SLIDE 7: FASE 1 - CONSTITUTION (STYLEGUIDE.MD) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Fase 1: Constitution (40 min)</span>
+        <h2 class="slide-title">Construindo a Constituição Técnica: <code>STYLEGUIDE.md</code></h2>
+        <p class="slide-subtitle">Definindo stack, arquitetura de pastas e restrições técnicas inegociáveis na raiz do projeto.</p>
+      </div>
+
+      <div class="grid-2">
+        <pre><code class="language-markdown"># STYLEGUIDE.md — Constituição Técnica (TaskFlow API)
+
+## 1. Stack Tecnológica Obrigatória
+- Python 3.12+ com FastAPI e tipagem estrita.
+- Pydantic v2 (BaseModel, ConfigDict, Field, @field_validator).
+- Persistência isolada em database.py (Thread-Safe RLock).
+- Testes automatizados com pytest + TestClient.
+
+## 2. Estrutura de Diretórios
+src/api/
+├── main.py          # App FastAPI, CORS e Middlewares
+├── schemas.py       # DTOs Pydantic v2 fiéis ao Apidog
+├── database.py      # Persistência isolada e seed inicial
+├── exceptions.py    # Handlers RFC 9457 (Problem Details)
+├── routers/         # tasks.py e projects.py
+└── tests/           # test_tasks.py, test_projects.py, test_errors.py</code></pre>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">⚖️As 3 Leis Inegociáveis do STYLEGUIDE.md</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Lei 1 — Padronização de Erros (RFC 9457):</strong> Proibido retornar o erro padrão do FastAPI (<code>{"detail": "..."}</code>). Todo erro 400, 404 ou 422 deve retornar <code>ApiError</code> (<code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code>, <code>instance</code>, <code>invalidParams</code>).</li>
+              <li><strong>Lei 2 — Fidelidade ao camelCase do Contrato:</strong> Preservar exatamente a grafia do Apidog (<code>dueDate</code>, <code>projectId</code>, <code>createdAt</code>, <code>updatedAt</code>, <code>totalItems</code>, <code>hasNext</code>).</li>
+              <li><strong>Lei 3 — Semântica HTTP Estrita:</strong> <code>POST</code> retorna <code>201 Created</code> com header <code>Location</code>; <code>DELETE</code> retorna <code>204 No Content</code> sem corpo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: FASE 1 - CONSTITUTION (AGENTS.MD) -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Fase 1: Constitution</span>
+        <h2 class="slide-title">A Constituição Operacional: <code>AGENTS.md</code></h2>
+        <p class="slide-subtitle">Carregado automaticamente pelo Google Antigravity para governar as Personas de Execução.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card" style="border-color: var(--accent-purple);">
+          <div class="card-title" style="color: var(--accent-purple);">📐 Persona 1: <code>[Tech Lead]</code></div>
+          <div class="card-body">
+            <p><strong>Papel:</strong> Arquiteto de Software e Planejador Técnico.</p>
+            <p style="margin-top: 8px;"><strong>Missão:</strong> Ler <code>SPEC.md</code>, <code>STYLEGUIDE.md</code> e <code>TakFlow API.Apidog.json</code> para gerar o checklist <code>PLAN.md</code>.</p>
+            <p style="margin-top: 8px; color: var(--accent-rose);"><strong>Trava de Segurança:</strong> Proibido criar ou editar arquivos <code>.py</code> enquanto estiver neste papel!</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">💻 Persona 2: <code>[Backend Coder]</code></div>
+          <div class="card-body">
+            <p><strong>Papel:</strong> Engenheiro de Implementação Backend.</p>
+            <p style="margin-top: 8px;"><strong>Missão:</strong> Executar apenas os itens do <code>PLAN.md</code> autorizados pelo desenvolvedor no turno atual.</p>
+            <p style="margin-top: 8px; color: var(--accent-emerald);"><strong>Rastreabilidade:</strong> Marca <code>[x]</code> no <code>PLAN.md</code> e pausa para revisão humana de diff.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🧪 Persona 3: <code>[QA Engineer]</code></div>
+          <div class="card-body">
+            <p><strong>Papel:</strong> Engenheiro de Qualidade e Testes de Contrato.</p>
+            <p style="margin-top: 8px;"><strong>Missão:</strong> Criar testes em <code>src/api/tests/</code> cobrindo casos positivos, negativos, limites e Expectations do Apidog.</p>
+            <p style="margin-top: 8px; color: var(--accent-amber);"><strong>Critério de Aceite:</strong> Executar <code>pytest -v</code> com 100% de aprovação.</p>
+          </div>
+        </div>
+      </div>
+
+      <pre style="margin-top: 16px;"><code class="language-markdown"># Trecho de AGENTS.md (na raiz do workspace):
+Você opera sob a metodologia Spec-Driven Development (SDD).
+Antes de qualquer ação, obedeça integralmente a @[STYLEGUIDE.md](STYLEGUIDE.md) e @[SPEC.md](SPEC.md).
+Nunca escreva código em src/ sem que a tarefa exista em @[PLAN.md](PLAN.md) e tenha sido autorizada.</code></pre>
+    </section>
+
+    <!-- SLIDE 9: FASE 2 - SPECIFY COM APIDOG -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Fase 2: Specify com Apidog</span>
+        <h2 class="slide-title">Apidog + <code>SPEC.md</code>: Eliminando a Ambiguidade</h2>
+        <p class="slide-subtitle">Como o contrato <code>TakFlow API.Apidog.json</code> alimenta a geração determinística de tipos.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">📦 O que o <code>TakFlow API.Apidog.json</code> Entrega</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Coleção Tasks (5 rotas):</strong> <code>GET</code> paginado (<code>page</code>, <code>limit</code>, <code>status</code>, <code>priority</code>, <code>search</code>), <code>POST</code> (201 + <code>Location</code>), <code>GET /{id}</code>, <code>PATCH /{id}</code>, <code>DELETE /{id}</code> (204).</li>
+              <li><strong>Coleção Projects (4 rotas):</strong> <code>GET</code>, <code>POST</code>, <code>GET /{id}</code> e o sub-recurso hierárquico <code>GET /api/v1/projects/{projectId}/tasks</code>.</li>
+              <li><strong>Data Schemas Estritos:</strong> <code>Task</code>, <code>CreateTaskDTO</code>, <code>UpdateTaskDTO</code>, <code>PaginatedTasksResponse</code>, <code>Project</code>, <code>CreateProjectDTO</code> e <code>Error</code> (RFC 9457).</li>
+              <li><strong>Expectation 404 Documentada:</strong> O UUID <code>00000000-0000-0000-0000-000000000000</code> simula recurso inexistente.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-emerald);">📄 O Papel do <code>SPEC.md</code> na Raiz</div>
+          <div class="card-body">
+            <p>Unifica o arquivo exportado do Apidog com as diretrizes internas de implementação:</p>
+            <pre style="margin-top: 10px;"><code class="language-markdown"># SPEC.md — TaskFlow API
+1. Este projeto implementa a API definida em
+   @[TakFlow API.Apidog.json](TakFlow API.Apidog.json).
+2. Priorizar a extração das tipagens estáticas
+   (Pydantic v2 em src/api/schemas.py) diretamente
+   dos Data Schemas do Apidog ANTES de implementar
+   a lógica das rotas.
+3. Inicializar seed em memória com os UUIDs de
+   exemplo do Apidog e garantir 404 RFC 9457 para
+   o UUID 00000000-0000-0000-0000-000000000000.</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: SIMULADOR 2 - EXTRATOR APIDOG -> PYDANTIC V2 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Laboratório Interativo (Fase Specify)</span>
+        <h2 class="slide-title">Simulador Schema-First: De <code>TakFlow API.Apidog.json</code> para Pydantic v2</h2>
+        <p class="slide-subtitle">Inspecione como o Agente extrai tipagens estáticas, validações e exemplos diretamente do JSON do Apidog.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🔄 Tradutor Determinístico de Contratos (Apidog JSON Schema ➔ Python Pydantic v2)</div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <select class="form-select" id="sim2-schema-select" style="width: 280px;">
+              <option value="Task">Schema: Task (Entidade Principal)</option>
+              <option value="CreateProjectDTO">Schema: CreateProjectDTO (Regex Slug)</option>
+              <option value="ApiError">Schema: Error / ApiError (RFC 9457)</option>
+              <option value="PaginatedTasksResponse">Schema: PaginatedTasksResponse (Envelope)</option>
+            </select>
+            <button class="btn-nav btn-primary" id="btn-run-sim2">⚡ Extrair Modelo Pydantic</button>
+          </div>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <label class="form-label">Definição Bruta em <code>TakFlow API.Apidog.json</code></label>
+            <textarea class="form-textarea" id="sim2-apidog-json" rows="12" readonly style="color: var(--accent-amber); font-size: 0.78rem;"></textarea>
+          </div>
+          <div>
+            <label class="form-label">Código Gerado em <code>src/api/schemas.py</code> (Governado por <code>STYLEGUIDE.md</code>)</label>
+            <textarea class="form-textarea" id="sim2-pydantic-code" rows="12" readonly style="color: var(--accent-emerald); font-size: 0.78rem;"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: FASE 3 - A ETAPA CRUCIAL DO PLAN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Fase 3: Plan (30 min)</span>
+        <h2 class="slide-title">A Etapa Crucial do "Plan": A IA como Arquiteta</h2>
+        <p class="slide-subtitle">Por que nunca devemos pular da especificação direto para o código?</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-purple);">🎯 O Prompt do <code>[Tech Lead]</code> no Antigravity</div>
+          <div class="card-body">
+            <pre><code class="language-text">Atuando como [Tech Lead], leia o @SPEC.md, o
+@"TakFlow API.Apidog.json" e nosso @STYLEGUIDE.md.
+
+Crie um arquivo chamado PLAN.md contendo um
+checklist sequencial e granular das tarefas
+técnicas necessárias para implementar esta API.
+
+Não escreva código ainda! Apenas detalhe os passos
+de arquitetura, configuração, geração de tipos,
+camada de dados, RFC 9457, rotas e testes pytest.</code></pre>
+            <p style="margin-top: 10px;"><strong>Dica no Antigravity:</strong> Use <kbd>/plan</kbd> ou <kbd>/grill-me</kbd> para alinhar decisões antes de gerar o arquivo!</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-amber);">
+          <div class="card-title" style="color: var(--accent-amber);">👁️ Revisão Humana do Plano (Human-in-the-Loop)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Ordem Topológica:</strong> <code>schemas.py</code> está planejado antes de <code>database.py</code>, <code>exceptions.py</code> e <code>routers/</code>?</li>
+              <li><strong>Cobertura do Contrato:</strong> O plano incluiu o sub-recurso <code>GET /api/v1/projects/{projectId}/tasks</code> e o header <code>Location</code>?</li>
+              <li><strong>Corte de Over-Engineering:</strong> Se a IA sugeriu algo fora do escopo, edite o <code>PLAN.md</code> em 10 segundos antes de gastar tokens gerando código errado!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: ANATOMIA DO PLAN.MD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Fase 3: Plan</span>
+        <h2 class="slide-title">Anatomia do <code>PLAN.md</code> Gerado e Auditado</h2>
+        <p class="slide-subtitle">Um checklist determinístico que serve simultaneamente de roteiro e rastreador de estado.</p>
+      </div>
+
+      <pre><code class="language-markdown"># PLAN.md — Roteiro Técnico de Implementação (TaskFlow API)
+
+## Fase 1: Fundação e Estrutura Arquitetural
+- [x] Passo 1.1: Criar árvore de diretórios (src/api/, routers/, tests/) e requirements.txt conforme STYLEGUIDE.md.
+
+## Fase 2: Extração de Tipagens Estáticas do Apidog (Schema-First)
+- [x] Passo 2.1: Implementar src/api/schemas.py extraindo todos os Data Schemas de TakFlow API.Apidog.json
+      (TaskStatus, Priority, ProjectStatus, ApiError RFC 9457, Task, CreateTaskDTO, UpdateTaskDTO, Project, etc.).
+
+## Fase 3: Tratamento de Erros (RFC 9457) e Camada de Persistência
+- [ ] Passo 3.1: Implementar src/api/exceptions.py com handlers globais para 400, 404 e 422 (com invalidParams).
+- [ ] Passo 3.2: Implementar src/api/database.py thread-safe (RLock) com seed inicial e filtros paginados.
+
+## Fase 4: Implementação dos Routers HTTP e Entrypoint
+- [ ] Passo 4.1: Implementar src/api/routers/tasks.py (incluindo Location no 201, 204 no DELETE e 404 para UUID zerado).
+- [ ] Passo 4.2: Implementar src/api/routers/projects.py e conectar rotas e middlewares em src/api/main.py.
+
+## Fase 5: Verificação de Contrato Automatizada
+- [ ] Passo 5.1: Implementar suíte pytest em src/api/tests/ e validar 100% dos cenários do Apidog.</code></pre>
+    </section>
+
+    <!-- SLIDE 13: FASE 4 - TASKS & IMPLEMENT -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Fase 4: Tasks & Implement (30 min)</span>
+        <h2 class="slide-title">Execução Granular com <code>[Backend Coder]</code> e <code>[QA Engineer]</code></h2>
+        <p class="slide-subtitle">Delegando a construção passo a passo com revisão humana no Visual Diff Overlay do Antigravity.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">🚀 Prompt de Implementação Granular</div>
+          <div class="card-body">
+            <pre><code class="language-text">Atuando como [Backend Coder], inicie a execução
+da Fase 1 e Fase 2 descritas no @PLAN.md.
+
+Certifique-se de seguir estritamente as regras de
+arquitetura do @STYLEGUIDE.md e as tipagens do
+@"TakFlow API.Apidog.json".
+
+Marque [x] no @PLAN.md e avise quando terminar
+para podermos revisar e avançar para o próximo
+passo.</code></pre>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🧪 Prompt de Verificação Final (QA)</div>
+          <div class="card-body">
+            <pre><code class="language-text">Atuando como [QA Engineer], execute a Fase 5 do
+@PLAN.md. Crie a suíte de testes em src/api/tests/
+validando todos os contratos, paginação, filtros,
+Expectations (UUID zerado 404) e erros RFC 9457
+do @"TakFlow API.Apidog.json".
+
+Execute o pytest no terminal para comprovar 100%
+de aprovação e finalize o @PLAN.md!</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">🔍 Por que Executar em Pequenos Lotes (1 a 2 Fases por Turno)?</div>
+        <div class="card-body">
+          <p>Permite inspecionar os diffs diretamente no editor do Antigravity antes que um pequeno desvio se propague para os arquivos seguintes, mantendo controle absoluto sobre o código gerado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: SIMULADOR 3 - CONSOLE AGÊNTICO DO ANTIGRAVITY -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Execução SDD no Google Antigravity</h2>
+        <p class="slide-subtitle">Execute passo a passo o ciclo completo da TaskFlow API e observe a atualização do <code>PLAN.md</code> e do <code>pytest</code>.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="phase-stepper" id="sim3-stepper">
+          <div class="phase-step active" id="step-card-1">
+            <div class="phase-step-title">1. [Tech Lead]</div>
+            <div class="phase-step-desc">Lê Spec/Apidog e gera PLAN.md</div>
+          </div>
+          <div class="phase-step" id="step-card-2">
+            <div class="phase-step-title">2. [Backend Coder] Lote 1</div>
+            <div class="phase-step-desc">Extrai Schemas + Exceptions + DB</div>
+          </div>
+          <div class="phase-step" id="step-card-3">
+            <div class="phase-step-title">3. [Backend Coder] Lote 2</div>
+            <div class="phase-step-desc">Implementa Routers + main.py</div>
+          </div>
+          <div class="phase-step" id="step-card-4">
+            <div class="phase-step-title">4. [QA Engineer]</div>
+            <div class="phase-step-desc">Roda suíte Pytest (19 testes)</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+          <button class="btn-nav btn-primary" id="btn-sim3-next">▶️ Executar Próxima Etapa no Antigravity</button>
+          <button class="btn-nav" id="btn-sim3-reset">🔄 Reiniciar Ciclo SDD</button>
+          <span class="status-pill warning" id="sim3-status-pill" style="margin-left: auto;">Aguardando comando para [Tech Lead]...</span>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <label class="form-label">Estado Vivo do Arquivo <code>PLAN.md</code> na Raiz</label>
+            <textarea class="form-textarea" id="sim3-plan-view" rows="9" readonly style="color: var(--accent-cyan); font-size: 0.76rem;"></textarea>
+          </div>
+          <div>
+            <label class="form-label">Console do Agente Antigravity & Saída do Terminal</label>
+            <textarea class="form-textarea" id="sim3-agent-log" rows="9" readonly style="color: var(--accent-emerald); font-size: 0.76rem;"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: ONDE COLOCAR OS ARQUIVOS NO WORKSPACE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Estrutura Prática em Sala</span>
+        <h2 class="slide-title">Onde Colocar os Arquivos <code>.md</code> no Projeto?</h2>
+        <p class="slide-subtitle">Organização exata da raiz do workspace aberto no Google Antigravity.</p>
+      </div>
+
+      <div class="grid-2">
+        <pre><code class="language-text">taskflow-sdd/                  ◄── Raiz do Workspace no Antigravity
+├── AGENTS.md                  ◄── NA RAIZ (Auto-descoberto pela IDE!)
+├── STYLEGUIDE.md              ◄── NA RAIZ (Constituição Técnica)
+├── SPEC.md                    ◄── NA RAIZ (Intenção e Regras)
+├── PLAN.md                    ◄── NA RAIZ (Gerado na Fase 3)
+├── TakFlow API.Apidog.json    ◄── NA RAIZ (Contrato exportado)
+├── .agents/                   ◄── NA RAIZ (Skills customizadas)
+│   └── skills/
+│       └── sdd-apidog-workflow/
+│           └── SKILL.md
+└── src/
+    └── api/                   ◄── Código gerado na Fase 4
+        ├── main.py
+        ├── schemas.py
+        ├── database.py
+        ├── exceptions.py
+        ├── routers/
+        └── tests/</code></pre>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">💡 Por que todos na Raiz do Projeto?</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Injeção Automática do <code>AGENTS.md</code>:</strong> O Google Antigravity busca <code>AGENTS.md</code> na raiz do workspace e injeta as personas automaticamente em todas as sessões.</li>
+              <li><strong>Atalhos Rápidos com <code>@</code>:</strong> Permite referenciar <code>@SPEC.md</code>, <code>@STYLEGUIDE.md</code> e <code>@PLAN.md</code> sem precisar navegar por subpastas profundas.</li>
+              <li><strong>Pronto para Usar na Aula:</strong> A pasta <code>10-pw-spec-driven-development/src/sdd-template/</code> já contém todos esses arquivos prontos!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: ANTIPATTERNS DE SDD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Governança e Boas Práticas</span>
+        <h2 class="slide-title">Os 4 Antipatterns Clássicos em Spec-Driven Development</h2>
+        <p class="slide-subtitle">Armadilhas que fazem equipes escorregarem de volta para o Vibe Coding.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 1. Spec Drift (Deriva de Especificação)</div>
+          <div class="card-body">
+            <p>Alterar o código manualmente ou pedir um "ajuste rápido" no chat sem atualizar o <code>SPEC.md</code> ou o Apidog. Na próxima tarefa, o agente lerá a especificação antiga e sobrescreverá sua mudança!</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 2. Rubber-Stamp Planning (Aprovação Cega)</div>
+          <div class="card-body">
+            <p>Gerar o <code>PLAN.md</code> com o <code>[Tech Lead]</code> e mandar o <code>[Backend Coder]</code> implementar sem ler o plano. Se houver um erro arquitetural no plano, a IA o implementará com 100% de obediência.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 3. Mega-Task Execution (Execução Monolítica)</div>
+          <div class="card-body">
+            <p>Pedir para o agente executar 20 passos do <code>PLAN.md</code> em um único prompt. Isso dificulta a revisão de diffs e aumenta o risco de truncamento. Execute 1 a 2 fases por turno.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 4. Implementação sem Gate de QA</div>
+          <div class="card-body">
+            <p>Considerar o <code>PLAN.md</code> concluído apenas porque o código foi gerado, sem acionar o <code>[QA Engineer]</code> para rodar <code>pytest -v</code> contra os contratos RFC 9457 e casos do Apidog.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: CHECKLIST DE GOVERNANÇA SDD -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Síntese e Checklist</span>
+        <h2 class="slide-title">Checklist de Validação SDD para Sala de Aula</h2>
+        <p class="slide-subtitle">O roteiro completo que executaremos agora no laboratório prático.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">📋 Etapas 1 & 2: Constitution + Specify</div>
+          <ul class="bullet-list">
+            <li><code>STYLEGUIDE.md</code> criado na raiz com stack Python/FastAPI/Pydantic v2 e RFC 9457.</li>
+            <li><code>AGENTS.md</code> criado na raiz definindo <code>[Tech Lead]</code>, <code>[Backend Coder]</code> e <code>[QA Engineer]</code>.</li>
+            <li>Contrato <code>TakFlow API.Apidog.json</code> exportado para a raiz do projeto.</li>
+            <li><code>SPEC.md</code> exigindo extração prévia dos schemas antes das rotas.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-emerald);">🚀 Etapas 3 & 4: Plan + Implement</div>
+          <ul class="bullet-list">
+            <li>Prompt do <code>[Tech Lead]</code> executado gerando o <code>PLAN.md</code> sem escrever código.</li>
+            <li>Auditoria humana realizada sobre o <code>PLAN.md</code> (ordem topológica validada).</li>
+            <li>Execução incremental pelo <code>[Backend Coder]</code> marcando <code>[x]</code> a cada entrega.</li>
+            <li>Bateria de testes executada pelo <code>[QA Engineer]</code> com 100% de aprovação no <code>pytest</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge">FATEC RIBEIRÃO PRETO • ADS 2026.2</span>
+      <h1 class="cover-title">Mãos à Obra no Google Antigravity!</h1>
+      <p class="cover-subtitle">Abra a pasta <code>src/sdd-template/</code> (ou siga o guia passo a passo em <code>10-pw-spec-driven-development-pratica-antigravity.md</code>) para executarmos o ciclo completo da TaskFlow API ao vivo!</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Disciplina: Programação Web • Fatec SP</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Overview / Table of Contents -->
+  <div class="modal-backdrop" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Índice da Apresentação</div>
+        <button class="btn-nav" id="modal-close">✕ Fechar (ESC)</button>
+      </div>
+      <div class="modal-body" id="toc-grid"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
