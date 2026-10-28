@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API: Autenticação e Autorização | Fatec Ribeirão Preto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| API: Autenticação e Autorização</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 18</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">API: Autenticação e Autorização</h1>
+      <p class="cover-subtitle">Estudo dos mecanismos de segurança e controle de acesso em aplicações Web. Implementação prática de estratégias de autenticação stateless baseadas em tokens (JWT) e introdução a fluxos de autorização baseados em papéis (RBAC). Middlewares para proteção de rotas, validação de credenciais e armazenamento seguro de dados sensíveis.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd>, barra de espaço ou tecla <kbd>M</kbd> para o índice completo.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: AGENDA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">00. Visão Geral</span>
+        <h2 class="slide-title">Agenda da Aula</h2>
+        <p class="slide-subtitle">Roteiro técnico e conceitual dos tópicos abordados nesta sessão.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🛡️ 01. Fundamentos & AuthN/AuthZ</div>
+          <div class="card-body">
+            <p>Zero Trust Architecture, a distinção conceitual e operacional entre Autenticação e Autorização, e o panorama de ameaças OWASP API Security Top 10.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚖️ 02. Stateful vs. Stateless</div>
+          <div class="card-body">
+            <p>Sessões com cookies e Redis versus tokens autossuficientes JWT. Análise de escalabilidade horizontal, custos de I/O e o desafio da revogação imediata.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔐 03. Criptografia & Hashing</div>
+          <div class="card-body">
+            <p>Encoding vs Criptografia vs Hashing. Por que MD5 e SHA-256 falham com senhas, e o uso de KDFs lentos (Argon2id e bcrypt) contra GPUs e Timing Attacks.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📦 04. JWT (RFC 7519) em Detalhe</div>
+          <div class="card-body">
+            <p>Anatomia Base64URL (Header, Payload, Signature), claims padronizadas e customizadas, e assinaturas simétricas (HS256) vs assimétricas (RS256/JWKS).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔄 05. Access vs. Refresh Token</div>
+          <div class="card-body">
+            <p>Estratégia de tokens duplos com TTL reduzido, rotação de Refresh Token (RTR) e detecção automática de reuso malicioso (Reuse Detection).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚦 06. RBAC & Middlewares</div>
+          <div class="card-body">
+            <p>Role-Based Access Control, matrizes de escopo granular, pipeline de middlewares, padronização de erros (RFC 9457) e prevenção contra BOLA/IDOR.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Destaque para os alunos que esta aula integra conceitos de arquitetura distribuída, segurança defensiva e desenvolvimento de backend profissional.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: ZERO TRUST -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Fundamentos de Segurança</span>
+        <h2 class="slide-title">Zero Trust Architecture em APIs Web</h2>
+        <p class="slide-subtitle">A superação do modelo obsoleto de perímetro: "Never trust, always verify".</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🏰 Modelo Obsoleto: Castelo & Fosso</div>
+          <div class="card-body">
+            <p>Assumia-se que qualquer nó dentro da rede interna (VPC) era seguro. Bastava um firewall externo na borda.</p>
+            <p><strong>A Falha Fatal:</strong> Se um único container ou credencial for comprometido, o invasor tem trânsito livre para movimento lateral em todos os bancos e microsserviços.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🛡️ Modelo Moderno: Zero Trust (NIST SP 800-207)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Nunca Confie, Sempre Verifique:</strong> Toda requisição precisa provar sua identidade e direitos, mesmo originada dentro do cluster.</li>
+              <li><strong>Assuma a Brecha (Assume Breach):</strong> Projete a API sob a premissa de que invasores já operam na rede.</li>
+              <li><strong>Privilégio Mínimo (Least Privilege):</strong> Conceda estritamente os escopos necessários com TTLs ultracurtos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Mostre que mesmo chamadas serviço-a-serviço (mTLS e Service Mesh) utilizam tokens para autenticar o contexto do usuário final que originou a transação.
+      </div>
+    </section>
+
+    <!-- SLIDE 4: AUTHN VS AUTHZ -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Fundamentos de Segurança</span>
+        <h2 class="slide-title">Autenticação (AuthN) vs. Autorização (AuthZ)</h2>
+        <p class="slide-subtitle">A diferença fundamental entre provar identidade e obter concessão de acesso.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">👤 Autenticação (AuthN) — "Quem é você?"</div>
+          <div class="card-body">
+            <p>Verificação das credenciais apresentadas para estabelecer a identidade incontestável da entidade.</p>
+            <ul class="bullet-list">
+              <li>Validação de login e hash de senha.</li>
+              <li>Conferência da assinatura digital do token JWT.</li>
+              <li>Checagem de certificados de cliente (mTLS).</li>
+              <li><strong>Código HTTP sob Falha:</strong> <code style="color: var(--accent-rose);">401 Unauthorized</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔑 Autorização (AuthZ) — "O que você pode fazer?"</div>
+          <div class="card-body">
+            <p>Avaliação das regras de negócio para determinar se a identidade comprovada tem o direito de executar a ação.</p>
+            <ul class="bullet-list">
+              <li>Checagem de papéis (RBAC: Admin, Editor, Viewer).</li>
+              <li>Inspeção de escopos granulares (<code style="color: var(--accent-cyan);">articles:write</code>).</li>
+              <li>Validação de posse do registro alvo (Prevenção BOLA/IDOR).</li>
+              <li><strong>Código HTTP sob Falha:</strong> <code style="color: var(--accent-amber);">403 Forbidden</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Frisamos a confusão clássica do nome da RFC: o código 401 chama-se "Unauthorized", mas significa "Unauthenticated"! O código real de falta de autorização é o 403 Forbidden.
+      </div>
+    </section>
+
+    <!-- SLIDE 5: STATEFUL VS STATELESS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Dicotomia Arquitetural</span>
+        <h2 class="slide-title">Sessões Stateful vs. Tokens Stateless</h2>
+        <p class="slide-subtitle">Comparativo de trade-offs entre arquiteturas centralizadas e distribuídas.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Dimensão Arquitetural</th>
+              <th>Sessão Stateful (Cookie + Session Store)</th>
+              <th>Token Stateless (JWT Bearer Token)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Armazenamento de Estado</strong></td>
+              <td>Servidor (Cluster Redis / Memcached / DB).</td>
+              <td>Cliente (transportado em cada cabeçalho HTTP).</td>
+            </tr>
+            <tr>
+              <td><strong>Custo de I/O por Chamada</strong></td>
+              <td><span style="color: var(--accent-rose);">Alto:</span> Leitura obrigatória de rede para cada requisição.</td>
+              <td><span style="color: var(--accent-emerald);">Zero:</span> Verificação matemática puramente via CPU local.</td>
+            </tr>
+            <tr>
+              <td><strong>Escalabilidade Horizontal</strong></td>
+              <td>Limitada pelo throughput do Session Store compartilhado.</td>
+              <td>Infinita: qualquer nó ou microsserviço valida autonomamente.</td>
+            </tr>
+            <tr>
+              <td><strong>Revogação Imediata</strong></td>
+              <td><span style="color: var(--accent-emerald);">Instantânea:</span> Basta deletar a chave de sessão no Redis.</td>
+              <td><span style="color: var(--accent-amber);">Complexa:</span> Válido até o `exp` (exige blacklist ou TTL curto).</td>
+            </tr>
+            <tr>
+              <td><strong>Tamanho da Carga de Rede</strong></td>
+              <td>Mínimo (~32 bytes para o identificador da sessão).</td>
+              <td>Maior (~300 bytes a 2 KB com claims e assinatura).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: CRIPTOGRAFIA VS HASHING -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Criptografia & Hashing</span>
+        <h2 class="slide-title">Encoding vs. Criptografia vs. Hashing</h2>
+        <p class="slide-subtitle">Fundamentos matemáticos para proteção de credenciais e integridade.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🔤 Encoding (Base64)</div>
+          <div class="card-body">
+            <p><strong>NÃO É SEGURANÇA!</strong> Apenas converte bytes arbitrários em caracteres ASCII seguros para tráfego web.</p>
+            <p>Reversível instantaneamente por qualquer cliente sem segredo algum.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔐 Criptografia (AES/RSA)</div>
+          <div class="card-body">
+            <p>Operação matemática <strong>bidirecional</strong> focada em confidencialidade.</p>
+            <p>O texto cifrado pode ser totalmente recuperado mediante a posse da chave secreta ou privada.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚡ Hashing (Argon2/bcrypt)</div>
+          <div class="card-body">
+            <p>Operação matemática <strong>unidirecional</strong> de digestão irreversível.</p>
+            <p>Gera um hash único. É impossível reverter matematicamente para o texto original.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">⚠️ Por que MD5 e SHA-256 são Proibidos para Senhas?</div>
+        <div class="card-body">
+          <p>Hashes rápidos foram projetados para checar integridade de arquivos em gigabytes por segundo. Uma GPU moderna (RTX 4090) calcula mais de <strong>20 bilhões de hashes SHA-256 por segundo</strong>, permitindo quebrar senhas fracas por força bruta em segundos!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: SIMULADOR DE HASHING & TIMING ATTACKS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Hashing & Custo Computacional</h2>
+        <p class="slide-subtitle">Experimente a velocidade e a resistência de diferentes algoritmos contra força bruta.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">⚡ Benchmark de KDF & Hardness em Tempo Real</div>
+          <span class="sim-badge">WebCrypto Engine</span>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Algoritmo de Hashing</label>
+              <select class="form-select" id="hash-algo-select">
+                <option value="sha256">SHA-256 (Inseguro para senhas - Rápido demais)</option>
+                <option value="bcrypt" selected>bcrypt (Custo ajustável via rounds exponenciais)</option>
+                <option value="argon2id">Argon2id (Padrão Ouro - Resistente a memória/GPU)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Parâmetro de Custo / Work Factor</label>
+              <input type="number" class="form-input" id="hash-cost-input" value="10" min="4" max="16">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Senha de Entrada para Teste</label>
+              <input type="text" class="form-input" id="hash-password-input" value="fatec_segura_2026!">
+            </div>
+
+            <button class="btn-nav btn-primary" id="btn-run-hash" style="width: 100%;">⚡ Calcular Hash</button>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label class="form-label">Hash Criptográfico Resultante</label>
+              <textarea class="form-textarea" id="hash-result-output" rows="3" readonly style="color: var(--accent-emerald);"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="card" style="padding: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Tempo de Cálculo (CPU)</div>
+                <div id="hash-elapsed-display" style="font-size: 1.3rem; font-weight: 700; color: var(--accent-cyan);">0.00 ms</div>
+              </div>
+              <div class="card" style="padding: 12px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Resistência Estimada</div>
+                <div id="hash-gpu-speed-display" style="font-size: 0.75rem; color: var(--accent-amber);">Pronto para calcular.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: ANATOMIA DO JWT -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. JSON Web Tokens (RFC 7519)</span>
+        <h2 class="slide-title">Anatomia Estrutural do JWT</h2>
+        <p class="slide-subtitle">Formato compacto dividido em três segmentos Base64URL separados por pontos.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card" style="border-color: var(--jwt-header);">
+          <div class="card-title" style="color: var(--jwt-header);">1. HEADER</div>
+          <div class="card-body">
+            <p>Metadados sobre o token:</p>
+            <pre><code>{
+  "alg": "HS256",
+  "typ": "JWT"
+}</code></pre>
+            <p>Indica o algoritmo criptográfico de assinatura e a tipagem do objeto.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--jwt-payload);">
+          <div class="card-title" style="color: var(--jwt-payload);">2. PAYLOAD (Claims)</div>
+          <div class="card-body">
+            <p>Afirmações sobre a entidade:</p>
+            <pre><code>{
+  "sub": "usr_104",
+  "name": "Mariana",
+  "role": "editor",
+  "exp": 1728954000
+}</code></pre>
+            <p>Contém as claims registradas e customizadas. <strong>Não é cifrado!</strong></p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--jwt-signature);">
+          <div class="card-title" style="color: var(--jwt-signature);">3. SIGNATURE</div>
+          <div class="card-body">
+            <p>Garantia de integridade:</p>
+            <pre><code>HMACSHA256(
+  base64Url(header) + "." +
+  base64Url(payload),
+  secret_key
+)</code></pre>
+            <p>Impede que terceiros adulterem as claims sem invalidar a assinatura.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: SIMULADOR JWT & TAMPER LAB -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Laboratório Interativo</span>
+        <h2 class="slide-title">JWT Inspector & Simulador de Adulteração (Tamper Lab)</h2>
+        <p class="slide-subtitle">Edite claims, teste assinaturas válidas e visualize como ataques de adulteração são detectados.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🛡️ Token Interativo & Validador de Assinatura</div>
+          <div id="jwt-status-badge" class="status-pill valid">Carregando...</div>
+        </div>
+
+        <div class="jwt-token-box" id="jwt-encoded-display" style="margin-bottom: 16px;"></div>
+
+        <div class="sim-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label" style="color: var(--jwt-header);">Header (JSON)</label>
+              <textarea class="form-textarea" id="jwt-header-input" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="color: var(--jwt-payload);">Payload Claims (JSON)</label>
+              <textarea class="form-textarea" id="jwt-payload-input" rows="7"></textarea>
+            </div>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label class="form-label" style="color: var(--jwt-signature);">Secret Key do Servidor</label>
+              <input type="text" class="form-input" id="jwt-secret-input" value="chave_secreta_super_segura_da_fatec_2026">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 20px;">
+              <button class="btn-nav btn-primary" id="btn-jwt-sign">✍️ Recalcular Assinatura Válida</button>
+              <button class="btn-nav btn-danger" id="btn-jwt-tamper">🚨 Adulterar Payload (Role ➔ 'superadmin')</button>
+              <button class="btn-nav btn-warning" id="btn-jwt-none-attack">⚠️ Testar Ataque "alg: none"</button>
+              <button class="btn-nav" id="btn-jwt-expire">⏰ Forçar Token Expirado (exp no passado)</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: SIMÉTRICA VS ASSIMÉTRICA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Criptografia em JWT</span>
+        <h2 class="slide-title">Assinatura Simétrica (HS256) vs. Assimétrica (RS256)</h2>
+        <p class="slide-subtitle">Distribuição segura de chaves em arquiteturas monolíticas e microsserviços.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔑 Assinatura Simétrica (HMAC SHA-256 / HS256)</div>
+          <div class="card-body">
+            <p>O emissor e todos os validadores compartilham exatamente a mesma <strong>SECRET_KEY</strong>.</p>
+            <ul class="bullet-list">
+              <li><strong>Vantagem:</strong> Ultrarrápida e implementação trivial.</li>
+              <li><strong>Risco Crítico:</strong> Se um microsserviço que apenas valida o token tiver sua chave vazada, qualquer pessoa pode usá-la para emitir novos tokens com poderes de administrador!</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">🏛️ Assinatura Assimétrica (RSA / RS256 / JWKS)</div>
+          <div class="card-body">
+            <p>Usa um par de chaves: <strong>Chave Privada</strong> para emitir; <strong>Chave Pública</strong> para validar.</p>
+            <ul class="bullet-list">
+              <li><strong>Vantagem:</strong> O Serviço de Identidade mantém a chave privada em cofre. Todos os outros microsserviços baixam a chave pública via JWKS (RFC 7517) e apenas validam tokens.</li>
+              <li><strong>Segurança:</strong> Mesmo que a chave pública vaze, ninguém consegue emitir tokens válidos!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: REFRESH TOKEN ROTATION -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Ciclo de Vida do Token</span>
+        <h2 class="slide-title">Refresh Token Rotation (RTR) & Detecção de Roubo</h2>
+        <p class="slide-subtitle">Como conciliar segurança de curto prazo com sessões prolongadas e detecção ativa de replay.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⏱️ Access Token (Curta Duração)</div>
+          <div class="card-body">
+            <p>TTL típico: <strong>5 a 15 minutos</strong>.</p>
+            <p>Enviado em toda requisição HTTP no cabeçalho <code style="color: var(--accent-cyan);">Authorization: Bearer &lt;token&gt;</code>.</p>
+            <p>Se interceptado, a janela temporal de exposição é minúscula.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔄 Refresh Token com Rotação (RTR)</div>
+          <div class="card-body">
+            <p>TTL típico: <strong>7 a 30 dias</strong>.</p>
+            <p>Trafegado estritamente na rota de renovação (<code style="color: var(--accent-emerald);">POST /auth/refresh</code>).</p>
+            <p><strong>A Cada Uso:</strong> O refresh token antigo é invalidado imediatamente e um novo par de tokens é emitido.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; border-color: var(--accent-rose);">
+        <div class="card-title" style="color: var(--accent-rose);">🚨 Mecanismo de Detecção de Reuso (Reuse Detection)</div>
+        <div class="card-body">
+          <p>Se um invasor interceptou um Refresh Token antigo e tentar utilizá-lo após ele já ter sido rotacionado pelo usuário legítimo, o servidor detecta: <em>"Token zumbi reutilizado!"</em>. O sistema dispara um alerta e <strong>revoga imediatamente toda a família de tokens</strong>, protegendo a conta e forçando novo login.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: SIMULADOR RTR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Refresh Token Rotation (RTR)</h2>
+        <p class="slide-subtitle">Acompanhe a expiração dos tokens, rotacione gerações e simule um ataque de replay em tempo real.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🔄 Ciclo de Vida da Sessão & Detecção de Reuso</div>
+          <span class="sim-badge">Live Token Engine</span>
+        </div>
+
+        <div class="grid-2" style="margin-bottom: 20px;">
+          <div class="card">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">ACCESS TOKEN (TTL: 15s)</div>
+            <div id="rtr-access-time" style="font-size: 1.6rem; font-weight: 800; color: var(--accent-emerald);">15s</div>
+            <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+              <div id="rtr-access-progress" style="height: 100%; width: 100%; background: var(--accent-emerald); transition: width 1s linear;"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;">REFRESH TOKEN (TTL: 60s)</div>
+            <div id="rtr-refresh-time" style="font-size: 1.6rem; font-weight: 800; color: var(--accent-cyan);">60s</div>
+            <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 8px; overflow: hidden;">
+              <div id="rtr-refresh-progress" style="height: 100%; width: 100%; background: var(--accent-cyan); transition: width 1s linear;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="rtr-family-display" style="margin-bottom: 16px; font-size: 0.9rem; line-height: 1.6;"></div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+          <button class="btn-nav btn-primary" id="btn-rtr-call-api">🚀 Fazer Requisição com Access Token</button>
+          <button class="btn-nav btn-success" id="btn-rtr-refresh">🔄 Renovar Tokens (/auth/refresh)</button>
+          <button class="btn-nav btn-danger" id="btn-rtr-replay-attack">🚨 Simular Ataque de Replay (Reutilizar Token Antigo)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: RBAC & MATRIZ DE ESCOPOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Controle de Acesso</span>
+        <h2 class="slide-title">Modelo RBAC (Role-Based Access Control) & Escopos</h2>
+        <p class="slide-subtitle">Como modelar permissões atômicas desacopladas de regras engessadas no código.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">👥 Hierarquia de Papéis (Roles)</div>
+          <div class="card-body">
+            <p>Os usuários são vinculados a funções de negócio bem definidas:</p>
+            <ul class="bullet-list">
+              <li><strong>Viewer:</strong> Acesso somente-leitura aos recursos públicos.</li>
+              <li><strong>Editor:</strong> Leitura e escrita de recursos sob sua alçada.</li>
+              <li><strong>Admin:</strong> Acesso irrestrito a operações administrativas globais.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 Escopos e Permissões Granulares</div>
+          <div class="card-body">
+            <p>O código da API <strong>nunca valida papéis fixos</strong>; valida escopos de ação e recurso:</p>
+            <ul class="bullet-list">
+              <li><code style="color: var(--accent-cyan);">articles:read</code>, <code style="color: var(--accent-cyan);">articles:write</code></li>
+              <li><code style="color: var(--accent-amber);">invoices:pay</code></li>
+              <li><code style="color: var(--accent-rose);">users:delete</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">⚡ O Alerta do BOLA / IDOR (OWASP API1)</div>
+        <div class="card-body">
+          <p>Ter o papel de "Editor" e a permissão <code style="color: var(--accent-cyan);">documents:read</code> <strong>não significa que você pode ler os documentos confidenciais de outros usuários!</strong></p>
+          <p>O controller deve obrigatoriamente validar a posse do recurso específico: <code style="color: var(--accent-emerald);">document.owner_id == current_user.id</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: PIPELINE DE MIDDLEWARES -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Arquitetura de Middlewares</span>
+        <h2 class="slide-title">Pipeline de Middlewares & Cadeia de Responsabilidade</h2>
+        <p class="slide-subtitle">A anatomia de interceptação sequencial em frameworks de alta performance.</p>
+      </div>
+
+      <div class="pipeline-track">
+        <div class="pipeline-node" id="node-rate">
+          <div style="font-size: 1.2rem;">🛡️</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">1. Rate Limiting</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Bloqueia Brute-Force</div>
+        </div>
+
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node" id="node-authn">
+          <div style="font-size: 1.2rem;">👤</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">2. AuthN (JWT)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Valida Assinatura/Exp</div>
+        </div>
+
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node" id="node-authz">
+          <div style="font-size: 1.2rem;">🔑</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">3. AuthZ (RBAC)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Checa Escopo/Papel</div>
+        </div>
+
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node" id="node-bola">
+          <div style="font-size: 1.2rem;">📄</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">4. Posse (BOLA)</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">owner_id == user.id</div>
+        </div>
+
+        <div class="pipeline-arrow">➔</div>
+
+        <div class="pipeline-node" id="node-handler">
+          <div style="font-size: 1.2rem;">⚡</div>
+          <div style="font-weight: 700; font-size: 0.85rem; color: #fff;">5. Controller</div>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Regra de Negócio</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">❌ HTTP 401 Unauthorized</div>
+          <div class="card-body">
+            <p>Disparado pelo estágio de <strong>AuthN</strong> se o cabeçalho Authorization estiver ausente, se a assinatura JWT for inválida ou se o token estiver expirado.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-amber);">🚫 HTTP 403 Forbidden</div>
+          <div class="card-body">
+            <p>Disparado pelos estágios de <strong>AuthZ ou BOLA</strong>. A identidade do usuário foi comprovada com sucesso, mas ele não tem privilégios suficientes para acessar aquele registro.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: SIMULADOR DE PIPELINE RBAC -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Pipeline de Middlewares & RBAC</h2>
+        <p class="slide-subtitle">Selecione uma identidade e uma rota para assistir a validação em cascata e a resposta RFC 9457.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🚦 Execução do Pipeline de Requisição</div>
+          <span class="sim-badge">Chain of Responsibility</span>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Identidade / Usuário Autenticado</label>
+              <select class="form-select" id="sim-user-select">
+                <option value="anonymous">Anônimo (Sem cabeçalho Authorization)</option>
+                <option value="viewer">Carlos (Viewer - Permissão: articles:read)</option>
+                <option value="editor" selected>Mariana (Editor - Permissões: articles:read, articles:write)</option>
+                <option value="admin">Eduardo (Admin - Acesso total '*')</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Rota e Operação Alvo</label>
+              <select class="form-select" id="sim-route-select">
+                <option value="GET /api/v1/articles">GET /api/v1/articles (Público / Leitura geral)</option>
+                <option value="POST /api/v1/articles">POST /api/v1/articles (Exige escopo articles:write)</option>
+                <option value="DELETE /api/v1/users/42">DELETE /api/v1/users/42 (Exige papel Admin)</option>
+                <option value="GET /api/v1/documents/doc_104">GET /api/v1/documents/doc_104 (BOLA Check - Pertence à Mariana)</option>
+              </select>
+            </div>
+
+            <button class="btn-nav btn-primary" id="btn-fire-pipeline" style="width: 100%; margin-top: 10px;">
+              🚀 Disparar Requisição pelo Pipeline
+            </button>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label class="form-label">Resposta HTTP (RFC 9457 Problem Details)</label>
+              <textarea class="form-textarea" id="pipeline-response-output" rows="10" readonly style="color: var(--accent-cyan); font-size: 0.8rem;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: CÓDIGO FASTAPI -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Implementação Prática</span>
+        <h2 class="slide-title">Proteção de Rotas com FastAPI & Dependencies</h2>
+        <p class="slide-subtitle">Código limpo, tipado e pronto para produção com injeção de dependência.</p>
+      </div>
+
+      <pre><code class="language-python">from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+
+app = FastAPI(title="TaskFlow API")
+security = HTTPBearer()
+SECRET_KEY = "sua_chave_mestra_super_secreta"
+
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expirado.")
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=401, detail="Assinatura inválida.")
+
+def require_permission(permission: str):
+    def checker(user: dict = Depends(get_current_user)):
+        user_perms = user.get("permissions", [])
+        if permission not in user_perms and "*" not in user_perms:
+            raise HTTPException(status_code=403, detail=f"Falta permissão: {permission}")
+        return user
+    return checker
+
+@app.post("/api/v1/articles")
+async def create_article(article_data: dict, user: dict = Depends(require_permission("articles:write"))):
+    return {"message": "Artigo publicado!", "author": user["sub"]}</code></pre>
+    </section>
+
+    <!-- SLIDE 17: CHECKLIST DE PRODUÇÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Engenharia de Produção</span>
+        <h2 class="slide-title">Checklist de Segurança para APIs em Produção</h2>
+        <p class="slide-subtitle">Auditoria técnica essencial antes de abrir endpoints para a internet.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔒 Criptografia & Tokens</div>
+          <ul class="bullet-list">
+            <li>HTTPS / TLS 1.3 obrigatório de ponta a ponta.</li>
+            <li>Senhas com Argon2id ou bcrypt (Work Factor &ge; 12).</li>
+            <li>Comparação em tempo constante (<code style="color: var(--accent-cyan);">hmac.compare_digest</code>).</li>
+            <li>Access Tokens com TTL curto (&le; 15 minutos).</li>
+            <li>Refresh Token Rotation (RTR) com detecção de reuso ativada.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛡️ Controle de Acesso & Infra</div>
+          <ul class="bullet-list">
+            <li>Verificação mandatória de posse de recursos contra BOLA.</li>
+            <li>Rate Limiting rigoroso nas rotas de autenticação (/login, /refresh).</li>
+            <li>Cookies protegidos com flags <code style="color: var(--accent-emerald);">HttpOnly; Secure; SameSite=Strict</code>.</li>
+            <li>Segredos fora do Git e gerenciados via Secrets Manager / Vault.</li>
+            <li>Padronização de respostas de erro seguindo a RFC 9457.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge">FATEC RIBEIRÃO PRETO • ADS 2026.2</span>
+      <h1 class="cover-title">Dúvidas & Discussão Técnica</h1>
+      <p class="cover-subtitle">Utilize os simuladores interativos para testar cenários de borda, algoritmos KDF, adulteração de JWT e rotação de Refresh Tokens!</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Disciplina: Programação Web • Fatec SP</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Overview / Table of Contents -->
+  <div class="modal-backdrop" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Índice da Apresentação</div>
+        <button class="btn-nav" id="modal-close">✕ Fechar (ESC)</button>
+      </div>
+      <div class="modal-body" id="toc-grid"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
