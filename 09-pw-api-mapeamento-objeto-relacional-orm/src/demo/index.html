@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API: Mapeamento Objeto-Relacional (ORM) | Fatec Ribeirão Preto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| API: Mapeamento Objeto-Relacional (ORM)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 18</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">API: Mapeamento Objeto-Relacional (ORM)</h1>
+      <p class="cover-subtitle">Estudo das técnicas de abstração para a persistência de dados. Implementação prática de bibliotecas de Mapeamento Objeto-Relacional (ORM) para a tradução de paradigmas entre a aplicação e o banco de dados. Mapeamento de entidades, relacionamentos, migrações estruturais (migrations) e gerenciamento de transações, com ênfase na mitigação de gargalos clássicos de performance, como o problema de consultas N+1.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd>, barra de espaço ou tecla <kbd>M</kbd> para o índice completo.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: AGENDA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">00. Visão Geral</span>
+        <h2 class="slide-title">Agenda da Aula</h2>
+        <p class="slide-subtitle">Roteiro técnico e conceitual sobre persistência moderna em APIs.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">⚡ 01. Impedance Mismatch</div>
+          <div class="card-body">
+            <p>O abismo entre grafos orientados a objetos e a álgebra relacional. O espectro: Raw SQL vs Query Builders vs Micro-ORMs vs Full ORMs.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏛️ 02. Active Record vs Data Mapper</div>
+          <div class="card-body">
+            <p>Acoplamento vs Separação de Responsabilidade (SRP). O padrão Unit of Work (UoW), Change Tracking e Dirty Checking automático.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧩 03. Entidades & Relacionamentos</div>
+          <div class="card-body">
+            <p>Mapeamento declarativo tipado, UUIDv7 vs Auto-increment, associações 1:1, 1:N e N:N, ações em cascata e Soft Delete.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🚨 04. O Problema de Consultas N+1</div>
+          <div class="card-body">
+            <p>Anatomia do maior gargalo de latência em APIs. Lazy Loading vs Joined Eager Loading (`LEFT JOIN`) vs Select-IN Eager Loading (`IN (...)`).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔒 05. Transações & Concorrência</div>
+          <div class="card-body">
+            <p>Propriedades ACID, a diferença entre `flush()` e `commit()`, e controle de concorrência: Pessimistic (`FOR UPDATE`) vs Optimistic Locking (`version`).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛠️ 06. Migrações & Produção</div>
+          <div class="card-body">
+            <p>Infraestrutura como Código no banco com Alembic/Prisma, Zero-Downtime Migrations (Expand & Contract) e dimensionamento de Connection Pool.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3: IMPEDANCE MISMATCH -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Fundamentos de Persistência</span>
+        <h2 class="slide-title">O Descasamento de Impedância Objeto-Relacional</h2>
+        <p class="slide-subtitle">O conflito teórico entre o grafo de objetos e as tabelas relacionais bidimensionais.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-purple);">☕ Modelo Orientado a Objetos</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Grafos Aninhados:</strong> Objetos possuem referências diretas e coleções em memória (<code style="color: var(--accent-purple);">user.orders[0].items</code>).</li>
+              <li><strong>Identidade por Ponteiro:</strong> Dois objetos são idênticos se ocupam o mesmo endereço de memória (<code style="color: var(--accent-cyan);">a is b</code>).</li>
+              <li><strong>Herança e Polimorfismo:</strong> Classes herdam comportamentos e propriedades hierarquicamente.</li>
+              <li><strong>Encapsulamento:</strong> O estado interno é protegido com modificadores privados.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">🗄️ Modelo Relacional (SQL)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Tabelas Planas:</strong> Relações bidimensionais normalizadas (Linhas e Colunas).</li>
+              <li><strong>Identidade por Chave Primária:</strong> A unicidade é determinada pelo valor escalar da PK (<code style="color: var(--accent-emerald);">id = 104</code>).</li>
+              <li><strong>Álgebra Relacional:</strong> Sem herança direta; relações são resolvidas por Junções (<code style="color: var(--accent-cyan);">JOIN</code>) e Foreign Keys.</li>
+              <li><strong>Acesso Ad-hoc:</strong> Qualquer query arbitrária pode projetar colunas livremente.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">💡 A Missão Central do ORM</div>
+        <div class="card-body">
+          <p>O <strong>ORM (Object-Relational Mapping)</strong> atua como a ponte bidirecional que traduz automaticamente operações de orientação a objetos em comandos SQL eficientes, gerenciando o ciclo de vida e a integridade dos dados.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4: ACTIVE RECORD VS DATA MAPPER -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões Arquiteturais</span>
+        <h2 class="slide-title">Active Record vs. Data Mapper</h2>
+        <p class="slide-subtitle">A dicotomia clássica descrita por Martin Fowler no livro P of EAA.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📦 Active Record (Django, Rails, Prisma)</div>
+          <div class="card-body">
+            <p>A entidade representa tanto a linha da tabela quanto os métodos de acesso a dados:</p>
+            <pre><code>user = User(name="Eduardo")
+user.save()  # A própria entidade grava a si mesma!
+users = User.find(active=True)</code></pre>
+            <p><strong>Vantagem:</strong> Simplicidade e altíssima velocidade em CRUDs.</p>
+            <p><strong>Desvantagem:</strong> Alto acoplamento; viola o princípio de responsabilidade única (SRP) e dificulta testes unitários desacoplados.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">🏛️ Data Mapper (SQLAlchemy 2.0, Hibernate)</div>
+          <div class="card-body">
+            <p>A entidade é um objeto de domínio puro, isolado da camada de banco:</p>
+            <pre><code>user = User(name="Eduardo")
+session.add(user)  # O Repositório/Sessão cuida da gravação!
+await session.commit()</code></pre>
+            <p><strong>Vantagem:</strong> Desacoplamento total, arquitetura limpa (*Clean Architecture*) e excelente testabilidade.</p>
+            <p><strong>Desvantagem:</strong> Maior verbosidade e curva de aprendizado inicial.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: UNIT OF WORK & DIRTY CHECKING -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões Arquiteturais</span>
+        <h2 class="slide-title">Unit of Work (UoW) & Dirty Checking</h2>
+        <p class="slide-subtitle">Como os ORMs modernos rastreiam mudanças em memória e agrupam comandos atômicos.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Snapshot Inicial</div>
+          <div class="card-body">
+            <p>Ao carregar <code style="color: var(--accent-cyan);">user = session.get(User, 104)</code>, a Unidade de Trabalho salva um snapshot do estado exato da entidade na memória.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">2. Modificação em Memória</div>
+          <div class="card-body">
+            <p>Você altera atributos normalmente:</p>
+            <pre><code>user.email = "novo@fatec.br"</code></pre>
+            <p>Nenhum comando SQL é disparado neste momento!</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. Dirty Checking no Commit</div>
+          <div class="card-body">
+            <p>Ao chamar <code style="color: var(--accent-emerald);">session.commit()</code>, o ORM compara o estado atual com o snapshot e gera o <code style="color: var(--accent-emerald);">UPDATE</code> cirúrgico apenas para os campos alterados!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">⚡ Otimização Topológica</div>
+        <div class="card-body">
+          <p>O Unit of Work organiza automaticamente a ordem lógica das operações de banco (insere primeiro os pais para obter suas chaves estrangeiras, insere depois os filhos, e por fim executa atualizações e exclusões), evitando violações de FK acidentais.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: MAPEAMENTO E CHAVES -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Modelagem de Entidades</span>
+        <h2 class="slide-title">Estratégias de Chaves Primárias: UUIDv7 vs. Auto-Increment</h2>
+        <p class="slide-subtitle">O impacto da escolha da PK na segurança da API e na fragmentação de índices B-Tree.</p>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Tipo de Chave</th>
+              <th>Tamanho</th>
+              <th>Segurança contra IDOR</th>
+              <th>Performance no Índice B-Tree</th>
+              <th>Veredito</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Auto-Increment / Sequence</strong></td>
+              <td>4 a 8 bytes (BigInt)</td>
+              <td><span style="color: var(--accent-rose);">Péssima:</span> Vaza métricas de negócio e facilita scraping por enumeração.</td>
+              <td><span style="color: var(--accent-emerald);">Ótima:</span> Inserção sequencial (Append-only). Zero fragmentação.</td>
+              <td>Legado / Tabelas internas simples.</td>
+            </tr>
+            <tr>
+              <td><strong>UUIDv4 (Aleatório)</strong></td>
+              <td>16 bytes</td>
+              <td><span style="color: var(--accent-emerald);">Máxima:</span> Impossível prever ou enumerar IDs.</td>
+              <td><span style="color: var(--accent-rose);">Terrível:</span> Fragmenta violentamente o índice B-Tree em altas taxas de inserção.</td>
+              <td>Bom para segurança, ruim para alta escrita.</td>
+            </tr>
+            <tr>
+              <td><strong>UUIDv7 (Time-Ordered)</strong></td>
+              <td>16 bytes</td>
+              <td><span style="color: var(--accent-emerald);">Máxima:</span> Aleatório nos bits finais.</td>
+              <td><span style="color: var(--accent-emerald);">Excelente:</span> Inicia com timestamp Unix; inserções ordenadas no tempo!</td>
+              <td><span style="color: var(--accent-cyan); font-weight: 700;">PADRÃO OURO MODERNO!</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: O PROBLEMA N+1 -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. O Problema de Consultas N+1</span>
+        <h2 class="slide-title">Anatomia do Problema de Consultas N+1</h2>
+        <p class="slide-subtitle">O gargalo mais recorrente em APIs que utilizam ORMs com carregamento preguiçoso.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚨 O Código Inocente que Destrói a API</div>
+          <div class="card-body">
+            <pre><code># 1 Query inicial
+authors = session.scalars(select(Author).limit(50)).all()
+
+# No loop de serialização JSON (Pydantic / Express):
+for author in authors:
+    # LAZY LOAD: Dispara 1 query para cada autor!
+    print(author.books)</code></pre>
+            <p><strong>Resultado Real:</strong></p>
+            <ul class="bullet-list">
+              <li>1 query para carregar os 50 autores.</li>
+              <li>50 queries extras buscando os livros de cada autor individualmente.</li>
+              <li><strong>Total: 1 + 50 = 51 consultas de rede!</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">⭐ A Solução: Eager Loading (selectinload)</div>
+          <div class="card-body">
+            <pre><code>stmt = (
+    select(Author)
+    .options(selectinload(Author.books))
+    .limit(50)
+)
+authors = session.scalars(stmt).all()</code></pre>
+            <p><strong>O ORM executa EXATAMENTE 2 queries:</strong></p>
+            <ol style="margin-left: 20px; margin-top: 8px; line-height: 1.6; color: var(--text-muted);">
+              <li><code>SELECT * FROM authors LIMIT 50;</code></li>
+              <li><code>SELECT * FROM books WHERE author_id IN (1, 2, ..., 50);</code></li>
+            </ol>
+            <p style="margin-top: 8px;">O relacionamento é montado em memória com <strong>zero produto cartesiano</strong> e custo previsível!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: SIMULADOR N+1 WATERFALL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador do Problema N+1 & Estratégias de Carregamento</h2>
+        <p class="slide-subtitle">Compare visualmente a cascata de rede do Lazy Loading contra Joined e Select-IN Eager Loading.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">⚡ Profiler de Consultas de Banco em Tempo Real</div>
+          <div id="n1-status-badge" class="status-pill valid">Aguardando execução...</div>
+        </div>
+
+        <div class="sim-grid" style="margin-bottom: 16px;">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Estratégia de Carregamento (Loading Strategy)</label>
+              <select class="form-select" id="n1-strategy-select">
+                <option value="lazy">Lazy Loading (Padrão perigoso - Dispara queries no Loop)</option>
+                <option value="joined">Joined Eager Loading (LEFT OUTER JOIN - 1 query)</option>
+                <option value="selectin" selected>Select-IN Eager Loading (selectinload - 2 queries)</option>
+              </select>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label">Quantidade de Autores (N)</label>
+                <select class="form-select" id="n1-count-select">
+                  <option value="10">10 Autores</option>
+                  <option value="25" selected>25 Autores</option>
+                  <option value="50">50 Autores</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Latência de Rede (Round-Trip)</label>
+                <input type="number" class="form-input" id="n1-latency-input" value="8" min="1" max="50">
+              </div>
+            </div>
+
+            <button class="btn-nav btn-primary" id="btn-run-n1" style="width: 100%; margin-top: 6px;">
+              ⚡ Executar Consulta
+            </button>
+          </div>
+
+          <div>
+            <div class="grid-2" style="margin-bottom: 10px;">
+              <div class="card" style="padding: 10px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Total de Queries de Rede</div>
+                <div id="n1-queries-count" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-cyan);">0</div>
+              </div>
+
+              <div class="card" style="padding: 10px;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Tempo Total em Rede</div>
+                <div id="n1-total-time" style="font-size: 1.4rem; font-weight: 800; color: var(--accent-rose);">0 ms</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">SQL Gerado pelo ORM</label>
+              <textarea class="form-textarea" id="n1-sql-output" rows="4" readonly style="color: var(--accent-emerald); font-size: 0.75rem;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="waterfall-container" id="n1-waterfall">
+          <div style="color: var(--text-dim); text-align: center; padding: 20px;">
+            Clique em "Executar Consulta" para visualizar a cascata de rede.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: TRANSAÇÕES FLUSH VS COMMIT -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Transações & ACID</span>
+        <h2 class="slide-title">Ciclo Transacional no ORM: flush() vs. commit()</h2>
+        <p class="slide-subtitle">A diferença vital entre sincronizar buffers de rede e persistir transações permanentemente.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-cyan);">🌊 session.flush()</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>Envia as instruções SQL pendentes (<code style="color: var(--accent-cyan);">INSERT/UPDATE</code>) para o buffer de conexão do SGBD.</li>
+              <li>Chaves geradas pelo banco (Sequences/IDs) tornam-se imediatamente acessíveis no objeto Python.</li>
+              <li><strong>A transação permanece ABERTA!</strong> Outras conexões ainda não veem os dados (Isolamento ACID) e a operação pode sofrer rollback completo.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-emerald);">
+          <div class="card-title" style="color: var(--accent-emerald);">💾 session.commit()</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>Chama implicitamente o <code style="color: var(--accent-cyan);">flush()</code> se houver alterações pendentes.</li>
+              <li>Dispara a instrução definitiva <code style="color: var(--accent-emerald);">COMMIT</code> no banco de dados.</li>
+              <li>Grava os dados no Write-Ahead Log (WAL) do disco, torna as alterações visíveis para todo o sistema e libera todas as travas e locks de linha.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: CONCORRÊNCIA E LOCKING -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Controle de Concorrência</span>
+        <h2 class="slide-title">Concorrência de Escrita: Pessimistic vs. Optimistic Locking</h2>
+        <p class="slide-subtitle">Como prevenir perdas de atualização (Lost Updates) e race conditions em APIs críticas.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔒 Pessimistic Locking (SELECT FOR UPDATE)</div>
+          <div class="card-body">
+            <p>Assume o pior: que conflitos certamente acontecerão. Bloqueia fisicamente a linha no SGBD durante a leitura:</p>
+            <pre><code>SELECT * FROM accounts
+WHERE id = 12 FOR UPDATE;</code></pre>
+            <p>Qualquer outra transação que tentar ler ou alterar a mesma linha é forçada a aguardar em fila até o commit.</p>
+            <p><strong>Trade-off:</strong> Segurança determinística, mas reduz o throughput e arrisca deadlocks.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--accent-purple);">
+          <div class="card-title" style="color: var(--accent-purple);">🚀 Optimistic Locking (Coluna version)</div>
+          <div class="card-body">
+            <p>Assume que conflitos são raros. Cada registro possui um contador inteiro <code style="color: var(--accent-purple);">version</code>:</p>
+            <pre><code>UPDATE accounts
+SET balance = 50, version = 2
+WHERE id = 12 AND version = 1;</code></pre>
+            <p>Se nenhuma linha for afetada, alguém atualizou antes! O ORM lança <code style="color: var(--accent-rose);">OptimisticLockException</code> e a API pode retentar.</p>
+            <p><strong>Trade-off:</strong> Sem travas de banco, altíssimo throughput de leitura.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: SIMULADOR DE CONCORRÊNCIA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Transações & Concorrência de Escrita</h2>
+        <p class="slide-subtitle">Simule dois usuários tentando comprar o mesmo assento de voo e observe o comportamento dos locks.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🛫 Cenário: Voo FATEC-2026 (Assento 12A - Resta 1 Vaga)</div>
+          <div style="display: flex; gap: 10px;">
+            <span class="sim-badge">Vagas: <span id="stock-display" style="color: #fff;">1</span></span>
+            <span class="sim-badge">Versão: <span id="version-display" style="color: #fff;">1</span></span>
+          </div>
+        </div>
+
+        <div class="sim-grid">
+          <div>
+            <div class="form-group">
+              <label class="form-label">Estratégia de Controle Concorrente</label>
+              <select class="form-select" id="lock-strategy-select">
+                <option value="none">Sem Lock (Controle Concorrente Desativado - Lost Update!)</option>
+                <option value="pessimistic">Pessimistic Lock (SELECT FOR UPDATE)</option>
+                <option value="optimistic" selected>Optimistic Lock (Coluna de Versão)</option>
+              </select>
+            </div>
+
+            <button class="btn-nav btn-primary" id="btn-run-concurrency" style="width: 100%; margin-top: 10px;">
+              🚀 Disparar Transações Concorrentes (Usuário A + B)
+            </button>
+          </div>
+
+          <div>
+            <div class="form-group">
+              <label class="form-label">Log de Execução Transacional do Banco</label>
+              <textarea class="form-textarea" id="concurrency-log" rows="8" readonly style="font-size: 0.75rem; color: var(--accent-cyan);"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: DATABASE MIGRATIONS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Migrações Estruturais</span>
+        <h2 class="slide-title">Migrações de Esquema (Database Migrations)</h2>
+        <p class="slide-subtitle">Infraestrutura como Código (IaC) para evolução segura e auditável do banco.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📝 O Arquivo de Migração (Alembic)</div>
+          <div class="card-body">
+            <p>Cada alteração de banco é um script no Git com funções reversíveis:</p>
+            <pre><code>def upgrade() -> None:
+    op.add_column('users', 
+        sa.Column('phone', sa.String(20))
+    )
+
+def downgrade() -> None:
+    op.drop_column('users', 'phone')</code></pre>
+            <p>Permite avançar para a versão mais recente (<code style="color: var(--accent-emerald);">upgrade head</code>) ou reverter mudanças com falhas (<code style="color: var(--accent-rose);">downgrade -1</code>).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎯 Tabela de Controle de Versão</div>
+          <div class="card-body">
+            <p>O banco de dados guarda uma tabela interna (<code style="color: var(--accent-cyan);">alembic_version</code>) contendo o hash único da migração atual:</p>
+            <pre><code>SELECT * FROM alembic_version;
+-- Resultado: 'rev_a1b2c3d4'</code></pre>
+            <p>Impede que o mesmo script seja rodado duas vezes e sincroniza pipelines CI/CD automaticamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: SIMULADOR DE MIGRAÇÕES -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Laboratório Interativo</span>
+        <h2 class="slide-title">Simulador de Ciclo de Vida de Migrações (Alembic)</h2>
+        <p class="slide-subtitle">Aplique e reverta migrações em tempo real e visualize as tabelas no esquema do banco.</p>
+      </div>
+
+      <div class="interactive-simulator">
+        <div class="sim-header">
+          <div class="sim-title">🛠️ Schema Migration Manager</div>
+          <div class="sim-badge">Revisão Atual: <span id="current-revision-display" style="color: #fff;">NULL</span></div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+          <button class="btn-nav btn-success" id="btn-migrate-upgrade">⬆️ Executar Upgrade (+1)</button>
+          <button class="btn-nav btn-danger" id="btn-migrate-downgrade">⬇️ Executar Downgrade (-1)</button>
+          <button class="btn-nav" id="btn-migrate-reset">🔄 Resetar Banco</button>
+        </div>
+
+        <div class="schema-tables-container" id="schema-tables-container" style="margin-bottom: 16px;"></div>
+
+        <div class="form-group">
+          <label class="form-label">SQL DDL Executado pela Migração</label>
+          <textarea class="form-textarea" id="migration-sql-log" rows="4" readonly style="color: var(--accent-emerald); font-size: 0.8rem;"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 14: FASTAPI & REPOSITORY PATTERN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">07. Implementação Prática</span>
+        <h2 class="slide-title">Arquitetura de Produção: SQLAlchemy 2.0 Assíncrono</h2>
+        <p class="slide-subtitle">Código limpo desacoplando consultas SQL do controlador HTTP com injeção de dependência.</p>
+      </div>
+
+      <pre><code class="language-python"># Repositório com Eager Loading defensivo contra N+1
+class UserRepository:
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def get_by_id_with_orders(self, user_id: UUID) -> User | None:
+        stmt = (
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.orders))  # Resolve N+1 em 2 queries limpas!
+        )
+        return await self.session.scalar(stmt)
+
+# Rota no FastAPI com injeção de dependência da sessão assíncrona
+@app.get("/api/v1/users/{user_id}", response_model=UserResponse)
+async def read_user(user_id: UUID, db: AsyncSession = Depends(get_db_session)):
+    repo = UserRepository(db)
+    user = await repo.get_by_id_with_orders(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+    return user</code></pre>
+    </section>
+
+    <!-- SLIDE 15: ZERO DOWNTIME MIGRATIONS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">08. Engenharia de Produção</span>
+        <h2 class="slide-title">Zero-Downtime Migrations: O Padrão Expand & Contract</h2>
+        <p class="slide-subtitle">Como alterar esquemas em bancos com milhões de linhas sem travar requisições.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Expand (Expandir)</div>
+          <div class="card-body">
+            <p>Adicione a nova coluna permitindo nulos:</p>
+            <pre><code>ALTER TABLE orders
+ADD COLUMN status VARCHAR(20) NULL;</code></pre>
+            <p>Evita locks exclusivos longos. A aplicação antiga continua rodando liso.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">2. Backfill (Preencher)</div>
+          <div class="card-body">
+            <p>Preencha os dados antigos em batches pequenos em background:</p>
+            <pre><code>UPDATE orders
+SET status = 'pending'
+WHERE status IS NULL
+LIMIT 5000;</code></pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. Contract (Contrair)</div>
+          <div class="card-body">
+            <p>Após todas as linhas estarem povoadas e a nova API estiver no ar, adicione a restrição <code style="color: var(--accent-cyan);">NOT NULL</code>:</p>
+            <pre><code>ALTER TABLE orders
+ALTER COLUMN status
+SET NOT NULL;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: ANTIPATTERNS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">09. Antipatterns</span>
+        <h2 class="slide-title">Antipatterns Clássicos com ORMs em APIs</h2>
+        <p class="slide-subtitle">Os erros mais caros cometidos em desenvolvimento de backend.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 Sobrecarga de Hidratação (Hydration)</div>
+          <div class="card-body">
+            <p>Fazer <code style="color: var(--accent-rose);">select(User).all()</code> para 50.000 linhas cria 50.000 instâncias em memória rastreadas pelo Unit of Work, consumindo centenas de MB de RAM.</p>
+            <p><strong>Solução:</strong> Use paginação estrita (<code style="color: var(--accent-emerald);">LIMIT/OFFSET</code>) ou projeção de tuplas (<code style="color: var(--accent-emerald);">select(User.id, User.name)</code>).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title" style="color: var(--accent-rose);">🚫 Inserts em Loop Individual</div>
+          <div class="card-body">
+            <p>Fazer <code style="color: var(--accent-rose);">for item in lista: session.add(item); session.commit()</code> gera milhares de transações de rede individuais.</p>
+            <p><strong>Solução:</strong> Use operações em lote (<code style="color: var(--accent-emerald);">session.add_all(lista)</code> ou <code style="color: var(--accent-emerald);">bulk_insert_mappings</code>).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: CHECKLIST DE PRODUÇÃO -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">10. Auditoria de Produção</span>
+        <h2 class="slide-title">Checklist de Persistência & ORM</h2>
+        <p class="slide-subtitle">Critérios técnicos mandatórios antes do deploy de qualquer API.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🔍 Performance & Queries</div>
+          <ul class="bullet-list">
+            <li>Prevenção de N+1 garantida com <code style="color: var(--accent-cyan);">selectinload</code> nas rotas com relacionamentos.</li>
+            <li>Consultas de listagem paginadas com limite máximo fixo.</li>
+            <li>Chaves primárias modeladas com UUIDv7 ou BigInt sequencial.</li>
+            <li>Connection Pool dimensionado com base nos núcleos do SGBD e <code style="color: var(--accent-emerald);">pool_pre_ping=True</code>.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🛡️ Concorrência & Schemas</div>
+          <ul class="bullet-list">
+            <li>Toda alteração de banco versionada via migrações Alembic/Prisma.</li>
+            <li>Migrações em tabelas grandes executadas sob o padrão Expand & Contract.</li>
+            <li>Operações críticas concorrentes protegidas por Optimistic Locking.</li>
+            <li>Gerenciamento de sessão com context managers assíncronos (Zero Connection Leaks).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge">FATEC RIBEIRÃO PRETO • ADS 2026.2</span>
+      <h1 class="cover-title">Dúvidas & Prática nos Simuladores</h1>
+      <p class="cover-subtitle">Explore o profiler de consultas N+1, o simulador de locking concorrente e o gerenciador de migrações nos laboratórios!</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Disciplina: Programação Web • Fatec SP</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Overview / Table of Contents -->
+  <div class="modal-backdrop" id="overview-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Índice da Apresentação</div>
+        <button class="btn-nav" id="modal-close">✕ Fechar (ESC)</button>
+      </div>
+      <div class="modal-body" id="toc-grid"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
