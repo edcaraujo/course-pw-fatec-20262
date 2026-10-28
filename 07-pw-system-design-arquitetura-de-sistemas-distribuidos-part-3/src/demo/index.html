@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Design: Arquitetura de Sistemas Distribuídos (Part. 3) | Fatec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Application Navigation Bar -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-badge">FATEC 2026.2</span>
+      <span>Programação Web</span>
+      <span style="color: var(--text-muted); font-weight: 400;">| System Design (Part. 3)</span>
+    </div>
+    
+    <div class="header-controls">
+      <button class="btn-nav" id="btn-prev" title="Slide Anterior (Seta Esquerda)">← Anter</button>
+      <span class="slide-counter" id="slide-counter">1 / 32</span>
+      <button class="btn-nav" id="btn-next" title="Próximo Slide (Seta Direita / Espaço)">Próx →</button>
+      <button class="btn-nav" id="btn-overview" title="Menu de Navegação (Tecla M)">📱 Índice (M)</button>
+      <button class="btn-nav" id="btn-notes" title="Notas do Apresentador (Tecla P)">💡 Notas (P)</button>
+      <button class="btn-nav" id="btn-fullscreen" title="Modo Tela Cheia (Tecla F)">⛶ Tela Cheia</button>
+    </div>
+  </header>
+
+  <!-- Top Progress Bar -->
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <!-- Slides Viewport -->
+  <main class="slides-viewport">
+
+    <!-- SLIDE 1: CAPA -->
+    <section class="slide slide-cover active">
+      <span class="cover-badge">FATEC • PROGRAMAÇÃO WEB 2026.2</span>
+      <h1 class="cover-title">System Design: Arquitetura de Sistemas Distribuídos (Part. 3)</h1>
+      <p class="cover-subtitle">Robustez em Sistemas Críticos: Alta Disponibilidade (HA) vs. Tolerância a Falhas (FT), Padrões de Resiliência (Circuit Breaker, Jitter, Bulkheads), Consenso & Quorum, Teoremas CAP & PACELC, Replicação e Observabilidade Avançada.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">🎓</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Professor & Engenheiro de Software • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono);">
+        Navegação: Use as setas <kbd>←</kbd> <kbd>→</kbd>, barra de espaço ou tecla <kbd>M</kbd> para o índice completo.
+      </div>
+    </section>
+
+    <!-- SLIDE 2: ANATOMIA DA ROBUSTEZ -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Robustez & Confiabilidade</span>
+        <h2 class="slide-title">Anatomia da Robustez em Sistemas Distribuídos</h2>
+        <p class="slide-subtitle">O espectro fundamental: Confiabilidade, Resiliência e Disponibilidade sob o axioma "Design for Failure".</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">🛡️ Confiabilidade (Reliability)</div>
+          <div class="card-body">
+            <p>Probabilidade de que um serviço opere de forma correta e livre de erros durante um período determinado.</p>
+            <p>Um sistema confiável <strong>não corrompe dados</strong>, não emite respostas incoerentes e honra seus contratos estritos de negócio.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌱 Resiliência (Resilience)</div>
+          <div class="card-body">
+            <p>Capacidade intrínseca da arquitetura de absorver o impacto de falhas parciais e se auto-recuperar sem colapso total.</p>
+            <p>Assume que falhas em nós e redes são eventos diários e normais, isolando componentes enfermos.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⏱️ Disponibilidade (Availability)</div>
+          <div class="card-body">
+            <p>Proporção do tempo total em que o sistema está funcional e apto a receber requisições de clientes externos.</p>
+            <p>Mensurada na "Matemática dos Noves" (ex: 99.9% a 99.999% de uptime contratual).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">⚡ O Espectro das Falhas em Ambientes Reais</div>
+        <div class="card-body">
+          <ul class="bullet-list">
+            <li><strong>Falhas Transitórias:</strong> Perda momentânea de pacotes, lentidão de GC ou timeouts pontuais (resolvidas via retry prudente).</li>
+            <li><strong>Falhas Permanentes:</strong> Queima de placa de rede ou disco NVMe danificado (exigem failover automático).</li>
+            <li><strong>Falhas Bizantinas:</strong> Nós que enviam mensagens divergentes ou corrompidas (exigem protocolos de consenso e quorums).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Deixe claro que sistemas distribuídos não tentam evitar falhas físicas; eles assumem a quebra contínua e são desenhados para que a queda de nós individuais seja imperceptível ao usuário final.
+      </div>
+    </section>
+
+    <!-- SLIDE 3: FAULT TOLERANCE VS HIGH AVAILABILITY -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Robustez & Confiabilidade</span>
+        <h2 class="slide-title">Fault Tolerance vs. High Availability (HA)</h2>
+        <p class="slide-subtitle">Dicotomia técnica: Continuidade ininterrupta vs. Recuperação rápida aceitável.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🔄 Alta Disponibilidade (High Availability - HA)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container" style="margin-bottom: 10px;">
+              <svg class="svg-diagram" viewBox="0 0 380 75" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-ha-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                  <marker id="arr-ha-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <rect x="8" y="10" width="125" height="52" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+                <text x="70" y="30" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Nó Primário</text>
+                <text x="70" y="46" fill="#a7f3d0" font-size="7.5" text-anchor="middle" font-family="system-ui">Ativo (Líder)</text>
+
+                <line x1="135" y1="26" x2="238" y2="26" stroke="#34d399" stroke-width="1.4" marker-end="url(#arr-ha-em)"/>
+                <text x="187" y="20" fill="#34d399" font-size="7" font-weight="700" text-anchor="middle" font-family="system-ui">Heartbeat PUSH</text>
+
+                <line x1="135" y1="46" x2="238" y2="46" stroke="#f43f5e" stroke-width="1.4" stroke-dasharray="3,2" marker-end="url(#arr-ha-rose)"/>
+                <text x="187" y="58" fill="#f43f5e" font-size="7" font-weight="700" text-anchor="middle" font-family="system-ui">Failover (5-15s)</text>
+
+                <rect x="245" y="10" width="125" height="52" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+                <text x="307" y="30" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Nó Standby</text>
+                <text x="307" y="46" fill="#93c5fd" font-size="7.5" text-anchor="middle" font-family="system-ui">Passivo (Espera)</text>
+              </svg>
+            </div>
+            <p>Projetada para garantir que o sistema esteja operando na esmagadora maioria do tempo, aceitando <strong>breves momentos de failover</strong>.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Comportamento sob Falha:</strong> Chaveamento automático para nó standby em segundos/minutos via Health Checks.</li>
+              <li><strong>Impacto:</strong> Requisições em voo podem receber erro 503 e exigir reconexão.</li>
+              <li><strong>Custo & Viabilidade:</strong> Custo acessível e elástico (padrão em nuvem, e-commerce, bancos digitais e APIs Web).</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">🛡️ Tolerância a Falhas (Fault Tolerance - FT)</div>
+          <div class="card-body">
+            <div class="svg-diagram-container" style="margin-bottom: 10px;">
+              <svg class="svg-diagram" viewBox="0 0 380 75" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="10" width="120" height="52" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.3"/>
+                <text x="68" y="30" fill="#c084fc" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Nó A (Lockstep)</text>
+                <text x="68" y="46" fill="#e9d5ff" font-size="7.5" text-anchor="middle" font-family="system-ui">Ciclo de clock 1</text>
+
+                <line x1="130" y1="28" x2="248" y2="28" stroke="#c084fc" stroke-width="2"/>
+                <line x1="130" y1="44" x2="248" y2="44" stroke="#c084fc" stroke-width="2"/>
+                <rect x="148" y="18" width="84" height="36" rx="4" fill="#0f172a" stroke="#c084fc" stroke-width="1"/>
+                <text x="190" y="33" fill="#c084fc" font-size="7" font-weight="700" text-anchor="middle" font-family="system-ui">TMR / Lockstep</text>
+                <text x="190" y="47" fill="#e9d5ff" font-size="6.5" text-anchor="middle" font-family="system-ui">Zero Downtime</text>
+
+                <rect x="250" y="10" width="120" height="52" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.3"/>
+                <text x="310" y="30" fill="#c084fc" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Nó B (Lockstep)</text>
+                <text x="310" y="46" fill="#e9d5ff" font-size="7.5" text-anchor="middle" font-family="system-ui">Ciclo de clock 1</text>
+              </svg>
+            </div>
+            <p>Capacidade de continuar operando <strong>sem qualquer interrupção perceptível e com zero perda de estado em memória</strong>.</p>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li><strong>Comportamento sob Falha:</strong> Hardware em lockstep ou redundância modular tripla (TMR). A falha é mascarada instantaneamente.</li>
+              <li><strong>Impacto:</strong> Zero requisições abortadas; latência inalterada.</li>
+              <li><strong>Custo & Viabilidade:</strong> Custo astronômico (5x a 10x hardware dedicado). Restrito a espaçonaves, usinas e bolsas de valores centrais.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="presenter-notes-box">
+        <strong>Notas do Apresentador:</strong> Em entrevistas de System Design, jamais prometa Fault Tolerance estrita se o negócio precisa apenas de High Availability (HA). O custo sobe exponencialmente.
+      </div>
+    </section>
+
+    <!-- SLIDE 4: MÉTRICAS VITAYS: MTTF, MTTR, MTTD, MTBF -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Robustez & Confiabilidade</span>
+        <h2 class="slide-title">Métricas Vitais de Ciclo de Vida: MTTF, MTTR, MTTD & MTBF</h2>
+        <p class="slide-subtitle">A anatomia temporal da falha e da recuperação em engenharia de confiabilidade (SRE).</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏱️ Decomposição do Ciclo de Vida da Falha</div>
+        <div class="svg-diagram-container large">
+          <svg class="svg-diagram" viewBox="0 0 880 185" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr-m-cyan-l" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto">
+                <path d="M5,0 L0,3 L5,6 Z" fill="#38bdf8"/>
+              </marker>
+              <marker id="arr-m-cyan-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L5,3 L0,6 Z" fill="#38bdf8"/>
+              </marker>
+            </defs>
+
+            <!-- MTBF Dimension Bar Top -->
+            <line x1="25" y1="22" x2="855" y2="22" stroke="#38bdf8" stroke-width="2" marker-start="url(#arr-m-cyan-l)" marker-end="url(#arr-m-cyan-r)"/>
+            <rect x="230" y="8" width="420" height="28" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+            <text x="440" y="26" fill="#38bdf8" font-size="11.5" font-weight="700" text-anchor="middle" font-family="system-ui">◄ MTBF (Mean Time Between Failures) = MTTF + MTTR ►</text>
+
+            <!-- MTTF Block -->
+            <rect x="20" y="45" width="550" height="58" rx="7" fill="#062e24" stroke="#34d399" stroke-width="1.5"/>
+            <text x="295" y="69" fill="#34d399" font-size="12.5" font-weight="700" text-anchor="middle" font-family="system-ui">🛡️ MTTF (Mean Time To Failure) — Tempo Operacional Útil</text>
+            <text x="295" y="89" fill="#a7f3d0" font-size="10" text-anchor="middle" font-family="system-ui">Período contínuo em que o sistema opera saudável, íntegro e sem incidentes</text>
+
+            <!-- MTTR Block -->
+            <rect x="580" y="45" width="280" height="58" rx="7" fill="#291219" stroke="#f43f5e" stroke-width="1.5"/>
+            <text x="720" y="69" fill="#f43f5e" font-size="12.5" font-weight="700" text-anchor="middle" font-family="system-ui">⏱️ MTTR (Mean Time To Recovery)</text>
+            <text x="720" y="89" fill="#fda4af" font-size="10" text-anchor="middle" font-family="system-ui">Tempo de Reparo: Detecção + Rollback / Failover</text>
+
+            <!-- Axis Baseline -->
+            <line x1="20" y1="120" x2="860" y2="120" stroke="#334155" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+            <!-- Milestones -->
+            <!-- 1. Sistema Online -->
+            <line x1="20" y1="103" x2="20" y2="132" stroke="#34d399" stroke-width="1.5"/>
+            <circle cx="20" cy="120" r="4.5" fill="#34d399"/>
+            <text x="20" y="146" fill="#34d399" font-size="10" font-weight="700" text-anchor="start" font-family="system-ui">▲ Sistema Online</text>
+            <text x="20" y="161" fill="#94a3b8" font-size="8.5" text-anchor="start" font-family="system-ui">Início do ciclo operacional</text>
+
+            <!-- 2. Falha Ocorre -->
+            <line x1="570" y1="103" x2="570" y2="132" stroke="#f43f5e" stroke-width="1.5"/>
+            <circle cx="570" cy="120" r="4.5" fill="#f43f5e"/>
+            <text x="570" y="146" fill="#f43f5e" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">▲ Falha Ocorre</text>
+            <text x="570" y="161" fill="#fda4af" font-size="8.5" text-anchor="middle" font-family="system-ui">Quebra ou anomalia no nó</text>
+
+            <!-- 3. Detecção MTTD -->
+            <line x1="655" y1="103" x2="655" y2="132" stroke="#fbbf24" stroke-width="1.5"/>
+            <circle cx="655" cy="120" r="4.5" fill="#fbbf24"/>
+            <text x="655" y="146" fill="#fbbf24" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">▲ Detecção (MTTD)</text>
+            <text x="655" y="161" fill="#fef08a" font-size="8.5" text-anchor="middle" font-family="system-ui">Alerta de monitoramento</text>
+
+            <!-- 4. Correção Aplicada -->
+            <line x1="755" y1="103" x2="755" y2="132" stroke="#c084fc" stroke-width="1.5"/>
+            <circle cx="755" cy="120" r="4.5" fill="#c084fc"/>
+            <text x="755" y="146" fill="#c084fc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">▲ Correção Aplicada</text>
+            <text x="755" y="161" fill="#e9d5ff" font-size="8.5" text-anchor="middle" font-family="system-ui">Failover ou hotfix ativo</text>
+
+            <!-- 5. Sistema Restaurado -->
+            <line x1="860" y1="103" x2="860" y2="132" stroke="#34d399" stroke-width="1.5"/>
+            <circle cx="860" cy="120" r="4.5" fill="#34d399"/>
+            <text x="860" y="146" fill="#34d399" font-size="10" font-weight="700" text-anchor="end" font-family="system-ui">▲ Sistema Restaurado</text>
+            <text x="860" y="161" fill="#a7f3d0" font-size="8.5" text-anchor="end" font-family="system-ui">SLAs 100% restabelecidos</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="grid-4" style="margin-top: 16px;">
+        <div class="card">
+          <div class="card-title">MTTF</div>
+          <div class="card-body"><strong>Mean Time To Failure:</strong> Tempo médio que o sistema permanece saudável operando sem quebras.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">MTTD</div>
+          <div class="card-body"><strong>Mean Time To Detect:</strong> Tempo entre o início do defeito e o alerta no monitoramento.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">MTTR</div>
+          <div class="card-body"><strong>Mean Time To Recovery:</strong> Tempo desde a falha até a restauração completa do tráfego.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">MTBF</div>
+          <div class="card-body"><strong>Mean Time Between Failures:</strong> MTBF = MTTF + MTTR. Ciclo completo entre falhas.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5: EQUAÇÃO DA DISPONIBILIDADE E DISPONIBILIDADE COMPOSTA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Robustez & Confiabilidade</span>
+        <h2 class="slide-title">A Equação da Disponibilidade & Composição</h2>
+        <p class="slide-subtitle">Disponibilidade matemática e a diferença crítica entre componentes em série e em paralelo.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📐 A Fórmula da Disponibilidade (A)</div>
+          <div class="card-body">
+            <div class="code-snippet" style="font-size: 0.95rem; text-align: center;">
+              A = MTTF / MTBF = MTTF / (MTTF + MTTR)
+            </div>
+            <p style="margin-top: 10px;"><strong>Por que a Cloud moderna foca em MTTR?</strong></p>
+            <p>Se MTTF = 100 horas e MTTR = 10 segundos (~0.0028h):<br>
+            A = 100 / 100.0028 = <strong>99.997%</strong> de uptime!</p>
+            <p>Derrubar o tempo de recuperação (auto-healing, pods efêmeros) compensa amplamente hardware comum.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔗 Dependências em Série vs. Paralelo</div>
+          <div class="card-body">
+            <div class="svg-diagram-container" style="margin-bottom: 8px;">
+              <svg class="svg-diagram" viewBox="0 0 440 115" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-sp-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                  <marker id="arr-sp-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                </defs>
+
+                <!-- 1. SERIE -->
+                <rect x="5" y="8" width="75" height="34" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1"/>
+                <text x="42" y="24" fill="#f8fafc" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">A1: 99.9%</text>
+                <text x="42" y="36" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">Gateway</text>
+
+                <line x1="82" y1="25" x2="98" y2="25" stroke="#f43f5e" stroke-width="1.3" marker-end="url(#arr-sp-rose)"/>
+
+                <rect x="100" y="8" width="75" height="34" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1"/>
+                <text x="137" y="24" fill="#f8fafc" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">A2: 99.9%</text>
+                <text x="137" y="36" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">Serviço</text>
+
+                <line x1="177" y1="25" x2="193" y2="25" stroke="#f43f5e" stroke-width="1.3" marker-end="url(#arr-sp-rose)"/>
+
+                <rect x="195" y="8" width="75" height="34" rx="4" fill="#0f172a" stroke="#64748b" stroke-width="1"/>
+                <text x="232" y="24" fill="#f8fafc" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">A3: 99.9%</text>
+                <text x="232" y="36" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">Banco</text>
+
+                <line x1="272" y1="25" x2="295" y2="25" stroke="#f43f5e" stroke-width="1.3" marker-end="url(#arr-sp-rose)"/>
+
+                <rect x="298" y="8" width="135" height="34" rx="4" fill="#291219" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="365" y="23" fill="#f43f5e" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">Global: 99.70%</text>
+                <text x="365" y="35" fill="#fda4af" font-size="7" text-anchor="middle" font-family="system-ui">⚠️ Degradação em Série</text>
+
+                <!-- 2. PARALELO -->
+                <!-- Fork line -->
+                <path d="M 15 85 L 35 85 L 50 68" fill="none" stroke="#34d399" stroke-width="1.3"/>
+                <path d="M 35 85 L 50 102" fill="none" stroke="#34d399" stroke-width="1.3"/>
+
+                <rect x="55" y="52" width="105" height="30" rx="4" fill="#062e24" stroke="#34d399" stroke-width="1"/>
+                <text x="107" y="67" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Nó 01: 99.0%</text>
+                <text x="107" y="78" fill="#a7f3d0" font-size="6.8" text-anchor="middle" font-family="system-ui">Instância A</text>
+
+                <rect x="55" y="86" width="105" height="30" rx="4" fill="#062e24" stroke="#34d399" stroke-width="1"/>
+                <text x="107" y="101" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Nó 02: 99.0%</text>
+                <text x="107" y="112" fill="#a7f3d0" font-size="6.8" text-anchor="middle" font-family="system-ui">Instância B</text>
+
+                <!-- Join line -->
+                <path d="M 163 67 L 185 85 L 205 85" fill="none" stroke="#34d399" stroke-width="1.3" marker-end="url(#arr-sp-em)"/>
+                <path d="M 163 101 L 185 85" fill="none" stroke="#34d399" stroke-width="1.3"/>
+
+                <rect x="210" y="68" width="223" height="34" rx="4" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+                <text x="321" y="83" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Global: 99.99% (4 Noves!)</text>
+                <text x="321" y="95" fill="#a7f3d0" font-size="7.2" text-anchor="middle" font-family="system-ui">🚀 Redundância Multiplicadora</text>
+              </svg>
+            </div>
+            <p><strong>Cadeia em Série (Efeito Degradativo):</strong></p>
+            <div class="code-snippet">A_global = A1 × A2 × A3 ... An</div>
+            <p style="font-size: 0.8rem; color: var(--accent-rose);">3 serviços de 99.9% em série = 0.999³ = 99.70% (piora o SLA!).</p>
+
+            <p style="margin-top: 8px;"><strong>Redundância em Paralelo (Efeito Multiplicador):</strong></p>
+            <div class="code-snippet">A_global = 1 - [ (1 - A1) × (1 - A2) ]</div>
+            <p style="font-size: 0.8rem; color: var(--accent-emerald);">2 nós de 99.0% em paralelo = 1 - (0.01 × 0.01) = 99.99%!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6: INTERACTIVE LAB 1: CONFIABILIDADE & FAILOVER SIMULATOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 01</span>
+        <h2 class="slide-title">Calculadora de Confiabilidade & Simulador de Failover</h2>
+        <p class="slide-subtitle">Ajuste MTBF e MTTR para calcular a disponibilidade em tempo real e teste failover em modo HA vs. FT.</p>
+      </div>
+
+      <div class="sim-failover-card">
+        <div class="sim-controls-row">
+          <label style="font-weight: 600; font-size: 0.85rem;">Modo de Arquitetura:</label>
+          <select id="sim1-mode-select" class="sim-select">
+            <option value="ha">High Availability (Active-Standby c/ Heartbeat)</option>
+            <option value="ft">Fault Tolerance (Hardware TMR Lockstep síncrono)</option>
+          </select>
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 10px;">MTBF (Horas):</label>
+          <input type="number" id="sim1-mtbf" class="sim-input" value="720" style="width: 90px;" min="10">
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 10px;">MTTR (Minutos):</label>
+          <input type="number" id="sim1-mttr" class="sim-input" value="5" style="width: 80px;" min="0.1" step="0.5">
+
+          <button id="btn-sim1-fail" class="btn-nav btn-danger" style="margin-left: auto;">💥 Derrubar Nó Primário</button>
+          <button id="btn-sim1-reset" class="btn-nav">🔄 Resetar</button>
+        </div>
+
+        <div class="stat-pills-row">
+          <div class="stat-pill">
+            <span class="stat-pill-label">Disponibilidade Teórica</span>
+            <span class="stat-pill-value" id="sim1-val-avail">99.988%</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Classificação dos Noves</span>
+            <span class="stat-pill-value" id="sim1-val-nines">~3.7 Noves</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Downtime Anual Máx</span>
+            <span class="stat-pill-value" id="sim1-val-downtime">1h 00m</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Status da Conexão</span>
+            <span class="stat-pill-value" id="sim1-val-status" style="color: var(--accent-emerald);">ONLINE (200 OK)</span>
+          </div>
+        </div>
+
+        <div class="failover-arena">
+          <div class="node-card primary" id="sim1-node-primary">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong>NÓ 01: Servidor Primário</strong>
+              <span class="node-status-badge badge-active" id="sim1-badge-p1">ATIVO (LÍDER)</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">Processando tráfego ativo dos clientes. Heartbeat ativo a cada 1.000ms.</div>
+            <div class="code-snippet" id="sim1-p1-log" style="font-size: 0.75rem; height: 60px;">[P1] Recebendo requisições HTTP... [200 OK]</div>
+          </div>
+
+          <div class="node-card standby" id="sim1-node-secondary">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <strong>NÓ 02: Servidor Secundário</strong>
+              <span class="node-status-badge badge-standby" id="sim1-badge-p2">STANDBY (PASSIVO)</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);" id="sim1-p2-desc">Aguardando sinal de falha do nó primário para iniciar promoção de liderança.</div>
+            <div class="code-snippet" id="sim1-p2-log" style="font-size: 0.75rem; height: 60px;">[P2] Monitorando batimentos cardíacos do Nó 01...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 7: TOPOLOGIAS DE REDUNDÂNCIA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">01. Robustez & Confiabilidade</span>
+        <h2 class="slide-title">Topologias de Redundância e Failover</h2>
+        <p class="slide-subtitle">Cold, Warm, Hot Standby e Active-Active: Equilibrando velocidade de recuperação contra custo financeiro.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">❄️ Cold Standby (Passivo Frio)</div>
+          <div class="card-body">
+            <p>Servidor desligado ou sem dados pré-carregados. Acionado manualmente ou via script em caso de perda total.</p>
+            <p><strong>RTO:</strong> Horas / Dezenas de minutos. <strong>Custo:</strong> Quase zero.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌤️ Warm Standby (Passivo Morno)</div>
+          <div class="card-body">
+            <p>Servidor ligado com sistema operacional rodando e dados replicados de forma assíncrona periódica.</p>
+            <p><strong>RTO:</strong> Poucos minutos (tempo de sincronizar os logs finais e apontar o DNS).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔥 Hot Standby (Passivo Quente)</div>
+          <div class="card-body">
+            <p>Servidor ligado com espelhamento contínuo em tempo real de transações e memória. Assume tráfego em segundos via IP flutuante (VIP).</p>
+            <p><strong>RTO:</strong> Segundos (1s a 15s). Padrão em bancos PostgreSQL/RDS.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">⚡ Active-Active (Ativo-Ativo)</div>
+          <div class="card-body">
+            <p>Todos os servidores processam tráfego de leitura e escrita simultaneamente. Nenhuma máquina fica ociosa.</p>
+            <p><strong>RTO:</strong> Zero (instantâneo). Requer particionamento de dados ou replicação multi-líder.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 8: CASCATA DE FALHAS & AS FALÁCIAS DA REDE -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões de Resiliência</span>
+        <h2 class="slide-title">As Falácias da Computação Distribuída & Falhas em Cascata</h2>
+        <p class="slide-subtitle">Como a ilusão de redes infalíveis derruba infraestruturas inteiras em efeito dominó.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">⚠️ As 8 Falácias de Peter Deutsch (1994)</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>1. A rede é confiável.</li>
+              <li>2. A latência é zero.</li>
+              <li>3. A largura de banda é infinita.</li>
+              <li>4. A rede é segura e imutável.</li>
+              <li>5. A topologia não sofre alterações.</li>
+              <li>6. Há apenas um administrador no sistema.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">💥 Anatomia da Falha em Cascata</div>
+          <div class="card-body">
+            <p><strong>1. Lentidão Oculta:</strong> Banco de dados demora 15 segundos para responder queries de relatório.</p>
+            <p><strong>2. Esgotamento de Threads:</strong> O microsserviço retém conexões TCP aguardando o banco. Seu pool de 200 threads satura.</p>
+            <p><strong>3. Enfileiramento Infinito:</strong> Novas requisições empilham na memória RAM até o OOM Killer exterminar o processo.</p>
+            <div class="svg-diagram-container" style="margin-top: 10px;">
+              <svg class="svg-diagram" viewBox="0 0 460 65" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-cf-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+                <rect x="5" y="8" width="102" height="48" rx="5" fill="#1c1917" stroke="#fbbf24" stroke-width="1.2"/>
+                <text x="56" y="26" fill="#fbbf24" font-size="7.8" font-weight="700" text-anchor="middle" font-family="system-ui">1. DB Lento</text>
+                <text x="56" y="43" fill="#94a3b8" font-size="6.8" text-anchor="middle" font-family="system-ui">Queries 15s</text>
+
+                <line x1="110" y1="32" x2="119" y2="32" stroke="#f43f5e" stroke-width="1.4" marker-end="url(#arr-cf-rose)"/>
+
+                <rect x="122" y="8" width="102" height="48" rx="5" fill="#291219" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="173" y="26" fill="#f43f5e" font-size="7.8" font-weight="700" text-anchor="middle" font-family="system-ui">2. Threads Presas</text>
+                <text x="173" y="43" fill="#fda4af" font-size="6.8" text-anchor="middle" font-family="system-ui">Pool 200 satura</text>
+
+                <line x1="227" y1="32" x2="236" y2="32" stroke="#f43f5e" stroke-width="1.4" marker-end="url(#arr-cf-rose)"/>
+
+                <rect x="239" y="8" width="102" height="48" rx="5" fill="#291219" stroke="#f43f5e" stroke-width="1.2"/>
+                <text x="290" y="26" fill="#f43f5e" font-size="7.8" font-weight="700" text-anchor="middle" font-family="system-ui">3. Fila RAM (OOM)</text>
+                <text x="290" y="43" fill="#fda4af" font-size="6.8" text-anchor="middle" font-family="system-ui">Processo morre</text>
+
+                <line x1="344" y1="32" x2="353" y2="32" stroke="#f43f5e" stroke-width="1.4" marker-end="url(#arr-cf-rose)"/>
+
+                <rect x="356" y="8" width="98" height="48" rx="5" fill="#450a0a" stroke="#ef4444" stroke-width="1.3"/>
+                <text x="405" y="26" fill="#fca5a5" font-size="7.8" font-weight="700" text-anchor="middle" font-family="system-ui">4. Colapso Geral</text>
+                <text x="405" y="43" fill="#fecaca" font-size="6.8" text-anchor="middle" font-family="system-ui">503 no Gateway</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 9: CIRCUIT BREAKER PATTERN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões de Resiliência</span>
+        <h2 class="slide-title">Circuit Breaker (Disjuntor): Teoria & Máquina de Estados</h2>
+        <p class="slide-subtitle">Como blindar integrações downstream interrompendo chamadas antes do colapso da plataforma.</p>
+      </div>
+
+      <div class="cb-diagram-viewport">
+        <div class="svg-diagram-container large" style="margin-bottom: 12px;">
+          <svg class="svg-diagram" viewBox="0 0 880 190" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr-cb-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+              </marker>
+              <marker id="arr-cb-amb" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#fbbf24"/>
+              </marker>
+              <marker id="arr-cb-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+              </marker>
+            </defs>
+
+            <!-- State 1: CLOSED -->
+            <g id="cb-box-closed" class="cb-state-box closed current">
+              <rect x="25" y="30" width="200" height="72" rx="8" fill="#062e24" stroke="#34d399" stroke-width="1.8"/>
+              <text x="125" y="58" fill="#34d399" font-size="14" font-weight="700" text-anchor="middle" font-family="system-ui">🟢 CLOSED</text>
+              <text x="125" y="77" fill="#a7f3d0" font-size="10" text-anchor="middle" font-family="system-ui">Tráfego Normal • Monitorando</text>
+              <text x="125" y="92" fill="#6ee7b7" font-size="8.5" text-anchor="middle" font-family="system-ui">Chamadas passam livremente</text>
+            </g>
+
+            <!-- Arrow CLOSED -> OPEN -->
+            <line x1="225" y1="56" x2="338" y2="56" stroke="#f43f5e" stroke-width="2" marker-end="url(#arr-cb-rose)"/>
+            <rect x="232" y="38" width="100" height="18" rx="3" fill="#291219" stroke="#f43f5e" stroke-width="0.8"/>
+            <text x="282" y="51" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">Erro &gt; Limiar</text>
+
+            <!-- State 2: OPEN -->
+            <g id="cb-box-open" class="cb-state-box open">
+              <rect x="345" y="30" width="200" height="72" rx="8" fill="#291219" stroke="#f43f5e" stroke-width="1.8"/>
+              <text x="445" y="58" fill="#f43f5e" font-size="14" font-weight="700" text-anchor="middle" font-family="system-ui">🔴 OPEN</text>
+              <text x="445" y="77" fill="#fda4af" font-size="10" text-anchor="middle" font-family="system-ui">Fast-Fail • Downstream descansa</text>
+              <text x="445" y="92" fill="#fca5a5" font-size="8.5" text-anchor="middle" font-family="system-ui">Executa Fallback imediato</text>
+            </g>
+
+            <!-- Arrow OPEN -> HALF-OPEN -->
+            <line x1="545" y1="56" x2="648" y2="56" stroke="#fbbf24" stroke-width="2" marker-end="url(#arr-cb-amb)"/>
+            <rect x="550" y="38" width="94" height="18" rx="3" fill="#2d1c03" stroke="#fbbf24" stroke-width="0.8"/>
+            <text x="597" y="51" fill="#fbbf24" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">Cooldown Expira</text>
+
+            <!-- State 3: HALF-OPEN -->
+            <g id="cb-box-half-open" class="cb-state-box half-open">
+              <rect x="655" y="30" width="200" height="72" rx="8" fill="#2d1c03" stroke="#fbbf24" stroke-width="1.8"/>
+              <text x="755" y="58" fill="#fbbf24" font-size="14" font-weight="700" text-anchor="middle" font-family="system-ui">🟡 HALF-OPEN</text>
+              <text x="755" y="77" fill="#fef08a" font-size="10" text-anchor="middle" font-family="system-ui">Sonda Canário de Teste</text>
+              <text x="755" y="92" fill="#fde047" font-size="8.5" text-anchor="middle" font-family="system-ui">Permite poucas requisições</text>
+            </g>
+
+            <!-- Return loop 1: HALF-OPEN -> CLOSED (Success) -->
+            <path d="M 755 102 C 755 172, 125 172, 125 108" fill="none" stroke="#34d399" stroke-width="2" marker-end="url(#arr-cb-em)"/>
+            <rect x="270" y="153" width="340" height="22" rx="4" fill="#062e24" stroke="#34d399" stroke-width="1"/>
+            <text x="440" y="168" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">✅ Sucesso nas requisições canário ➔ Circuito fecha (CLOSED)</text>
+
+            <!-- Return loop 2: HALF-OPEN -> OPEN (Failure) -->
+            <path d="M 720 30 C 670 6, 520 6, 470 24" fill="none" stroke="#f43f5e" stroke-width="1.8" stroke-dasharray="4,2" marker-end="url(#arr-cb-rose)"/>
+            <rect x="525" y="2" width="140" height="18" rx="3" fill="#291219" stroke="#f43f5e" stroke-width="0.8"/>
+            <text x="595" y="14" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">❌ Falha ➔ Reabre (OPEN)</text>
+          </svg>
+        </div>
+
+        <div class="grid-3" style="margin-top: 10px;">
+          <div class="card">
+            <div class="card-title">CLOSED (Fechado)</div>
+            <div class="card-body">Todas as chamadas passam normalmente. O disjuntor monitora a taxa percentual de erros em janela deslizante. Se ultrapassar o limiar, abre.</div>
+          </div>
+          <div class="card">
+            <div class="card-title">OPEN (Aberto)</div>
+            <div class="card-body">O downstream é considerado morto. Novas requisições <strong>não abrem conexão de rede</strong> e executam o Fallback local imediatamente. Downstream descansa!</div>
+          </div>
+          <div class="card">
+            <div class="card-title">HALF-OPEN (Meio-Aberto)</div>
+            <div class="card-body">Após o término do sleep window, deixa passar N requisições de teste. Se tiverem sucesso, fecha o circuito. Se 1 falhar, reabre por mais um ciclo.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10: INTERACTIVE LAB 2: CIRCUIT BREAKER PLAYGROUND -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 02</span>
+        <h2 class="slide-title">Playground Interativo de Circuit Breaker</h2>
+        <p class="slide-subtitle">Simule tráfego contra um microsserviço instável e observe as transições atômicas de estado em tempo real.</p>
+      </div>
+
+      <div class="sim-failover-card">
+        <div class="sim-controls-row">
+          <label style="font-weight: 600; font-size: 0.85rem;">Taxa de Falha do Backend:</label>
+          <select id="cb-fail-rate" class="sim-select">
+            <option value="0">0% (100% Saudável)</option>
+            <option value="50">50% (Instável / Intermitente)</option>
+            <option value="100" selected>100% (Backend Fora do Ar)</option>
+          </select>
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 10px;">Threshold de Falhas:</label>
+          <input type="number" id="cb-threshold" class="sim-input" value="3" style="width: 60px;" min="1" max="10">
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 10px;">Sleep Window (s):</label>
+          <input type="number" id="cb-sleep-win" class="sim-input" value="4" style="width: 60px;" min="1" max="15">
+
+          <button id="btn-cb-send" class="btn-nav btn-primary">⚡ Enviar 1 Req</button>
+          <button id="btn-cb-burst" class="btn-nav">🚀 Rajada (10 Reqs)</button>
+          <button id="btn-cb-stream" class="btn-nav">▶ Auto Stream</button>
+          <button id="btn-cb-reset" class="btn-nav">🔄 Reset</button>
+        </div>
+
+        <div class="stat-pills-row">
+          <div class="stat-pill">
+            <span class="stat-pill-label">Estado Atual</span>
+            <span class="stat-pill-value" id="cb-val-state" style="color: var(--accent-emerald);">CLOSED</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Total / Sucessos</span>
+            <span class="stat-pill-value" id="cb-val-success">0 / 0</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Falhas Backend</span>
+            <span class="stat-pill-value" id="cb-val-failed" style="color: var(--accent-rose);">0</span>
+          </div>
+          <div class="stat-pill">
+            <span class="stat-pill-label">Fallbacks Servidos</span>
+            <span class="stat-pill-value" id="cb-val-fallbacks" style="color: var(--accent-amber);">0</span>
+          </div>
+        </div>
+
+        <div class="cb-console-box" id="cb-terminal-logs">
+          [00:00.00] Circuit Breaker inicializado em estado CLOSED. Pronto para receber tráfego.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11: RETRY PATTERNS & JITTER -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões de Resiliência</span>
+        <h2 class="slide-title">Retry com Backoff Exponencial e Jitter</h2>
+        <p class="slide-subtitle">Por que retentativas sem espera destroem servidores e como o Jitter dilui rajadas sincronizadas.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📈 A Fórmula do Exponential Backoff</div>
+          <div class="card-body">
+            <p>O tempo de espera dobra a cada nova tentativa até um teto máximo de segurança (*Cap*):</p>
+            <div class="code-snippet">t = min( t_cap, t_base × 2^(tentativa) )</div>
+            <ul class="bullet-list" style="margin-top: 10px;">
+              <li>Tentativa 1: 100ms × 2¹ = 200ms</li>
+              <li>Tentativa 2: 100ms × 2² = 400ms</li>
+              <li>Tentativa 3: 100ms × 2³ = 800ms</li>
+              <li>Tentativa 4: 100ms × 2⁴ = 1.600ms</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(251, 191, 36, 0.4);">
+          <div class="card-title" style="color: var(--accent-amber);">🎲 O Problema da Sincronização & O Jitter</div>
+          <div class="card-body">
+            <p>Se 500 clientes falham juntos, mesmo com backoff exponencial, seus timers disparam <strong>no mesmo exato milissegundo</strong> (*Synchronized Pulsing*).</p>
+            <p><strong>A Solução: Full Jitter (Recomendado AWS):</strong></p>
+            <div class="code-snippet">sleep = random_between( 0, t_backoff )</div>
+            <p style="margin-top: 8px;">A dispersão aleatória espalha a carga uniformemente pela linha do tempo, permitindo que o servidor se recupere.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12: INTERACTIVE LAB 3: RETRY & JITTER SIMULATOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 03</span>
+        <h2 class="slide-title">Simulador de Retentativas Concorrentes & Jitter</h2>
+        <p class="slide-subtitle">Dispare 10 clientes simultâneos e visualize o espalhamento temporal com e sem Full Jitter.</p>
+      </div>
+
+      <div class="sim-failover-card">
+        <div class="sim-controls-row">
+          <label style="font-weight: 600; font-size: 0.85rem;">Estratégia de Retry:</label>
+          <select id="jitter-strategy-select" class="sim-select">
+            <option value="none">Retry Imediato (Sem Backoff - Avalancha instantânea)</option>
+            <option value="pure">Exponential Backoff Puro (Rajadas Sincronizadas)</option>
+            <option value="jitter" selected>Exponential Backoff com FULL JITTER (AWS Standard)</option>
+          </select>
+
+          <button id="btn-jitter-simulate" class="btn-nav btn-primary" style="margin-left: 10px;">💥 Simular 10 Clientes Concorrentes</button>
+          <button id="btn-jitter-clear" class="btn-nav">🧹 Limpar Pista</button>
+        </div>
+
+        <div class="jitter-canvas-box" id="jitter-arena">
+          <div class="jitter-lane">
+            <div class="jitter-lane-label">Tentativa 1 (200ms)</div>
+            <div class="jitter-track" id="track-t1"></div>
+          </div>
+          <div class="jitter-lane">
+            <div class="jitter-lane-label">Tentativa 2 (400ms)</div>
+            <div class="jitter-track" id="track-t2"></div>
+          </div>
+          <div class="jitter-lane">
+            <div class="jitter-lane-label">Tentativa 3 (800ms)</div>
+            <div class="jitter-track" id="track-t3"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 10px; padding: 12px 16px;">
+          <div class="card-body" id="jitter-explanation" style="font-size: 0.82rem;">
+            <strong>Análise:</strong> Com <strong>Full Jitter</strong>, cada cliente escolhe um intervalo aleatório entre 0 e o teto do backoff. Os pontos coloridos acima mostram que os clientes atingem o servidor espaçadamente, evitando picos de sobrecarga.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13: BULKHEAD PATTERN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões de Resiliência</span>
+        <h2 class="slide-title">Bulkhead Pattern (Isolamento por Anteparas)</h2>
+        <p class="slide-subtitle">Como compartimentalizar recursos computacionais para evitar que a falha de um subsistema afunde o navio inteiro.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🚢 A Analogia Naval</div>
+          <div class="card-body">
+            <p>Em navios modernos, anteparas estanques dividem o casco em compartimentos isolados. Se o casco for perfurado, apenas uma câmara inunda; o navio flutua.</p>
+            <p style="margin-top: 8px;">Em software: se uma integração externa com cartão de crédito demorar 15 segundos para responder, ela <strong>não pode consumir todas as threads da JVM</strong>.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚙️ Mecanismos de Implementação</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>Pools de Threads Isoladas:</strong> Dedica um `ExecutorService` de 20 threads para pagamentos e outro pool de 100 threads para navegação no catálogo.</li>
+              <li><strong>Semáforos com Limite Estrito:</strong> Utiliza contadores atômicos para rejeitar requisições excedentes instantaneamente com status 429 sem alocar threads adicionais.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="code-snippet" style="margin-top: 16px;">
+// Exemplo Conceitual de Bulkhead por Semáforo
+const paymentSemaphore = new Semaphore(15); // Limite rígido de 15 conexões paralelas
+
+async function processPayment(req) {
+  if (!paymentSemaphore.tryAcquire()) {
+    // Rejeição imediata sem enfileirar nem drenar memória do processo
+    throw new ServiceUnavailableError("Payment Bulkhead saturated. Try again later.");
+  }
+  try {
+    return await externalPaymentGateway.charge(req);
+  } finally {
+    paymentSemaphore.release();
+  }
+}
+      </div>
+    </section>
+
+    <!-- SLIDE 14: GRACEFUL DEGRADATION & DEADLINES -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">02. Padrões de Resiliência</span>
+        <h2 class="slide-title">Degradação Graciosa & Deadlines Distribuídos</h2>
+        <p class="slide-subtitle">Degradar capacidades de forma suave e propagar cancelamentos de contexto de ponta a ponta.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📉 Degradação Graciosa (Graceful Degradation)</div>
+          <div class="card-body">
+            <p>Sob sobrecarga extrema, desligue recursos secundários e preserve a conversão vital de negócio:</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li><strong>Cache Stale:</strong> Servir catálogo expirado com aviso "preços aproximados".</li>
+              <li><strong>Desativação Seletiva:</strong> Ocultar área de comentários ou motor de IA recomendando os 10 mais vendidos.</li>
+              <li><strong>Fila Assíncrona:</strong> Salvar pedido em DLQ e devolver HTTP 202 Accepted.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⏳ Distributed Deadlines (Context Propagation)</div>
+          <div class="card-body">
+            <p>Timeouts estáticos independentes criam processos zumbis que queimam CPU e conexões de banco sem motivo.</p>
+            <div class="svg-diagram-container" style="margin-top: 8px;">
+              <svg class="svg-diagram" viewBox="0 0 460 135" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-dd-c" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+                  </marker>
+                  <marker id="arr-dd-p" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#c084fc"/>
+                  </marker>
+                  <marker id="arr-dd-r" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+
+                <!-- Box 1: Gateway -->
+                <rect x="10" y="10" width="125" height="48" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+                <text x="72" y="28" fill="#38bdf8" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">🌐 API Gateway</text>
+                <text x="72" y="45" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">Deadline: 5.0s</text>
+
+                <!-- Seta 1 -->
+                <line x1="135" y1="34" x2="163" y2="34" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arr-dd-c)"/>
+                <text x="149" y="27" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">200ms</text>
+
+                <!-- Box 2: Servico A -->
+                <rect x="168" y="10" width="125" height="48" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.3"/>
+                <text x="230" y="28" fill="#c084fc" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">⚙️ Serviço A</text>
+                <text x="230" y="45" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">Restante: 4.8s</text>
+
+                <!-- Seta 2 -->
+                <line x1="293" y1="34" x2="323" y2="34" stroke="#c084fc" stroke-width="1.5" marker-end="url(#arr-dd-p)"/>
+                <text x="308" y="27" fill="#94a3b8" font-size="7" text-anchor="middle" font-family="system-ui">300ms</text>
+
+                <!-- Box 3: Banco -->
+                <rect x="328" y="10" width="122" height="48" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+                <text x="389" y="28" fill="#34d399" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">🗄️ Banco de Dados</text>
+                <text x="389" y="45" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">Restante: 4.5s</text>
+
+                <!-- Cancelamento Cooperativo Reverso -->
+                <rect x="10" y="68" width="440" height="56" rx="6" fill="#291219" stroke="#f43f5e" stroke-width="1.2" stroke-dasharray="3,2"/>
+                <line x1="430" y1="88" x2="25" y2="88" stroke="#f43f5e" stroke-width="1.6" marker-end="url(#arr-dd-r)"/>
+                <text x="230" y="82" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">◄ Sinal de Cancelamento Cooperativo Instantâneo ◄</text>
+                <text x="230" y="112" fill="#fecdd3" font-size="7.5" text-anchor="middle" font-family="system-ui">Se Gateway estourar 5s: propaga AbortSignal abortando nós downstream</text>
+              </svg>
+            </div>
+            <p style="margin-top: 8px; font-size: 0.82rem;">Implementado via <code>context.Context</code> em Go, <code>AbortSignal</code> em Node e headers <code>grpc-timeout</code>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 15: O DESAFIO DA COORDENAÇÃO & RELÓGIOS DE LAMPORT -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Coordenação & Consenso</span>
+        <h2 class="slide-title">Coordenação sem Memória Compartilhada & Relógios Lógicos</h2>
+        <p class="slide-subtitle">Como ordenar eventos em sistemas distribuídos quando relógios físicos sofrem drift contínuo.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🕰️ A Ilusão dos Relógios de Parede (NTP)</div>
+          <div class="card-body">
+            <p>Relógios de cristal de quartzo em servidores físicos sofrem <strong>Clock Drift</strong> imprevisível decorrente de temperatura e voltagem.</p>
+            <p>Mesmo sincronizando via NTP, discrepâncias de 10ms a 200ms são comuns. Utilizar timestamps de parede para definir "quem escreveu primeiro" corrompe dados silenciosamente (*Last-Write-Wins hazard*).</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🧩 Relógios Lógicos de Lamport (1978)</div>
+          <div class="card-body">
+            <p>Leslie Lamport provou que o tempo em computação distribuída resume-se à <strong>ordem causal</strong> de eventos (Relação *Happens-Before* $A \to B$):</p>
+            <ul class="bullet-list" style="margin-top: 8px;">
+              <li>Cada nó mantém um contador inteiro estritamente incremental.</li>
+              <li>A cada ação local, o nó incrementa seu contador: $C = C + 1$.</li>
+              <li>Ao enviar uma mensagem, inclui seu contador atual. O receptor atualiza seu relógio para $\max(C_{\text{local}}, C_{\text{msg}}) + 1$.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 16: TEORIA DE QUORUM: N, R, W -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Coordenação & Consenso</span>
+        <h2 class="slide-title">Teoria de Quorum: N, R, W e a Regra R + W > N</h2>
+        <p class="slide-subtitle">Como garantir consistência estrita sem nós mestres através do Princípio da Casa dos Pombos.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📦 Os 3 Parâmetros do Quorum</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>N (Replication Factor):</strong> Quantos nós do cluster armazenam uma cópia daquele dado (ex: $N = 5$).</li>
+              <li><strong>W (Write Quorum):</strong> Quantas confirmações de escrita bem-sucedidas são necessárias para considerar a gravação concluída.</li>
+              <li><strong>R (Read Quorum):</strong> Quantos nós devem ser consultados simultaneamente durante uma leitura.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">⚖️ A Regra Fundamental da Consistência Estrita</div>
+          <div class="card-body">
+            <div class="code-snippet" style="font-size: 1.1rem; text-align: center; color: var(--accent-emerald);">
+              R + W > N
+            </div>
+            <p style="margin-top: 8px;">Pelo <strong>Princípio da Casa dos Pombos</strong> (*Pigeonhole Principle*), se a soma dos nós lidos e escritos superar o total de réplicas, <strong>haverá obrigatoriamente pelo menos um nó na intersecção</strong> contendo a versão mais atual!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">🔍 Exemplo Prático de Trade-offs</div>
+        <div class="card-body">
+          <p>Para $N = 5$ réplicas:</p>
+          <ul class="bullet-list">
+            <li><strong>Quorum Majoritário Balanceado:</strong> $W = 3, R = 3 \implies 3 + 3 = 6 > 5$. Tolera até 2 nós mortos mantendo leituras e escritas consistentes!</li>
+            <li><strong>Otimizado para Leitura:</strong> $W = 5, R = 1 \implies 5 + 1 = 6 > 5$. Leitura em 1 salto, mas se 1 nó falhar, o cluster para de escrever.</li>
+            <li><strong>Inconsistente / Eventual:</strong> $W = 1, R = 1 \implies 1 + 1 = 2 \le 5$. Risco extremo de ler dados antigos (*Stale Reads*).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 17: INTERACTIVE LAB 4: QUORUM DISTRIBUÍDO SIMULATOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 04</span>
+        <h2 class="slide-title">Simulador Visual de Quorum Distribuído (N, R, W)</h2>
+        <p class="slide-subtitle">Ajuste os quorums de leitura e escrita, desligue nós clicando sobre eles e teste escritas e leituras.</p>
+      </div>
+
+      <div class="quorum-cluster-arena">
+        <div class="sim-controls-row">
+          <label style="font-weight: 600; font-size: 0.85rem;">Fator de Replicação (N):</label>
+          <span style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-cyan);">5 Nós</span>
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 14px;">Quorum Escrita (W):</label>
+          <input type="range" id="q-w-range" min="1" max="5" value="3" style="width: 100px;">
+          <span id="q-w-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-emerald);">3</span>
+
+          <label style="font-weight: 600; font-size: 0.85rem; margin-left: 14px;">Quorum Leitura (R):</label>
+          <input type="range" id="q-r-range" min="1" max="5" value="3" style="width: 100px;">
+          <span id="q-r-val" style="font-family: var(--font-mono); font-weight: 700; color: var(--accent-cyan);">3</span>
+
+          <button id="btn-q-write" class="btn-nav btn-primary" style="margin-left: auto;">✍️ Executar Escrita (v2)</button>
+          <button id="btn-q-read" class="btn-nav btn-success">📖 Executar Leitura</button>
+          <button id="btn-q-reset" class="btn-nav">🔄 Reset</button>
+        </div>
+
+        <div class="quorum-rule-box">
+          <div>
+            <strong>Condição de Consistência Estrita:</strong>
+            <span id="q-formula-text" style="font-family: var(--font-mono); font-weight: 700; margin-left: 8px;">R(3) + W(3) = 6 &gt; 5</span>
+          </div>
+          <span id="q-status-badge" class="badge-active node-status-badge">CONSISTÊNCIA FORTE GARANTIDA</span>
+        </div>
+
+        <div class="quorum-nodes-ring" id="q-nodes-container">
+          <!-- 5 Nodes will be rendered here dynamically -->
+        </div>
+
+        <div class="code-snippet" id="q-output-log" style="font-size: 0.8rem; height: 70px;">
+          [Cluster Status] 5 nós ativos em versão inicial v1. Clique em qualquer nó para simular queda de hardware ou partição de rede.
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 18: LEADER/FOLLOWER & SPLIT-BRAIN -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Coordenação & Consenso</span>
+        <h2 class="slide-title">Leader / Follower & A Prevenção do Split-Brain</h2>
+        <p class="slide-subtitle">O perigo catastrófico de duas autoridades simultâneas e a blindagem via Fencing Tokens.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card" style="border-color: rgba(244, 63, 94, 0.4);">
+          <div class="card-title" style="color: var(--accent-rose);">🧠 A Anomalia do Split-Brain</div>
+          <div class="card-body">
+            <p>Quando a conexão de rede entre nós primários racha:</p>
+            <ul class="bullet-list">
+              <li>O Líder Antigo ainda se julga vivo e recebe escritas de uma partição.</li>
+              <li>Os seguidores isolados elegem um Novo Líder que passa a aceitar escritas de outra partição.</li>
+              <li><strong>Consequência:</strong> Duas versões mutuamente contraditórias do banco de dados são geradas, corrompendo o negócio.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">🛡️ Blindagem com Fencing Tokens</div>
+          <div class="card-body">
+            <p>O armazenamento central nunca confia cegamente no líder. Cada eleição gera um número de época estritamente crescente (*Epoch*):</p>
+            <div class="svg-diagram-container" style="margin-top: 8px;">
+              <svg class="svg-diagram" viewBox="0 0 460 155" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <marker id="arr-ft-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+                  </marker>
+                  <marker id="arr-ft-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+                  </marker>
+                </defs>
+
+                <!-- Líder A Zumbi -->
+                <rect x="10" y="10" width="145" height="52" rx="6" fill="#291219" stroke="#f43f5e" stroke-width="1.3"/>
+                <text x="82" y="29" fill="#f43f5e" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">👻 Líder A (Zumbi)</text>
+                <text x="82" y="47" fill="#fda4af" font-size="8" text-anchor="middle" font-family="system-ui">Token: 12 (Termo 12)</text>
+
+                <!-- Líder B Novo -->
+                <rect x="10" y="90" width="145" height="52" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+                <text x="82" y="109" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">👑 Líder B (Novo Líder)</text>
+                <text x="82" y="127" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">Token: 13 (Termo 13)</text>
+
+                <!-- Storage Central -->
+                <rect x="300" y="28" width="150" height="95" rx="7" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.4"/>
+                <text x="375" y="49" fill="#38bdf8" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">💾 Storage / Disco</text>
+                <rect x="312" y="58" width="126" height="24" rx="4" fill="#08201a" stroke="#34d399" stroke-width="0.9"/>
+                <text x="375" y="74" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Último Token: 13</text>
+                <text x="375" y="104" fill="#93c5fd" font-size="7.5" text-anchor="middle" font-family="system-ui">Regra: Token &gt;= Atual</text>
+
+                <!-- Setas e Labels -->
+                <path d="M 155 116 L 295 86" fill="none" stroke="#34d399" stroke-width="1.6" marker-end="url(#arr-ft-em)"/>
+                <rect x="165" y="104" width="125" height="17" rx="3" fill="#062e24" stroke="#34d399" stroke-width="0.7"/>
+                <text x="227" y="116" fill="#34d399" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">1. Token 13 ➔ ✅ ACEITO</text>
+
+                <path d="M 155 36 L 295 62" fill="none" stroke="#f43f5e" stroke-width="1.6" stroke-dasharray="4,2" marker-end="url(#arr-ft-rose)"/>
+                <rect x="165" y="32" width="125" height="17" rx="3" fill="#291219" stroke="#f43f5e" stroke-width="0.7"/>
+                <text x="227" y="44" fill="#f43f5e" font-size="7.5" font-weight="700" text-anchor="middle" font-family="system-ui">2. Token 12 ➔ ❌ RECUSADO</text>
+              </svg>
+            </div>
+            <p style="margin-top: 8px; font-size: 0.82rem;">Adotado em ZooKeeper, etcd, Apache Kafka e HDFS.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 19: ALGORITMOS DE CONSENSO: RAFT -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Coordenação & Consenso</span>
+        <h2 class="slide-title">Algoritmos de Consenso Distribuído: O Protocolo Raft</h2>
+        <p class="slide-subtitle">Como Kubernetes (etcd) e Kafka (KRaft) mantêm integridade de logs replicados sob falhas de nós.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Eleição de Líder</div>
+          <div class="card-body">
+            <p>Nós operam como <strong>Followers</strong>. Se o heartbeat do líder não chega dentro do <em>Election Timeout Aleatório</em> (ex: 150-300ms), o nó se proclama <strong>Candidate</strong> e pede votos para a maioria.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">2. Replicação de Log</div>
+          <div class="card-body">
+            <p>O Líder aceita comandos dos clientes, grava em seu log e dispara mensagens <code>AppendEntries</code> para todos os seguidores do cluster.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3. Regra de Commit</div>
+          <div class="card-body">
+            <p>Uma entrada de log só é considerada definitiva (*Committed*) quando a maioria estrita ($\lfloor N/2 \rfloor + 1$) confirma a gravação em disco.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">💡 Por que os Election Timeouts são Aleatórios no Raft?</div>
+        <div class="card-body">
+          <p>Se todos os nós tivessem o mesmo timeout fixo (ex: 200ms), todos virariam candidatos no mesmo milissegundo e votariam em si mesmos, gerando um empate infinito (*Split Vote*). O jitter aleatório garante que um nó sempre inicie a eleição frações de segundo antes dos outros e conquiste a maioria.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 20: DETECÇÃO DE FALHAS: HEARTBEATS & PHI ACCRUAL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">03. Coordenação & Consenso</span>
+        <h2 class="slide-title">Detecção de Falhas: O Detector Φ-Accrual</h2>
+        <p class="slide-subtitle">Substituindo decisões binárias ingênuas por probabilidade estatística contínua (Cassandra & Akka).</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">❌ O Problema do Timeout Fixo Binário</div>
+          <div class="card-body">
+            <p>Sistemas tradicionais usam: <em>"Se não responder em 3s, mate o nó"</em>.</p>
+            <ul class="bullet-list">
+              <li>Pausa de Garbage Collection de 3.2s gera falso positivo e inicia failover caro à toa.</li>
+              <li>Aumentar o timeout para 30s faz o sistema demorar meio minuto para reagir a um servidor queimado.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(192, 132, 252, 0.4);">
+          <div class="card-title" style="color: var(--accent-purple);">📊 A Fórmula do Φ-Accrual (Hayashibara et al.)</div>
+          <div class="card-body">
+            <div class="code-snippet">Φ = - log10( P_later( t_now - t_last ) )</div>
+            <p style="margin-top: 8px;">Mede o quão anômalo é o atraso com base na distribuição estatística histórica da rede:</p>
+            <ul class="bullet-list" style="margin-top: 6px;">
+              <li><strong>Φ = 1:</strong> 10% de probabilidade de falso alarme.</li>
+              <li><strong>Φ = 8:</strong> 0.000001% de probabilidade de falso alarme. O nó realmente morreu!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 21: TEOREMA CAP -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Persistência & Particionamento</span>
+        <h2 class="slide-title">O Teorema CAP & O Mito do "CA" na Prática</h2>
+        <p class="slide-subtitle">Consistency, Availability, Partition Tolerance: Por que toda rede real é forçada a escolher entre CP ou AP.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">C - Consistency</div>
+          <div class="card-body"><strong>Linearizabilidade:</strong> Toda leitura recebe a escrita mais recente ou um erro explícito. Todos os nós concordam com o mesmo dado no mesmo instante.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">A - Availability</div>
+          <div class="card-body"><strong>Disponibilidade Contínua:</strong> Toda requisição não-falha para um nó não-falho recebe resposta não-erro, mesmo que os dados estejam desatualizados.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">P - Partition Tolerance</div>
+          <div class="card-body"><strong>Tolerância a Partição:</strong> O sistema continua processando requisições mesmo que a conexão física entre nós seja rompida.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px; border-color: rgba(244, 63, 94, 0.4);">
+        <div class="card-title" style="color: var(--accent-rose);">💥 A Ilusão do "CA" em Sistemas Distribuídos Reais</div>
+        <div class="card-body">
+          <p>Cabos submarinos rompem, switches superaquecem e instâncias de nuvem sofrem timeouts. <strong>A Partição de Rede (P) é uma lei física inevitável</strong>.</p>
+          <p>Portanto, quando a partição ocorre, o arquiteto deve fazer uma escolha binária:</p>
+          <p>👉 <strong>CP (Consistência):</strong> Bloqueia escritas e recusa clientes para evitar corrupção de dados (ex: Spanner, ZooKeeper, etcd).<br>
+          👉 <strong>AP (Disponibilidade):</strong> Continua aceitando requisições em ambos os lados e aceita inconsistência temporária (ex: Cassandra, DynamoDB).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 22: TEOREMA PACELC -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Persistência & Particionamento</span>
+        <h2 class="slide-title">O Teorema PACELC de Daniel Abadi</h2>
+        <p class="slide-subtitle">A extensão moderna do CAP: Como os sistemas distribuídos se comportam em condições normais de operação.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌳 A Árvore de Decisão do PACELC</div>
+        <div class="svg-diagram-container large">
+          <svg class="svg-diagram" viewBox="0 0 880 170" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr-pac-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+              </marker>
+              <marker id="arr-pac-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+              </marker>
+              <marker id="arr-pac-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+              </marker>
+            </defs>
+
+            <!-- Root: Sistema Distribuído -->
+            <rect x="15" y="55" width="175" height="58" rx="8" fill="#0f172a" stroke="#94a3b8" stroke-width="1.4"/>
+            <text x="102" y="79" fill="#f8fafc" font-size="11.5" font-weight="700" text-anchor="middle" font-family="system-ui">🌐 Sistema Distribuído</text>
+            <text x="102" y="97" fill="#94a3b8" font-size="9" text-anchor="middle" font-family="system-ui">Avaliação da Rede</text>
+
+            <!-- Branch P (Partição) -->
+            <path d="M 190 70 C 225 70, 235 38, 265 38" fill="none" stroke="#f43f5e" stroke-width="1.8" marker-end="url(#arr-pac-rose)"/>
+            <text x="228" y="47" fill="#f43f5e" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Partição (P)</text>
+
+            <rect x="270" y="10" width="225" height="56" rx="6" fill="#291219" stroke="#f43f5e" stroke-width="1.3"/>
+            <text x="382" y="32" fill="#f43f5e" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">⚡ SOB PARTIÇÃO ( P )</text>
+            <text x="382" y="50" fill="#fda4af" font-size="8.5" text-anchor="middle" font-family="system-ui">Trade-off: A (Disp) vs C (Consistência)</text>
+
+            <line x1="495" y1="24" x2="535" y2="24" stroke="#34d399" stroke-width="1.4" marker-end="url(#arr-pac-em)"/>
+            <rect x="540" y="10" width="325" height="26" rx="5" fill="#062e24" stroke="#34d399" stroke-width="1.2"/>
+            <text x="702" y="27" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">PA: Prioriza Disponibilidade (Cassandra, DynamoDB)</text>
+
+            <line x1="495" y1="52" x2="535" y2="52" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#arr-pac-cyan)"/>
+            <rect x="540" y="40" width="325" height="26" rx="5" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.2"/>
+            <text x="702" y="57" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">PC: Prioriza Consistência (Spanner, CockroachDB)</text>
+
+            <!-- Branch E (Else - Tempo de Paz) -->
+            <path d="M 190 98 C 225 98, 235 130, 265 130" fill="none" stroke="#34d399" stroke-width="1.8" marker-end="url(#arr-pac-em)"/>
+            <text x="228" y="121" fill="#34d399" font-size="8" font-weight="700" text-anchor="middle" font-family="system-ui">Else (E)</text>
+
+            <rect x="270" y="102" width="225" height="56" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.3"/>
+            <text x="382" y="124" fill="#34d399" font-size="11" font-weight="700" text-anchor="middle" font-family="system-ui">🕊️ TEMPO DE PAZ ( ELSE - E )</text>
+            <text x="382" y="142" fill="#a7f3d0" font-size="8.5" text-anchor="middle" font-family="system-ui">Trade-off: L (Latência) vs C (Consistência)</text>
+
+            <line x1="495" y1="116" x2="535" y2="116" stroke="#34d399" stroke-width="1.4" marker-end="url(#arr-pac-em)"/>
+            <rect x="540" y="102" width="325" height="26" rx="5" fill="#062e24" stroke="#34d399" stroke-width="1.2"/>
+            <text x="702" y="119" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">EL: Baixa Latência (Responde rápido, replica async)</text>
+
+            <line x1="495" y1="144" x2="535" y2="144" stroke="#38bdf8" stroke-width="1.4" marker-end="url(#arr-pac-cyan)"/>
+            <rect x="540" y="132" width="325" height="26" rx="5" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.2"/>
+            <text x="702" y="149" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">EC: Consistência Forte (Sincroniza réplicas antes do OK)</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="card" style="border-color: rgba(56, 189, 248, 0.4);">
+          <div class="card-title" style="color: var(--accent-cyan);">PC / EC (Ex: Google Spanner, CockroachDB)</div>
+          <div class="card-body">
+            <p><strong>Sob partição:</strong> Prefere falhar a corromper dados (PC).</p>
+            <p><strong>Sem partição:</strong> Paga maior latência de rede sincronizando réplicas antes de responder (EC). Prioridade: precisão absoluta.</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">PA / EL (Ex: Apache Cassandra, DynamoDB default)</div>
+          <div class="card-body">
+            <p><strong>Sob partição:</strong> Continua respondendo a todo custo (PA).</p>
+            <p><strong>Sem partição:</strong> Responde imediatamente com latência ultrabaixa e sincroniza réplicas em background (EL). Prioridade: vazão e velocidade.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 23: INTERACTIVE LAB 5: PACELC EXPLORER -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 05</span>
+        <h2 class="slide-title">Explorador Interativo CAP & PACELC</h2>
+        <p class="slide-subtitle">Alterne entre estado com partição e estado normal e descubra onde cada banco de dados se encaixa.</p>
+      </div>
+
+      <div class="pacelc-explorer-card">
+        <div class="pacelc-mode-switch">
+          <button class="pacelc-btn active" id="btn-pacelc-partition">⚡ Sob Partição de Rede (P)</button>
+          <button class="pacelc-btn" id="btn-pacelc-peace">🕊️ Operação Normal / Tempo de Paz (E)</button>
+        </div>
+
+        <div class="grid-2" id="pacelc-choices-row">
+          <div class="card" id="pacelc-opt-left" style="cursor: pointer; border-color: var(--accent-cyan);">
+            <div class="card-title" id="pacelc-title-left">Escolha: Consistência (CP)</div>
+            <div class="card-body" id="pacelc-desc-left">
+              Rejeita requisições nos nós minoritários para preservar a linearizabilidade estrita. Zero corrupção de dados.
+            </div>
+          </div>
+
+          <div class="card" id="pacelc-opt-right" style="cursor: pointer; border-color: var(--border-color);">
+            <div class="card-title" id="pacelc-title-right">Escolha: Disponibilidade (AP)</div>
+            <div class="card-body" id="pacelc-desc-right">
+              Permite que clientes continuem lendo e escrevendo mesmo isolados. Gera divergências temporárias resolvidas a posteriori.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🏷️ Tecnologias Correspondentes no Mercado</div>
+          <div class="pacelc-systems-grid" id="pacelc-dbs-grid">
+            <div class="db-badge-card">
+              <strong style="color: var(--accent-cyan);">Google Spanner</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">PC / EC • Relógios Atômicos</span>
+            </div>
+            <div class="db-badge-card">
+              <strong style="color: var(--accent-cyan);">CockroachDB</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">PC / EC • Raft Consensus</span>
+            </div>
+            <div class="db-badge-card">
+              <strong style="color: var(--accent-emerald);">Apache Cassandra</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">PA / EL • Dynamo Leaderless</span>
+            </div>
+            <div class="db-badge-card">
+              <strong style="color: var(--accent-amber);">MongoDB</strong>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">PC / EL • Escrita Primária</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 24: RESOLUÇÃO DE CONFLITOS: LWW, VECTORS, CRDTS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">04. Persistência & Particionamento</span>
+        <h2 class="slide-title">Conflitos de Escrita: LWW, Vector Clocks e CRDTs</h2>
+        <p class="slide-subtitle">Como reconciliar dados quando múltiplos nós aceitam atualizações simultâneas.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">1. Last-Write-Wins (LWW)</div>
+          <div class="card-body">
+            <p>O nó com timestamp mais recente sobrescreve todos os outros.</p>
+            <p style="color: var(--accent-rose); font-size: 0.8rem; margin-top: 6px;">⚠️ <strong>Perigo:</strong> Drift de relógios físicos faz escritas válidas desaparecerem sem rastros.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">2. Vector Clocks</div>
+          <div class="card-body">
+            <p>Cada nó mantém um vetor de versões [A:1, B:2]. Se dois vetores são concorrentes, o conflito é detectado e a aplicação decide a fusão (ex: merge de carrinhos de compras).</p>
+          </div>
+        </div>
+
+        <div class="card" style="border-color: rgba(52, 211, 153, 0.4);">
+          <div class="card-title" style="color: var(--accent-emerald);">3. CRDTs</div>
+          <div class="card-body">
+            <p><strong>Conflict-Free Replicated Data Types:</strong> Estruturas matemáticas que convergem deterministicamente para o mesmo estado sem travas (usadas no Figma e Redis Enterprise).</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">🌐 Hashing Consistente com Nós Virtuais (vnodes)</div>
+        <div class="card-body">
+          <p>Mapeia chaves e servidores em um anel contínuo de $2^{128}-1$. Quando um servidor é adicionado ou removido, apenas $K/N$ chaves são migradas para nós vizinhos, eliminando a sobrecarga de re-hashing total.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 25: OBSERVABILIDADE & SINAIS DOURADOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Observabilidade & Operações</span>
+        <h2 class="slide-title">Os 3 Pilares da Observabilidade & Sinais Dourados</h2>
+        <p class="slide-subtitle">Logs Estruturados, Métricas Numéricas e Distributed Tracing orientados pelo Google SRE Handbook.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">📜 Logs Estruturados</div>
+          <div class="card-body">Registros em JSON ricos com <code>trace_id</code>, <code>span_id</code> e metadados contextuais para análise forense detalhada de incidentes.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 Métricas (Time-Series)</div>
+          <div class="card-body">Séries temporais numéricas de custo fixo (Prometheus, VictoriaMetrics). Ideais para dashboards executivos e gatilhos de alertas de sobrecarga.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🕸️ Distributed Tracing</div>
+          <div class="card-body">Grafo acíclico direcionado (DAG) reconstituindo a jornada ponta a ponta de requisições que cruzam dezenas de microsserviços.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="card-title">🏅 Os 4 Sinais Dourados (Google SRE)</div>
+        <div class="grid-4" style="margin-top: 10px;">
+          <div><strong>1. Latência:</strong> Tempo gasto por requisição (separando sucessos de falhas).</div>
+          <div><strong>2. Tráfego:</strong> Vazão e demanda de clientes (RPS, IOPS).</div>
+          <div><strong>3. Erros:</strong> Taxa percentual de requisições que retornam falha.</div>
+          <div><strong>4. Saturação:</strong> O quão próximo do teto os recursos estão (CPU, threads, RAM).</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 26: DISTRIBUTED TRACING & OPENTELEMETRY -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Observabilidade & Operações</span>
+        <h2 class="slide-title">Distributed Tracing: W3C TraceContext & OpenTelemetry</h2>
+        <p class="slide-subtitle">Como as requisições mantêm sua identidade unificada através de fronteiras de rede.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏷️ Anatomia do Cabeçalho W3C traceparent</div>
+        <div class="svg-diagram-container large">
+          <svg class="svg-diagram" viewBox="0 0 880 145" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arr-tp-pur" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#c084fc"/>
+              </marker>
+              <marker id="arr-tp-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+              </marker>
+              <marker id="arr-tp-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+              </marker>
+              <marker id="arr-tp-amb" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#fbbf24"/>
+              </marker>
+            </defs>
+
+            <!-- Label traceparent -->
+            <text x="15" y="41" fill="#94a3b8" font-size="12" font-family="ui-monospace, monospace" font-weight="700">traceparent:</text>
+
+            <!-- 1. Versão -->
+            <rect x="120" y="18" width="55" height="36" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.5"/>
+            <text x="147" y="41" fill="#c084fc" font-size="13" font-weight="700" font-family="ui-monospace, monospace" text-anchor="middle">00</text>
+
+            <!-- Separador 1 -->
+            <text x="186" y="41" fill="#64748b" font-size="15" font-family="ui-monospace, monospace" text-anchor="middle">-</text>
+
+            <!-- 2. Trace ID -->
+            <rect x="198" y="18" width="372" height="36" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="384" y="41" fill="#38bdf8" font-size="12.5" font-weight="700" font-family="ui-monospace, monospace" text-anchor="middle">4bf92f3577b34da6a3ce929d0e0e4736</text>
+
+            <!-- Separador 2 -->
+            <text x="582" y="41" fill="#64748b" font-size="15" font-family="ui-monospace, monospace" text-anchor="middle">-</text>
+
+            <!-- 3. Parent Span ID -->
+            <rect x="594" y="18" width="195" height="36" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.5"/>
+            <text x="691" y="41" fill="#34d399" font-size="12.5" font-weight="700" font-family="ui-monospace, monospace" text-anchor="middle">00f067aa0ba902b7</text>
+
+            <!-- Separador 3 -->
+            <text x="801" y="41" fill="#64748b" font-size="15" font-family="ui-monospace, monospace" text-anchor="middle">-</text>
+
+            <!-- 4. Flags -->
+            <rect x="812" y="18" width="52" height="36" rx="6" fill="#2d1c03" stroke="#fbbf24" stroke-width="1.5"/>
+            <text x="838" y="41" fill="#fbbf24" font-size="13" font-weight="700" font-family="ui-monospace, monospace" text-anchor="middle">01</text>
+
+            <!-- Setas e Descrições -->
+            <path d="M 147 54 L 147 70 L 95 70 L 95 84" fill="none" stroke="#c084fc" stroke-width="1.3" marker-end="url(#arr-tp-pur)"/>
+            <rect x="15" y="86" width="160" height="48" rx="5" fill="#151226" stroke="#c084fc" stroke-width="1"/>
+            <text x="95" y="103" fill="#c084fc" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Versão W3C (1 byte)</text>
+            <text x="95" y="120" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">Atualmente "00" oficial</text>
+
+            <path d="M 384 54 L 384 84" fill="none" stroke="#38bdf8" stroke-width="1.3" marker-end="url(#arr-tp-cyan)"/>
+            <rect x="190" y="86" width="388" height="48" rx="5" fill="#071526" stroke="#38bdf8" stroke-width="1"/>
+            <text x="384" y="103" fill="#38bdf8" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Trace ID Global (16 bytes = 32 hex chars)</text>
+            <text x="384" y="120" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">Identificador único contínuo da transação fim a fim</text>
+
+            <path d="M 691 54 L 691 84" fill="none" stroke="#34d399" stroke-width="1.3" marker-end="url(#arr-tp-em)"/>
+            <rect x="590" y="86" width="200" height="48" rx="5" fill="#051f18" stroke="#34d399" stroke-width="1"/>
+            <text x="690" y="103" fill="#34d399" font-size="9" font-weight="700" text-anchor="middle" font-family="system-ui">Parent Span ID (8 bytes)</text>
+            <text x="690" y="120" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">Identifica o nó chamador imediato</text>
+
+            <path d="M 838 54 L 838 84" fill="none" stroke="#fbbf24" stroke-width="1.3" marker-end="url(#arr-tp-amb)"/>
+            <rect x="802" y="86" width="66" height="48" rx="5" fill="#221603" stroke="#fbbf24" stroke-width="1"/>
+            <text x="835" y="103" fill="#fbbf24" font-size="8.5" font-weight="700" text-anchor="middle" font-family="system-ui">Flags (1B)</text>
+            <text x="835" y="120" fill="#fef08a" font-size="7.5" text-anchor="middle" font-family="system-ui">01=Sampled</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top: 16px;">
+        <div class="card">
+          <div class="card-title">🔭 O Papel do OpenTelemetry (CNCF)</div>
+          <div class="card-body">
+            <p>O standard aberto unificado da indústria para instrumentação de código, coleta e exportação de traces, métricas e logs sem dependência de fornecedor proprietário.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🌊 Visão em Cascata (Waterfall)</div>
+          <div class="card-body">
+            <p>Permite identificar com exatidão cirúrgica qual microsserviço ou query SQL específica é responsável pela cauda longa de latência P99.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 27: INTERACTIVE LAB 6: TRACE WATERFALL INSPECTOR -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">Laboratório Interativo 06</span>
+        <h2 class="slide-title">Inspecionador Waterfall de Distributed Tracing</h2>
+        <p class="slide-subtitle">Simule uma transação de Checkout, injete latência ou erros em microsserviços e examine o trace distribuído.</p>
+      </div>
+
+      <div class="tracing-waterfall-card">
+        <div class="sim-controls-row">
+          <label style="font-weight: 600; font-size: 0.85rem;">Injeção de Anomalia:</label>
+          <select id="trace-anomaly-select" class="sim-select">
+            <option value="none">Transação Normal (Sem Anomalia)</option>
+            <option value="latency">Latência Severa (+1.5s no Payment Processor)</option>
+            <option value="error">Falha Crítica HTTP 500 (Inventory Service sem estoque)</option>
+          </select>
+
+          <button id="btn-trace-run" class="btn-nav btn-primary" style="margin-left: 10px;">⚡ Disparar POST /api/v1/checkout</button>
+          <button id="btn-trace-reset" class="btn-nav">🔄 Reset</button>
+        </div>
+
+        <div class="trace-header-info">
+          <div>Trace ID: <span id="trace-id-preview" style="color: var(--accent-cyan);">4bf92f3577b34da6a3ce929d0e0e4736</span></div>
+          <div>Duração Total: <span id="trace-total-dur" style="color: var(--accent-emerald);">285ms</span></div>
+          <div>Status HTTP: <span id="trace-status-code" style="color: var(--accent-emerald);">200 OK</span></div>
+        </div>
+
+        <div class="trace-waterfall-view" id="trace-waterfall-container">
+          <div class="span-row">
+            <div class="span-name">api-gateway</div>
+            <div class="span-bar-container">
+              <div class="span-bar ok" id="span-gateway" style="left: 0%; width: 100%;">285ms</div>
+            </div>
+          </div>
+
+          <div class="span-row">
+            <div class="span-name">└─ auth-service</div>
+            <div class="span-bar-container">
+              <div class="span-bar ok" id="span-auth" style="left: 5%; width: 15%;">22ms</div>
+            </div>
+          </div>
+
+          <div class="span-row">
+            <div class="span-name">└─ order-service</div>
+            <div class="span-bar-container">
+              <div class="span-bar ok" id="span-order" style="left: 22%; width: 75%;">210ms</div>
+            </div>
+          </div>
+
+          <div class="span-row">
+            <div class="span-name">&nbsp;&nbsp;├─ inventory</div>
+            <div class="span-bar-container">
+              <div class="span-bar ok" id="span-inventory" style="left: 25%; width: 20%;">45ms</div>
+            </div>
+          </div>
+
+          <div class="span-row">
+            <div class="span-name">&nbsp;&nbsp;└─ payment-gw</div>
+            <div class="span-bar-container">
+              <div class="span-bar ok" id="span-payment" style="left: 48%; width: 45%;">130ms</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 28: ENGENHARIA DO CAOS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">05. Observabilidade & Operações</span>
+        <h2 class="slide-title">Engenharia do Caos (Chaos Engineering) & Self-Healing</h2>
+        <p class="slide-subtitle">Como testar a robustez em produção derrubando intencionalmente componentes da infraestrutura.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🐒 O Legado do Chaos Monkey (Netflix)</div>
+          <div class="card-body">
+            <p>Criado em 2010 após a migração para a AWS: um processo automatizado que extermina pods e instâncias de produção aleatoriamente durante o horário comercial.</p>
+            <p style="margin-top: 8px;"><strong>Objetivo:</strong> Forçar os desenvolvedores a construir sistemas que não dependam da sobrevivência de nenhum nó individual.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔬 Os 4 Passos do Experimento de Caos</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>1. Definir o estado estacionário (*Steady State*) via métricas de negócio.</li>
+              <li>2. Formular a hipótese: <em>"Se a Zona B cair, a taxa de erros não sobe mais que 0.1%"</em>.</li>
+              <li>3. Injetar turbulência real (cortar rede, matar nós).</li>
+              <li>4. Verificar se a hipótese foi validada ou refutada.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 29: ARQUITETURA DISTRIBUÍDA INTEGRADA DE REFERÊNCIA -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Síntese Integrada</span>
+        <h2 class="slide-title">Arquitetura Distribuída Integrada de Alta Robustez</h2>
+        <p class="slide-subtitle">O blueprint corporativo de produção integrando todos os pilares estudados.</p>
+      </div>
+
+      <div class="card">
+        <div class="svg-diagram-container large" style="background: #070c18; border-color: rgba(56, 189, 248, 0.4); padding: 12px 14px;">
+          <svg class="svg-diagram" viewBox="0 0 940 450" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="bp-arr-cyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/>
+              </marker>
+              <marker id="bp-arr-em" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#34d399"/>
+              </marker>
+              <marker id="bp-arr-pur" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#c084fc"/>
+              </marker>
+              <marker id="bp-arr-rose" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill="#f43f5e"/>
+              </marker>
+            </defs>
+
+            <!-- TIER 1: GLOBAL EDGE & INGRESS -->
+            <!-- Clientes Globais -->
+            <rect x="10" y="10" width="160" height="48" rx="6" fill="#0f172a" stroke="#94a3b8" stroke-width="1.3"/>
+            <text x="90" y="29" fill="#f8fafc" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">📱 💻 Clientes Globais</text>
+            <text x="90" y="45" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">HTTP/3 • TLS 1.3 • Web/App</text>
+
+            <line x1="170" y1="34" x2="198" y2="34" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#bp-arr-cyan)"/>
+
+            <!-- DNS Anycast -->
+            <rect x="204" y="10" width="185" height="48" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+            <text x="296" y="29" fill="#38bdf8" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">🌐 DNS Anycast + GSLB</text>
+            <text x="296" y="45" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">Roteamento por Latência PoP</text>
+
+            <line x1="389" y1="34" x2="417" y2="34" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#bp-arr-cyan)"/>
+
+            <!-- Edge CDN / WAF -->
+            <rect x="423" y="10" width="190" height="48" rx="6" fill="#0c1e33" stroke="#38bdf8" stroke-width="1.3"/>
+            <text x="518" y="29" fill="#38bdf8" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">🛡️ Edge CDN &amp; WAF</text>
+            <text x="518" y="45" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">TLS Term • Anti-DDoS • Cache</text>
+
+            <line x1="613" y1="34" x2="641" y2="34" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#bp-arr-cyan)"/>
+
+            <!-- API Gateway -->
+            <rect x="647" y="10" width="283" height="48" rx="6" fill="#1e1b4b" stroke="#c084fc" stroke-width="1.3"/>
+            <text x="788" y="29" fill="#c084fc" font-size="9.5" font-weight="700" text-anchor="middle" font-family="system-ui">🚪 API Gateway L7</text>
+            <text x="788" y="45" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">Rate Limit • Load Shedding • Trace Context</text>
+
+            <!-- Connector Down to Service Mesh -->
+            <path d="M 788 58 L 788 74" fill="none" stroke="#c084fc" stroke-width="1.8" marker-end="url(#bp-arr-pur)"/>
+
+            <!-- TIER 2: SERVICE MESH & MICROSSERVIÇOS -->
+            <rect x="10" y="80" width="920" height="118" rx="8" fill="#080e1c" stroke="#38bdf8" stroke-width="1.3"/>
+            <text x="25" y="98" fill="#38bdf8" font-size="10" font-weight="700" font-family="system-ui">TIER 2: SERVICE MESH &amp; MICROSSERVIÇOS RESILIENTES (ENVOY / ISTIO)</text>
+
+            <!-- Servico A -->
+            <rect x="25" y="110" width="220" height="74" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+            <text x="135" y="130" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">Serviço A (Stateless)</text>
+            <text x="135" y="148" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">• Bulkhead isolado (Pool dedicado)</text>
+            <text x="135" y="164" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">• Injeção de Context Deadlines</text>
+
+            <!-- Seta A -> B -->
+            <line x1="245" y1="147" x2="333" y2="147" stroke="#34d399" stroke-width="1.8" marker-end="url(#bp-arr-em)"/>
+            <rect x="255" y="132" width="70" height="16" rx="3" fill="#062e24" stroke="#34d399" stroke-width="0.8"/>
+            <text x="290" y="144" fill="#34d399" font-size="7" font-weight="700" text-anchor="middle" font-family="system-ui">mTLS gRPC</text>
+
+            <!-- Servico B -->
+            <rect x="340" y="110" width="220" height="74" rx="6" fill="#0f172a" stroke="#60a5fa" stroke-width="1.2"/>
+            <text x="450" y="130" fill="#60a5fa" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">Serviço B (Stateless)</text>
+            <text x="450" y="148" fill="#93c5fd" font-size="8" text-anchor="middle" font-family="system-ui">• Bulkhead de conexões isolado</text>
+            <text x="450" y="164" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">• Degradação Graciosa (Fallback)</text>
+
+            <!-- Badges de Resiliencia Tier 2 -->
+            <rect x="580" y="108" width="335" height="23" rx="4" fill="#291219" stroke="#f43f5e" stroke-width="1"/>
+            <text x="590" y="124" fill="#f43f5e" font-size="8.2" font-weight="700" font-family="system-ui">🛡️ Circuit Breaker: Abre sob taxa &gt; limiar p/ downstream descansar</text>
+
+            <rect x="580" y="135" width="335" height="23" rx="4" fill="#2d1c03" stroke="#fbbf24" stroke-width="1"/>
+            <text x="590" y="151" fill="#fbbf24" font-size="8.2" font-weight="700" font-family="system-ui">🎲 Exponential Backoff c/ Full Jitter: Evita manada concorrente</text>
+
+            <rect x="580" y="162" width="335" height="23" rx="4" fill="#062e24" stroke="#34d399" stroke-width="1"/>
+            <text x="590" y="178" fill="#34d399" font-size="8.2" font-weight="700" font-family="system-ui">⏳ Context Deadlines: Aborta cooperativamente chamadas excedentes</text>
+
+            <!-- Connector Down to Data Tier -->
+            <path d="M 450 198 L 450 212" fill="none" stroke="#34d399" stroke-width="1.8" marker-end="url(#bp-arr-em)"/>
+
+            <!-- TIER 3: CAMADA DE DADOS E CONSENSO -->
+            <rect x="10" y="218" width="920" height="114" rx="8" fill="#051c14" stroke="#34d399" stroke-width="1.3"/>
+            <text x="25" y="235" fill="#34d399" font-size="10" font-weight="700" font-family="system-ui">TIER 3: CAMADA DE DADOS E CONSENSO DISTRIBUÍDO</text>
+
+            <!-- Cluster Coordenacao -->
+            <rect x="25" y="246" width="245" height="72" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.2"/>
+            <text x="147" y="266" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">Cluster de Coordenação</text>
+            <text x="147" y="284" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">etcd / Raft • Quorum Estrito</text>
+            <text x="147" y="300" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">Geração de Fencing Tokens (Epoch)</text>
+
+            <!-- Banco Replicado -->
+            <rect x="290" y="246" width="270" height="72" rx="6" fill="#062e24" stroke="#34d399" stroke-width="1.2"/>
+            <text x="425" y="266" fill="#34d399" font-size="10.5" font-weight="700" text-anchor="middle" font-family="system-ui">Banco de Dados Multi-AZ</text>
+            <text x="425" y="284" fill="#a7f3d0" font-size="8" text-anchor="middle" font-family="system-ui">Quorum R + W &gt; N configurável</text>
+            <text x="425" y="300" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="system-ui">Consistent Hashing com Vnodes</text>
+
+            <!-- Badges Tier 3 -->
+            <rect x="580" y="248" width="335" height="30" rx="4" fill="#0c1e33" stroke="#38bdf8" stroke-width="1"/>
+            <text x="590" y="267" fill="#38bdf8" font-size="8.2" font-weight="700" font-family="system-ui">⚖️ Quorum R + W &gt; N: Leitura e escrita garantem interseção linearizável</text>
+
+            <rect x="580" y="284" width="335" height="30" rx="4" fill="#1e1523" stroke="#c084fc" stroke-width="1"/>
+            <text x="590" y="303" fill="#c084fc" font-size="8.2" font-weight="700" font-family="system-ui">🛡️ Fencing Tokens: Rejeita ordens de líderes zumbis isolados por partição</text>
+
+            <!-- Telemetria Connectors -->
+            <path d="M 147 348 L 147 338" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <path d="M 425 348 L 425 338" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+            <!-- TIER 4: PLATAFORMA DE OBSERVABILIDADE -->
+            <rect x="10" y="348" width="920" height="90" rx="8" fill="#140d1e" stroke="#c084fc" stroke-width="1.3"/>
+            <text x="25" y="366" fill="#c084fc" font-size="10" font-weight="700" font-family="system-ui">TIER 4: PLATAFORMA INTEGRADA DE OBSERVABILIDADE &amp; TELEMETRIA CONTÍNUA</text>
+
+            <!-- Pilar 1: OTel Collector -->
+            <rect x="25" y="378" width="275" height="48" rx="5" fill="#1e1523" stroke="#c084fc" stroke-width="1"/>
+            <text x="162" y="398" fill="#c084fc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">OpenTelemetry Collector</text>
+            <text x="162" y="414" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">W3C traceparent • Ingestão OTLP</text>
+
+            <!-- Pilar 2: Prometheus -->
+            <rect x="315" y="378" width="275" height="48" rx="5" fill="#1e1523" stroke="#c084fc" stroke-width="1"/>
+            <text x="452" y="398" fill="#c084fc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Prometheus &amp; Grafana</text>
+            <text x="452" y="414" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">4 Sinais Dourados: Latência, Tráfego, Erros, Saturação</text>
+
+            <!-- Pilar 3: Jaeger -->
+            <rect x="605" y="378" width="310" height="48" rx="5" fill="#1e1523" stroke="#c084fc" stroke-width="1"/>
+            <text x="760" y="398" fill="#c084fc" font-size="10" font-weight="700" text-anchor="middle" font-family="system-ui">Jaeger Tracing &amp; Análise P99</text>
+            <text x="760" y="414" fill="#e9d5ff" font-size="8" text-anchor="middle" font-family="system-ui">Visão Waterfall de Spans ponta a ponta</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 30: CHECKLIST DE DECISÃO ARQUITETURAL -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Síntese Integrada</span>
+        <h2 class="slide-title">Checklist Decisório de System Design</h2>
+        <p class="slide-subtitle">Guia prático para entrevistas técnicas de alto nível e desenho de sistemas corporativos críticos.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">✅ Resiliência e Tráfego</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>O sistema aceita failover em segundos (HA) ou exige hardware lockstep (FT)?</li>
+              <li>Toda chamada de rede downstream possui Circuit Breaker e Fallback claro?</li>
+              <li>Os retries implementam Backoff Exponencial com <strong>Full Jitter</strong>?</li>
+              <li>Recursos sensíveis estão isolados em Bulkheads para evitar esgotamento geral?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✅ Consistência e Observabilidade</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li>O modelo de dados foi posicionado no Teorema PACELC (PC/EC vs PA/EL)?</li>
+              <li>A regra fundamental de Quorum $R + W > N$ é atendida para consistência forte?</li>
+              <li>O chaveamento de líderes implementa Fencing Tokens contra Split-Brain?</li>
+              <li>O pipeline de rede propaga cabeçalhos W3C <code>traceparent</code> de ponta a ponta?</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 31: REFERÊNCIAS BIBLIOGRÁFICAS -->
+    <section class="slide">
+      <div class="slide-header">
+        <span class="slide-tag">06. Síntese Integrada</span>
+        <h2 class="slide-title">Referências Bibliográficas e Leituras Recomendadas</h2>
+        <p class="slide-subtitle">A literatura clássica indispensável para o domínio de sistemas distribuídos e engenharia de confiabilidade.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">📚 Obras Fundamentais</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>KLEPPMANN, Martin.</strong> <em>Designing Data-Intensive Applications</em>. O'Reilly Media, 2017.</li>
+              <li><strong>BEYER, Betsy et al.</strong> <em>Site Reliability Engineering: How Google Runs Production Systems</em>. O'Reilly, 2016.</li>
+              <li><strong>NYGARD, Michael T.</strong> <em>Release It! Design and Deploy Production-Ready Software</em>. 2ª ed. Pragmatic Bookshelf, 2018.</li>
+              <li><strong>PETROV, Alex.</strong> <em>Database Internals: A Deep Dive into How Distributed Data Systems Work</em>. O'Reilly, 2019.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 Papers Seminais da Computação</div>
+          <div class="card-body">
+            <ul class="bullet-list">
+              <li><strong>ONGARO, D.; OUSTERHOUT, J.</strong> <em>In Search of an Understandable Consensus Algorithm (Raft)</em>. USENIX ATC, 2014.</li>
+              <li><strong>DECANDIA, G. et al.</strong> <em>Dynamo: Amazon's Highly Available Key-value Store</em>. SOSP, 2007.</li>
+              <li><strong>ABADI, Daniel J.</strong> <em>Consistency Tradeoffs in Modern Distributed Database System Design (PACELC)</em>. IEEE Computer, 2012.</li>
+              <li><strong>HAYASHIBARA, N. et al.</strong> <em>The $\phi$ Accrual Failure Detector</em>. SRDS, 2004.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 32: ENCERRAMENTO -->
+    <section class="slide slide-cover">
+      <span class="cover-badge">FATEC RIBEIRÃO PRETO • ADS 2026.2</span>
+      <h1 class="cover-title">Perguntas & Discussão Aberta!</h1>
+      <p class="cover-subtitle">Explore os simuladores interativos nesta aplicação web e teste diferentes cenários de falhas de rede, quorums e resiliência.</p>
+      
+      <div class="author-box">
+        <div style="font-size: 2rem;">👨‍🏫</div>
+        <div class="author-info">
+          <div class="author-name">Eduardo Cruz Araujo</div>
+          <div class="author-meta">Disciplina de Programação Web • Fatec SP</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button class="btn-nav btn-primary" onclick="goToSlide(0)">↩ Voltar ao Início</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Overview / Grid Navigator -->
+  <div class="modal-overlay" id="overview-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">📱 Índice Geral da Aula 07 (System Design Part. 3)</div>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="slide-grid-nav">
+        <!-- Dynamically populated via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-msg" id="toast-msg">Mensagem de aviso</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
